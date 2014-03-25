@@ -1,6 +1,15 @@
 <p>这篇文章将简单地描述一下博客的搭建过程。博客源代码见<a href="https://github.com/laike9m/My_Blog">这里</a><br>
 首先要感谢stevelosh, 博客的基本设计参考了他的博客，来源于<a href="http://stevelosh.com/projects/stevelosh-com/">stevelosh.com</a> 这篇文章。<br>
-博客从2013.8开始搭建，暑假主要处于学习阶段，学期途中插空写了一点，2014寒假把基本框架完成了。</p>
+博客从2013.8开始搭建，暑假主要处于学习阶段，学期途中插空写了一点，2014寒假把基本框架完成了。<br>
+对于想基于代码学习/搭建博客的行为，本人不能够更欢迎，但是请至少做到：<br><strong>在运行之前修改<code>settings.py</code></strong>，再不济，请至少把这里的<strong>email替换成你自己的email</strong></p>
+
+<div class="highlight highlight-python"><pre><span class="n">ADMINS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="c"># ('Your Name', 'your_email@example.com'),</span>
+    <span class="p">(</span><span class="s">'laike9m'</span><span class="p">,</span> <span class="s">'laike9m@gmail.com'</span><span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+
+<p>否则，你的代码运行时的出错信息将被发送到我的邮箱，不利于你进行调试，也给我带来极大困扰。不胜感激！！</p>
 
 <h2>
 <a name="%E8%AE%BE%E8%AE%A1" class="anchor" href="#%E8%AE%BE%E8%AE%A1"><span class="octicon octicon-link"></span></a>设计</h2>
