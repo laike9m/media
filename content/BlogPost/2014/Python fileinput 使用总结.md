@@ -59,8 +59,8 @@ $ cat *.py | python fileinput_grep.py fileinput
 
 ```bash
 for line in fileinput.input('file.txt', inplace=True):
-     line = ... # edit line
-     print line, # stdout is redirected to the file
+     line = ...  # edit line
+     print line,  # stdout is redirected to the file
 ```
 <br>
 #### Note:
@@ -69,13 +69,26 @@ for line in fileinput.input('file.txt', inplace=True):
 
 2. fileinput 支持 context manager
 例如在原处修改文件最好写成
-
-```python
-with fileinput.input('file.txt', inplace=True) as f:
-    for line in f:
-    ...
-```
+    ```python
+    with fileinput.input('file.txt', inplace=True) as f:
+        for line in f:
+        ...
+    ```
 否则最后还得调用 fileinput.close()
 
+3. 一个常见的任务是，如果某一行满足某个条件，那么修改/删除这一行。这时候**不要忘记原样输出别的行！**
+
+4. 如果单纯地`print`会多出一些空白行，这是因为`print`的时候末尾自带一个换行符。解决方法有两种  
+(1) Python2.X  
+去掉末尾的换行，`strip`默认删除空白符（包括'\n', '\r',  '\t',  ' ')
+    ```python
+    line.rstrip()
+    print line
+    ```
+(2) Python3.X  
+`print()`函数有个参数是`end`，代表以什么结尾，默认是`\n`，我们用空字符做结尾
+    ```python
+    print(line, end='')
+    ```
 
 [1]: http://docs.python.org/3/library/fileinput.html#fileinput.filename
