@@ -10,8 +10,7 @@
 <li>First, on the computer I do developing, <code>commit</code> and <code>push</code> everything as you normally do, including <code>settings.py</code>.</li>
 <li>Create a new branch called <code>deploy</code> on Github.</li>
 <li>Then, on deployment server, <code>git pull</code> from branch <code>master</code>.</li>
-<li>
-<strong>Modify <code>settings.py</code> for deployment</strong>, e.g. set <code>DEBUG=False</code>, change <code>MEDIA_ROOT</code>, <code>STATIC_ROOT</code>, etc. The ONLY file you should change is <code>settings.py</code>, <strong>DO NOT TOUCH OTHER FILES !</strong><br>
+<li>checkout <code>deploy</code> branch, <strong>Modify <code>settings.py</code> for deployment</strong>, e.g. set <code>DEBUG=False</code>, change <code>MEDIA_ROOT</code>, <code>STATIC_ROOT</code>, etc. The ONLY file you should change is <code>settings.py</code>, <strong>DO NOT TOUCH OTHER FILES !</strong><br>
 </li>
 <li>
 <code>commit</code> and <code>push</code> to branch <code>deploy</code>.</li>
@@ -40,5 +39,24 @@ When these flags are specified, the object names recorded for the paths are not 
 
 <p><strong>Edit <code>settings.py</code> on deployment server (if needed) —&gt; Push to <code>deploy</code></strong></p>
 
-<p>Be careful, NEVER push to branch <code>master</code> from deployment server.<br>
-I'm open to changes and suggestions, if you have better ideas, feel free to comment.</p>
+<p>Be careful, NEVER push to branch <code>master</code> from deployment server.  </p>
+
+<p>Now you've pushed some new commits to Github and want to apply it on your server. Here are the steps:</p>
+
+<div class="highlight highlight-bash"><pre><span class="c"># step 1</span>
+make sure you<span class="err">'</span>re on master branch, <span class="k">if </span>not, git checkout master
+
+<span class="c"># step 2</span>
+<span class="nv">$ </span>git pull
+
+<span class="c"># step 3</span>
+<span class="nv">$ </span>git checkout deploy
+
+<span class="c"># step 4</span>
+<span class="nv">$ </span>git rebase master
+
+<span class="c"># step 5</span>
+<span class="nv">$ </span>git push origin deploy
+</pre></div>
+
+<p>I'm open to changes and suggestions, if you have better ideas, feel free to comment.</p>

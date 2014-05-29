@@ -8,7 +8,7 @@ My purpose is to **keep different versions of `settings.py`**. Here's what I did
 1. First, on the computer I do developing, `commit` and `push` everything as you normally do, including `settings.py`.
 2. Create a new branch called `deploy` on Github.
 3. Then, on deployment server, `git pull` from branch `master`.
-4. **Modify `settings.py` for deployment**, e.g. set `DEBUG=False`, change `MEDIA_ROOT`, `STATIC_ROOT`, etc. The ONLY file you should change is `settings.py`, **DO NOT TOUCH OTHER FILES !**  
+4. checkout `deploy` branch, **Modify `settings.py` for deployment**, e.g. set `DEBUG=False`, change `MEDIA_ROOT`, `STATIC_ROOT`, etc. The ONLY file you should change is `settings.py`, **DO NOT TOUCH OTHER FILES !**  
 5. `commit` and `push` to branch `deploy`.
 6. Back to developing environment, type this command:  
 ```bash
@@ -35,4 +35,24 @@ Finally, workflow is like this:
 **Edit `settings.py` on deployment server (if needed) —> Push to `deploy`**
 
 Be careful, NEVER push to branch `master` from deployment server.  
+
+Now you've pushed some new commits to Github and want to apply it on your server. Here are the steps:
+
+```bash
+# step 1
+make sure you're on master branch, if not, git checkout master
+
+# step 2
+$ git pull
+
+# step 3
+$ git checkout deploy
+
+# step 4
+$ git rebase master
+
+# step 5
+$ git push origin deploy
+```
+
 I'm open to changes and suggestions, if you have better ideas, feel free to comment.

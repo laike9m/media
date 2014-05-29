@@ -56,7 +56,6 @@ president of Tsinghua Student Association of Detective and Mystery.
 About the Site
 -----------
 
-If you want to know more about my site you should check out the [blog
-post][blog] about how I wrote it.
+If you want to know more about my site you should check out the [blogpost][blog] about how I wrote it. (It's in 中文)
 
-[blog]: /
+[blog]: http://www.laike9m.com/blog/permant_link,22/
