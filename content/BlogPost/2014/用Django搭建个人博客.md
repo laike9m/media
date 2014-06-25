@@ -14,6 +14,7 @@ ADMINS = (
 设计
 ---
 在博客搭建之初，我就决定要**尽可能少写前端代码**。最简单的方法自然是使用CMS。实际上有不少使用Django的CMS，比如最著名的[django CMS][django-cms]。不过调研一番之后发现一个问题：没有一个支持Python 3。考虑到博客里必然有一堆Unicode字符，我还是希望能用Python 3的，所以就放弃了CMS。  
+（2014.6.25 EDIT: 目前发现django CMS已经能支持Python3.4了，至少3.0.2版本以及更新的都可以。参见[3.0.2 release][3.0.2]）  
 好在马上找到了替代品：HTML模版。最后使用了[css3templates][templates] 里面的一个模板。模板基本只包含HTML/CSS/JS代码，这正是我需要的东西，因为后端本来就是想从零开始写的。  
 
 文件路径结构
@@ -107,11 +108,13 @@ ADMINS = (
 <br>
 > 初版：2014-2-5  
 > EDIT：2014-2-20 加入**文件路径结构**小节，增补其它小节内容
+> EDIT：2014-6-25 django CMS 已经支持 Python3.4
 
 
 [blog]: https://github.com/laike9m/My_Blog
 [sl]: http://stevelosh.com/projects/stevelosh-com/
 [django-cms]: https://www.django-cms.org/en/
+[3.0.2]: https://www.django-cms.org/en/blog/2014/05/21/302-release/
 [templates]: http://www.css3templates.co.uk/templates.html
 [wf]: https://www.webfaction.com/
 [QA]: https://community.webfaction.com/
