@@ -5,10 +5,14 @@
 
 #### 用途1
 
-例如  
+如果我们有如下的文件夹结构：  
 test/  
-|_____ 1.txt   content: 1_line1\n1_line2  
-|_____ 2.txt   content: 2_line1\n2_line2  
+|_____ 1.txt   content: 
+|                 1_line1  
+|                 1_line2    
+|_____ 2.txt   content: 
+|                 2_line1
+|                 2_line2  
 |_____ test_fileinput.py  
 
 ```python
@@ -19,9 +23,9 @@ for line in fileinput.input(sys.argv[1:]):
      print(fileinput.filename(), fileinput.filelineno(), line)
 ```
 
-在 Linux 里面执行
+在 Linux 下执行
 ```bash
-python test_fileinput.py *.txt
+$ python test_fileinput.py *.txt
 ```
 输出
 ```bash
@@ -33,14 +37,14 @@ python test_fileinput.py *.txt
 2_line2
 ```
 
-在Windows里直接用*.txt, 系统不认  
+在Windows下直接用*.txt, 系统不认  
 ![Windows Fail](/media/content/BlogPost/images/windows_fileinput_fail.jpg)
 
 所以修改成
 ```python
 import glob
 all_files = [f for files in sys.argv[1:] for f in glob(files)]
-for line in fileinput.input(glob(all_files)):
+for line in fileinput.input(all_files):
      print(fileinput.filename(), fileinput.filelineno(), line)
 ```
 
