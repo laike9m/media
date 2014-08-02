@@ -1,0 +1,132 @@
+<p>之前根据Django自带的缓存写了一个简单的缓存系统，针对views而不是页面，同时支持function based和class based views。因为并没有实际投入使用，所以只是个demo（但是测试过）。所有的代码都在一个文件里，参见 <a href="https://gist.github.com/laike9m/cb861faea84f3f4d5630">django_cache_for_views.py</a><br>
+Django缓存系统的介绍可见<a href="https://docs.djangoproject.com/en/1.7/topics/cache/">官方文档</a>，这里用到的缓存方式是Local-memory caching，也就是说不依赖外部的数据库或者文件，直接把缓存放在内存中。使用方法如下：</p>
+
+<h3>
+<a name="user-content-%E5%9C%A8settingspy-%E4%B8%AD%E5%8A%A0%E5%85%A5%E8%AE%BE%E7%BD%AE" class="anchor" href="#%E5%9C%A8settingspy-%E4%B8%AD%E5%8A%A0%E5%85%A5%E8%AE%BE%E7%BD%AE" aria-hidden="true"><span class="octicon octicon-link"></span></a>在<code>settings.py</code> 中加入设置</h3>
+
+<div class="highlight highlight-python"><pre><span class="n">CACHES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'default'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'BACKEND'</span><span class="p">:</span> <span class="s">'django.core.cache.backends.locmem.LocMemCache'</span><span class="p">,</span>
+        <span class="s">'KEY_PREFIX'</span><span class="p">:</span> <span class="s">'kratos_server'</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+<h3>
+<a name="user-content-%E4%BD%BF%E7%94%A8utilspy%E4%B8%AD%E5%AE%9A%E4%B9%89%E7%9A%84%E5%87%BD%E6%95%B0%E9%9C%80%E8%A6%81%E5%9C%A8%E5%A4%96%E9%83%A8%E8%B0%83%E7%94%A8%E7%9A%84%E6%9C%893%E4%B8%AA" class="anchor" href="#%E4%BD%BF%E7%94%A8utilspy%E4%B8%AD%E5%AE%9A%E4%B9%89%E7%9A%84%E5%87%BD%E6%95%B0%E9%9C%80%E8%A6%81%E5%9C%A8%E5%A4%96%E9%83%A8%E8%B0%83%E7%94%A8%E7%9A%84%E6%9C%893%E4%B8%AA" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用<code>utils.py</code>中定义的函数，需要在外部调用的有3个</h3>
+
+<p><code>generate_key</code>, <code>get_cachevalue</code>, <code>set_cachevalue</code><br>
+具体的参数请直接参考代码的注释</p>
+
+<h3>
+<a name="user-content-%E4%BD%BF%E7%94%A8%E4%B8%BE%E4%BE%8B" class="anchor" href="#%E4%BD%BF%E7%94%A8%E4%B8%BE%E4%BE%8B" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用举例</h3>
+
+<div class="highlight highlight-python"><pre><span class="nd">@api_view</span><span class="p">([</span><span class="s">'GET'</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">cost_month_detail</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">"""  </span>
+<span class="sd">    获取某个成本某月的详细采购记录</span>
+<span class="sd">    """</span>
+    <span class="n">costs</span> <span class="o">=</span> <span class="n">Cost</span>    <span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="n">item</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">QUERY_PARAMS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'item'</span><span class="p">,</span> <span class="s">'undefined'</span><span class="p">)</span>
+    <span class="n">cost_type</span> <span class="o">=</span> <span class="n">COST_TYPE_KEY_MAP</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">COST_TYPE_UNDEFINED</span><span class="p">)</span>
+    <span class="n">month</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">QUERY_PARAMS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'month'</span><span class="p">,</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">generate_key</span><span class="p">(</span><span class="s">'.'</span> <span class="p">,</span> <span class="o">*</span><span class="p">[</span><span class="n">item</span><span class="p">,</span> <span class="n">month</span><span class="p">])</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">get_cachevalue</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">req_ym_str</span> <span class="o">=</span> <span class="n">month</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">'.'</span><span class="p">)</span>
+        <span class="n">req_ym_int</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">req_ym_str</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">req_ym_str</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+
+        <span class="k">if</span> <span class="n">cost_type</span> <span class="ow">and</span> <span class="n">req_ym_int</span><span class="p">:</span>
+            <span class="n">costs</span> <span class="o">=</span> <span class="n">costs</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span> <span class="n">cost_type</span><span class="o">=</span><span class="n">cost_type</span><span class="p">,</span>\
+                    <span class="n">purchase_date__year</span><span class="o">=</span><span class="n">req_ym_int</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>\
+                    <span class="n">purchase_date__month</span><span class="o">=</span><span class="n">req_ym_int</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">serializer</span> <span class="o">=</span> <span class="n">CostSerializer</span><span class="p">(</span><span class="n">costs</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">serializer</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">set_cachevalue</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="n">models</span><span class="p">[</span><span class="n">item</span><span class="p">]])</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+</pre></div>
+
+<p><br></p>
+
+<h3>
+<a name="user-content-%E8%AF%B4%E6%98%8E" class="anchor" href="#%E8%AF%B4%E6%98%8E" aria-hidden="true"><span class="octicon octicon-link"></span></a>说明</h3>
+
+<p>Django的缓存在手动操作的情况下就是key-value的结构，添加、读取、删除，这几个操作Django已经封装得很好，无非就是 <code>cache.add(key,value)</code>，<code>cache.get(key)</code>，<code>cache.delete(key)</code>。关键之处在于，缓存的key要如何设计。我们当然可以对每一项需要缓存的东西事先定好key，比如有个Model叫做 <code>Car</code>，那么缓存数据库中全部车辆信息的key就叫做 <code>car_info</code>。这么做的问题在于，缓存项多了之后，容易搞混，比如我们希望缓存车辆价格信息，是不是又要弄一个 <code>car_price_info</code> 呢。而且在添加/获取缓存项的时候，如果每一个地方都要手动填写key，实在是非常麻烦又易出错。<br>
+要避免这种麻烦，只剩下一个选择，那就是自动生成所需要的 key，并且在读取缓存时，程序也能自己知道该用什么key去找缓存。自动生成key的代码，在 <code>generate_key</code> 这个函数里</p>
+
+<div class="highlight highlight-python"><pre><span class="kn">import</span> <span class="nn">inspect</span>
+
+<span class="k">def</span> <span class="nf">generate_key</span><span class="p">(</span><span class="n">seperator</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    :param seperator: key中的分隔符, 比如'-', '.'</span>
+<span class="sd">    :param args: 需要添加到key中的参数</span>
+<span class="sd">    :return: 生成的key</span>
+<span class="sd">    这个函数用来生成缓存的key, 有两种模式</span>
+<span class="sd">    1. class based view</span>
+<span class="sd">    会读取class name和method name</span>
+<span class="sd">    2. function view</span>
+<span class="sd">    会读取function name</span>
+<span class="sd">    最后用传入的seperator把所有东西, 包括args连接起来, 作为key返回</span>
+<span class="sd">    """</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">frame_back</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">currentframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_back</span>
+    <span class="n">func_name</span> <span class="o">=</span> <span class="n">frame_back</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>   
+    <span class="n">key</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">func_name</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="s">'self'</span> <span class="ow">in</span> <span class="n">frame_back</span><span class="o">.</span><span class="n">f_locals</span><span class="p">:</span>
+        <span class="n">class_name</span> <span class="o">=</span> <span class="n">frame_back</span><span class="o">.</span><span class="n">f_locals</span><span class="p">[</span><span class="s">'self'</span><span class="p">]</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+        <span class="n">key</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">class_name</span><span class="p">)</span>
+
+    <span class="n">key</span> <span class="o">=</span> <span class="n">seperator</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">key</span> <span class="o">+</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">key</span>
+</pre></div>
+
+<p>这段代码起作用的部分一共就9行，不过我自己都觉得看懂好难啊<em>(:3」∠)</em>。其实现在记下来的一个目的就是怕之后看不懂（雾。不如我们先看看效果吧：<br>
+假设有一个 function based view 函数 <code>fbv</code>：</p>
+
+<pre><code>def fbv(request):
+    ...
+    key = generate_key('-', 'args1', 'args2')
+    ...
+</code></pre>
+
+<p>先不考虑上下文，只关注生成key这件事。这里，生成的key是 <code>fbv-args1-args2</code></p>
+
+<p>再看一个 class based view：  </p>
+
+<div class="highlight highlight-python"><pre><span class="k">class</span> <span class="nc">cbv</span><span class="p">(</span><span class="n">View</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="o">...</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">generate_key</span><span class="p">(</span><span class="s">'-'</span><span class="p">,</span> <span class="s">'args1'</span><span class="p">,</span> <span class="s">'args2'</span><span class="p">)</span>
+        <span class="o">...</span>
+</pre></div>
+
+<p>这里生成的 key 是
+<code>cbv-get-args1-args2</code>  </p>
+
+<p>现在，<code>generate_key</code>这个函数的效果就很清楚了，说白了就是把所有对生成一个有意义且唯一的 key 有帮助的信息用用户自定的分隔符连接起来，就得到了这个 key。这些信息包括：</p>
+
+<ol>
+<li>view 函数名</li>
+<li>class based view 类名（如果有的话）</li>
+<li>用户自己添加的信息<br>
+</li>
+</ol><p>如果用户懒得添加额外信息，那就直接 <code>generate_key('-')</code> 就行了，这样一来，每一个view函数都能够生成一个key，并且这个key具有唯一性，之后进行 <code>add/get/delete</code> 操作时，直接使用这个key就好，达成了我们希望的自动化。</p>
+
+<p>那么生成key这件事到底是如何做到？我使用了 <a href="https://docs.python.org/3/library/inspect.html">inspect</a> 这个模块。之前没有用过它，为了这个任务不得已去看了看，结果发现 inspect 真的是非常强大，能完成好多看似不可能的任务。<br>
+由于这不是一篇讲 inspect 的文章，所以这块就不详细展开，看官方文档即可。要说的是三条语句所完成的事情：</p>
+
+<ol>
+<li>
+<code>frame_back = inspect.currentframe().f_back</code><br>
+获取当前堆栈帧的上一个堆栈帧，换句话说实际上就是调用generate_key函数的堆栈帧,也即view函数的堆栈帧</li>
+<li>
+<code>func_name = frame_back.f_code.co_name</code><br>
+从堆栈帧里面读取代码信息，找到这段代码的名字，其实就是获取view函数名</li>
+<li>
+<code>if 'self' in frame_back.f_locals:</code><br>
+从frame_back也就是view函数所在的堆栈帧读取local namespace，看看 <code>self</code> 是否在里面，用来判断这个view function是不是某个类的方法，即判断是否是class based view</li>
+<li>
+<code>class_name = frame_back.f_locals['self'].__class__.__name__</code><br>
+如果是class based view，那我们就通过 <code>self.__class__.__name__</code> 获取类的名字</li>
+</ol><p>以上就是缓存系统介绍的第一部分，之后应该还会写一篇，讲一下缓存如何和某个 Model 绑定以及缓存的更新。</p>
