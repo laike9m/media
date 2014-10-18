@@ -1,3 +1,5 @@
+<p><strong>NOTE</strong>: After writing this article several months ago, I gradually realized that despite this solution works, it is error-prone, and too verbose. I'll write a new article explaing how I deal with it now. </p>
+
 <p>When I started wirting my blog, one thing that confused me is different versions of <code>settings.py</code>. As we know, different <code>settings.py</code> should be kept for developement and deployment, however when it comes to using Git, things get messy. The main difficulties lies on two things:</p>
 
 <ol>
@@ -44,7 +46,7 @@ When these flags are specified, the object names recorded for the paths are not 
 <p>Now you've pushed some new commits to Github and want to apply it on your server. Here are the steps:</p>
 
 <div class="highlight highlight-bash"><pre><span class="c"># step 1</span>
-make sure you<span class="err">'</span>re on master branch, <span class="k">if </span>not, git checkout master
+make sure you<span class="err">'</span>re on master branch, <span class="k">if</span> not, git checkout master
 
 <span class="c"># step 2</span>
 <span class="nv">$ </span>git pull

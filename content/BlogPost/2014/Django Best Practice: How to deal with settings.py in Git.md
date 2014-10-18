@@ -1,3 +1,5 @@
+**NOTE**: After writing this article several months ago, I gradually realized that despite this solution works, it is error-prone, and too verbose. I'll write a new article explaing how I deal with it now. 
+
 When I started wirting my blog, one thing that confused me is different versions of `settings.py`. As we know, different `settings.py` should be kept for developement and deployment, however when it comes to using Git, things get messy. The main difficulties lies on two things:
 
 1. Should I upload `settings.py` from developement environment to Git server? If I did, does that mean I have to change the file every time after doing `Git pull` on deployment server?  
