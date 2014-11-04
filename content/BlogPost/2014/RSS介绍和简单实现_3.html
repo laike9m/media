@@ -1,0 +1,77 @@
+<p>关于RSS，现在用的人已经很少了，估计上网的人中也就5%知道这个东西，这部分人中大部分肯定从事IT行业，小部分则是上个时代遗留下来的网民。</p>
+
+<p>RSS 是一种xml规范, 最新版本是2.01。一个网站提供RSS， 本质上就是把网站希望推送给读者的内容按照 RSS 规范写入一个xml, 并且在一个页面（比如/blog/rss）提供这个 xml 的访问。然后 feedburner 或者别的 rss 工具会读取这个页面，检查更新，提供推送。</p>
+
+<p>RSS标准格式如下，我只列出需要关注的标签</p>
+
+<div class="highlight highlight-xml"><pre><span class="nt">&lt;title&gt;</span>Lift Off News<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;link&gt;</span>http://liftoff.msfc.nasa.gov/<span class="nt">&lt;/link&gt;</span>
+<span class="nt">&lt;description&gt;</span>Liftoff to Space Exploration.<span class="nt">&lt;/description&gt;</span>
+<span class="nt">&lt;item&gt;</span>
+　　<span class="nt">&lt;title&gt;</span>Star City<span class="nt">&lt;/title&gt;</span>
+　　<span class="nt">&lt;link&gt;</span>http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp<span class="nt">&lt;/link&gt;</span>
+　　<span class="nt">&lt;description&gt;</span>How do Americans get ready to work with Russians aboard the
+　　International Space Station? They take a crash course in culture, language
+　　and protocol at Russia's Star City.<span class="nt">&lt;/description&gt;</span>
+<span class="nt">&lt;/item&gt;</span>
+<span class="nt">&lt;item&gt;</span>
+      another item
+<span class="nt">&lt;/item&gt;</span>
+</pre></div>
+
+<p>rss 有总 的 title, link, description, 有一堆 item, 每一个 item 自己也有 title, link, description 属性，description 就是正文, 例如一篇博客文章的内容。有这些内容就够了。</p>
+
+<p>那么如何给自己的网站加上 rss 呢？很简单，只要照着这个格式生成一个页面就好了。这里还是以 Django 和我自己的博客为例。我的博客的 rss 地址是 <a href="http://www.laike9m.com/blog/rss/">http://www.laike9m.com/blog/rss/</a>.</p>
+
+<p>虽说是自己实现，但是 Django 已经把大部分事情都做好了。<br>
+首先我们要用 Django 提供的 <code>Feed</code> 类派生出一个子类</p>
+
+<div class="highlight highlight-python"><pre><span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">BlogPost</span>
+<span class="kn">from</span> <span class="nn">django.contrib.syndication.views</span> <span class="kn">import</span> <span class="n">Feed</span>
+
+<span class="n">exclude_posts</span> <span class="o">=</span> <span class="p">(</span><span class="s">"about"</span><span class="p">,</span> <span class="s">"projects"</span><span class="p">,</span> <span class="s">"talks"</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">BlogPostFeed</span><span class="p">(</span><span class="n">Feed</span><span class="p">):</span>
+     <span class="n">title</span> <span class="o">=</span> <span class="s">"laike9m's blog"</span>
+     <span class="n">link</span> <span class="o">=</span> <span class="s">"/blog/rss"</span>
+     <span class="n">description</span> <span class="o">=</span> <span class="s">"Update on laike9m blog's articles."</span>
+
+     <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+          <span class="k">return</span> <span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">title__in</span><span class="o">=</span><span class="n">exclude_posts</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s">"programming"</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span>
+
+     <span class="k">def</span> <span class="nf">item_title</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+          <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">title</span>
+
+     <span class="k">def</span> <span class="nf">item_link</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+          <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">get_absolute_url</span><span class="p">()</span>
+
+     <span class="k">def</span> <span class="nf">item_description</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+          <span class="n">html</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">display_html</span><span class="p">()</span>
+          <span class="kn">import</span> <span class="nn">re</span>
+          <span class="n">html</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">r"/media/"</span><span class="p">,</span> <span class="s">r"http://laike9m.com/media/"</span><span class="p">,</span> <span class="n">html</span><span class="p">)</span>
+          <span class="k">return</span> <span class="n">html</span>
+
+     <span class="k">def</span> <span class="nf">item_pubdate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+          <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">pub_date</span>
+</pre></div>
+
+<p>这个子类可能有两种写法，这里只看这一种。需要提供的方法有 <code>items</code>, <code>item_title</code>, <code>item_link</code>, <code>item_description</code>，<code>item_pubdate</code> 并非必须。可以看到这几个方法对应了之前列出的 rss 元素，所以这个类干的事情，就是告诉 Django 要如何填充 rss 中必须的元素，比如说构造 <code>&lt;title&gt;&lt;/title&gt;</code> 的时候，就通过 <code>get_title</code> 这个方法，获取到 <code>item.title</code>，而每个 <code>item</code> 是在 <code>items</code> 中定义的，可以看到，<code>item</code> 实际上就是 BlogPost 这个 Model 的实例，也就是一篇文章。<br>
+这里我作了一些筛选，没有把所有文章都放到 rss 里面，这句话</p>
+
+<div class="highlight highlight-python"><pre><span class="n">BlogPost</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exclude</span><span class="p">(</span><span class="n">title__in</span><span class="o">=</span><span class="n">exclude_posts</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">category</span><span class="o">=</span><span class="s">"programming"</span><span class="p">)[:</span><span class="mi">5</span><span class="p">]</span>
+</pre></div>
+
+<p>做的事情是把标题属于 <code>exclude_posts</code> 的文章排除，这些文章是我不想放进 rss 的，有 "about", "projects", "talks" 这三篇（因为它们并不是真正的文章，只是以和文章同样的形式保存用来构成博客的一些页面的），然后又通过 <code>filter</code> 选出那些属于编程类的文章。其实派生类的 <code>items</code> 方法不一定要返回 Model Objects，但是这么做的确有一些好处，这里的筛选功能就是因为使用了 Model Objects 而变得非常简单。</p>
+
+<p>然后只要在 <code>urls.py</code> 里面加上下面这句话就行了</p>
+
+<div class="highlight highlight-python"><pre><span class="n">url</span><span class="p">(</span><span class="s">'^rss/$'</span><span class="p">,</span> <span class="n">BlogPostFeed</span><span class="p">())</span>
+</pre></div>
+
+<p>通常 <code>url()</code> 的第二个参数是 views 里的某个函数，但是这里我们只要把刚才写的 Feed 类的派生的填进来就好了。</p>
+
+<p>这就是为博客提供 rss 所要做的全部工作。Django 大大简化了步骤，不过使用其它框架，亦或是自己从 html 级开始写出 rss 页面，原理是一样的。简单来讲就是：写一个页面，填上 rss 必须的元素，仅此而已。</p>
+
+<p>如果使用 feedburner 来提供 rss 服务，去注册一个账号，然后把自己的 rss 页面地址填进去，就OK了</p>
+
+<p><a href="/media/content/BlogPost/images/add_feed.jpg" target="_blank"><img src="/media/content/BlogPost/images/add_feed.jpg" alt="feed" style="max-width:100%;"></a></p>

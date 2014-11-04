@@ -3,7 +3,7 @@ Talks
 
 * [**FBT客户端内幕：Node.js 和 node-webkit**][5]  
 A talk at OpenCAS seminar. I talked about the technology we use to build FBT client.    
-在中科院开源软件协会技术交流会上作的关于 FBT 客户端技术实现的演讲
+在中科院开源软件协会技术交流会上作的关于 FBT 客户端技术实现的演讲  
 
 * [**Python HTTP**][3]  
 A talk at OpenCAS seminar on how to use Python to do HTTP related tasks, and showed a full example of crawling posts from renren.com. This program can be found in my "Projects".  
