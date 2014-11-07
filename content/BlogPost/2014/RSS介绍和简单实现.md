@@ -1,28 +1,30 @@
-关于RSS，现在用的人已经很少了，估计上网的人中也就5%知道这个东西，这部分人中大部分肯定从事IT行业，小部分则是上个时代遗留下来的网民。
+现在用RSS的人已经很少了，估计网民中不超过5%，这些人中大部分从事IT行业，小部分则是上个时代遗留下来的网民。
 
 RSS 是一种xml规范, 最新版本是2.01。一个网站提供RSS， 本质上就是把网站希望推送给读者的内容按照 RSS 规范写入一个xml, 并且在一个页面（比如/blog/rss）提供这个 xml 的访问。然后 feedburner 或者别的 rss 工具会读取这个页面，检查更新，提供推送。
 
-RSS标准格式如下，我只列出需要关注的标签
+RSS标准格式如下，下面只列出需要关注的标签
 
 ```xml
 <title>Lift Off News</title>
 <link>http://liftoff.msfc.nasa.gov/</link>
 <description>Liftoff to Space Exploration.</description>
 <item>
-　　<title>Star City</title>
-　　<link>http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp</link>
-　　<description>How do Americans get ready to work with Russians aboard the
-　　International Space Station? They take a crash course in culture, language
-　　and protocol at Russia's Star City.</description>
+    <title>Star City</title>
+    <link>http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp</link>
+    <description>
+        How do Americans get ready to work with Russians aboard the
+        International Space Station? They take a crash course in culture, language
+        and protocol at Russia's Star City.
+    </description>
 </item>
 <item>
-      another item
+    another item
 </item>
 ```
 
-rss 有总 的 title, link, description, 有一堆 item, 每一个 item 自己也有 title, link, description 属性，description 就是正文, 例如一篇博客文章的内容。有这些内容就够了。
+rss 有总的 title, link, description, 有一堆 item, 每一个 item 自己也有 title, link, description 属性，description 就是正文, 例如一篇博客文章的内容。有这些内容就够了。
 
-那么如何给自己的网站加上 rss 呢？很简单，只要照着这个格式生成一个页面就好了。这里还是以 Django 和我自己的博客为例。我的博客的 rss 地址是 [http://www.laike9m.com/blog/rss/](http://www.laike9m.com/blog/rss/).
+那么如何给自己的网站加上 rss 呢？很简单，只要照着这个格式生成一个页面就好了。这里还是以 Django 和我自己的博客为例。我的博客的 rss 地址是 [http://www.laike9m.com/blog/rss/](http://www.laike9m.com/blog/rss/)
 
 虽说是自己实现，但是 Django 已经把大部分事情都做好了。  
 首先我们要用 Django 提供的 `Feed` 类派生出一个子类

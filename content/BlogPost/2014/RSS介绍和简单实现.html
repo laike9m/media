@@ -1,27 +1,29 @@
-<p>关于RSS，现在用的人已经很少了，估计上网的人中也就5%知道这个东西，这部分人中大部分肯定从事IT行业，小部分则是上个时代遗留下来的网民。</p>
+<p>现在用RSS的人已经很少了，估计网民中不超过5%，这些人中大部分从事IT行业，小部分则是上个时代遗留下来的网民。</p>
 
 <p>RSS 是一种xml规范, 最新版本是2.01。一个网站提供RSS， 本质上就是把网站希望推送给读者的内容按照 RSS 规范写入一个xml, 并且在一个页面（比如/blog/rss）提供这个 xml 的访问。然后 feedburner 或者别的 rss 工具会读取这个页面，检查更新，提供推送。</p>
 
-<p>RSS标准格式如下，我只列出需要关注的标签</p>
+<p>RSS标准格式如下，下面只列出需要关注的标签</p>
 
 <div class="highlight highlight-xml"><pre><span class="nt">&lt;title&gt;</span>Lift Off News<span class="nt">&lt;/title&gt;</span>
 <span class="nt">&lt;link&gt;</span>http://liftoff.msfc.nasa.gov/<span class="nt">&lt;/link&gt;</span>
 <span class="nt">&lt;description&gt;</span>Liftoff to Space Exploration.<span class="nt">&lt;/description&gt;</span>
 <span class="nt">&lt;item&gt;</span>
-　　<span class="nt">&lt;title&gt;</span>Star City<span class="nt">&lt;/title&gt;</span>
-　　<span class="nt">&lt;link&gt;</span>http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp<span class="nt">&lt;/link&gt;</span>
-　　<span class="nt">&lt;description&gt;</span>How do Americans get ready to work with Russians aboard the
-　　International Space Station? They take a crash course in culture, language
-　　and protocol at Russia's Star City.<span class="nt">&lt;/description&gt;</span>
+    <span class="nt">&lt;title&gt;</span>Star City<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;link&gt;</span>http://liftoff.msfc.nasa.gov/news/2003/news-starcity.asp<span class="nt">&lt;/link&gt;</span>
+    <span class="nt">&lt;description&gt;</span>
+        How do Americans get ready to work with Russians aboard the
+        International Space Station? They take a crash course in culture, language
+        and protocol at Russia's Star City.
+    <span class="nt">&lt;/description&gt;</span>
 <span class="nt">&lt;/item&gt;</span>
 <span class="nt">&lt;item&gt;</span>
-      another item
+    another item
 <span class="nt">&lt;/item&gt;</span>
 </pre></div>
 
-<p>rss 有总 的 title, link, description, 有一堆 item, 每一个 item 自己也有 title, link, description 属性，description 就是正文, 例如一篇博客文章的内容。有这些内容就够了。</p>
+<p>rss 有总的 title, link, description, 有一堆 item, 每一个 item 自己也有 title, link, description 属性，description 就是正文, 例如一篇博客文章的内容。有这些内容就够了。</p>
 
-<p>那么如何给自己的网站加上 rss 呢？很简单，只要照着这个格式生成一个页面就好了。这里还是以 Django 和我自己的博客为例。我的博客的 rss 地址是 <a href="http://www.laike9m.com/blog/rss/">http://www.laike9m.com/blog/rss/</a>.</p>
+<p>那么如何给自己的网站加上 rss 呢？很简单，只要照着这个格式生成一个页面就好了。这里还是以 Django 和我自己的博客为例。我的博客的 rss 地址是 <a href="http://www.laike9m.com/blog/rss/">http://www.laike9m.com/blog/rss/</a></p>
 
 <p>虽说是自己实现，但是 Django 已经把大部分事情都做好了。<br>
 首先我们要用 Django 提供的 <code>Feed</code> 类派生出一个子类</p>

@@ -12,3 +12,6 @@
 
 <p>14.10.14<br>
 今天试了试 selenium，访问是没有问题，毕竟是“真”浏览器访问。但是局限在于不能开多个 tab，只能开多个窗口。把每个 <code>webdriver</code> 放到一个单独的线程里似乎就可以让它们互不影响了。总之 selenium 这条路是可行的。</p>
+
+<p>14.11.5<br>
+今天把页面上的两种名字的提取做了，发现 xpath 比 css-selector 好用不少。不过 selenium 的 xpath-selector 好像不支持把 <code>text()</code> 写进 query，只能之后通过 webelement 的 text 属性来获取某个元素的 text.</p>
