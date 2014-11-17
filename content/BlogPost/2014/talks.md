@@ -1,6 +1,10 @@
 Talks
 ==
 
+* [**Concurrent.futures: history, usage, internal, future**][6]  
+A 30-minutes talk I gave at PyCon2014 China(Beijing). I tried to make clear why `concurrent.futures` is brought into Python beyond how to use it, explore the internal implementation of `Future.result()` and `ProcessPoolExecutor`, and finally explained why we should use it.    
+在 PyCon2014 北京场做的主题演讲，主要针对 Python3.2引入的 `concurrent.futures`。我试图理清这个模块被引入的前因后果，同时也讲到了一部分底层的实现，最后说明了为什么我们应当使用这它。   
+
 * [**FBT客户端内幕：Node.js 和 node-webkit**][5]  
 A talk at OpenCAS seminar. I talked about the technology we use to build FBT client.    
 在中科院开源软件协会技术交流会上作的关于 FBT 客户端技术实现的演讲  
@@ -24,3 +28,4 @@ My first talk at OpenCAS seminar. I introduced Python to students told them how 
 [3]: http://www.laike9m.com/slides/Python%20HTTP.pdf  
 [4]: http://www.laike9m.com/slides/ChinaUnicom模拟登陆.pdf  
 [5]: http://www.laike9m.com/slides/node-and-nw.pdf  
+[6]: http://www.laike9m.com/slides/PyCon2014-cf-laike9m.pdf  
