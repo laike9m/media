@@ -1,5 +1,4 @@
-下午要讲了，先把 pdf 放上来吧。之后看能不能弄成直接显示 html
+在 PyCon2014 做了关于`concurrent.futures` 的演讲，这是 slide
 
-pdf 比较大，打开时可能很慢，请多等一会
-
-[Slide](http://www.laike9m.com/slides/PyCon2014-cf-laike9m.pdf)
+[oneline-html](http://www.laike9m.com/media/files/html/PyCon2014-concurrent.futures.html#/)  
+[pdf](http://www.laike9m.com/media/files/pdf/PyCon2014-cf-laike9m.pdf)
