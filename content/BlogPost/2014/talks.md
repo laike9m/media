@@ -1,7 +1,7 @@
 Talks
 ==
 
-* **Concurrent.futures: history, usage, internal, future** [oneline-html][6], [pdf][7]  
+* **Concurrent.futures: history, usage, internal, future** [online-html][6], [pdf][7]  
 A 30-minutes talk I gave at PyCon2014 China(Beijing). I tried to make clear why `concurrent.futures` is brought into Python beyond how to use it, explore the internal implementation of `Future.result()` and `ProcessPoolExecutor`, and finally explained why we should use it.    
 在 PyCon2014 北京场做的主题演讲，主要针对 Python3.2引入的 `concurrent.futures`。我试图理清这个模块被引入的前因后果，同时也讲到了一部分底层的实现，最后说明了为什么我们应当使用这它。   
 

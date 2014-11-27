@@ -57,6 +57,17 @@ sockfd.sendto(addr2bytes(b, nat_type_id_b), a)
 
 大概就是这样了。~~再次声明，代码并未在真实情况下测试过，所以未必一定能正常工作。可以保证的是原理正确，以及在模拟状况下测试正常。~~目前已经测试过了，各种状况下都能正常工作，除非路由器或者防火墙被设定为阻挡来自某些IP的UDP报文，那确实无能为力了。另外，我不知道ICE是具体是怎么工作的，到处都说是对STUN+TURN的封装，难不成就和这个差不多？
 
+**Update**  
+
+有同学看完文章之后发邮件问我，正好这里也可以补充说一下：
+> 你好！
+> 看到你的blog，想问几个关于NAT 穿透的问题。
+> 我们现在基于局域网+websocket实现了一个聊天软件，想知道如果走互联网的话，需要穿透NAT，是不是只能通过nat穿透的这个socket通信了？还是说如果nat穿透后，两个client就可以随意通信了？
+
+我的回答：  
+现在你想把局域网 websocket 聊天扩展到任意网络，我个人认为这个是不太现实的。websocket 底层是用 TCP 实现的，设计的目的并不是为了让客户端(比如浏览器)之间可以相互通信，而是客户端和服务器之间的通信。更广泛地说，要实现互联网上任意两台电脑之间的  TCP 连接，靠谱的做法只能是 UPNP，也就是各种 BT 软件的做法。虽然我的 blog 引用的那篇论文讲了 TCP 穿透，但是太复杂了。我说的 NAT 穿透其实都是针对 UDP 的。  
+不论是用 TCP 还是 UDP 作穿透，之后必须继续沿用那个 socket，这一点是毫无疑问的。因为穿透的第一步是获知对方公网 ip:port，而每新开一个本地 socket，它对应的公网 port 一定会变化，所以如果你新开一个 socket 的话即使原来穿透成功了也没法通信，因为公网 port 变了。
+
 [1]:https://github.com/laike9m/PyPunchP2P
 [2]:http://www.cs.nccu.edu.tw/~lien/Writing/NGN/firewall.htm
 [3]:https://hacks.mozilla.org/2013/07/webrtc-and-the-ocean-of-acronyms/
