@@ -1,0 +1,229 @@
+<p>做 PPT 太无聊了，突然想到可以统计一下这个东西，于是就做了一下<br>
+现在基本上所有国外大公司和国内部分公司都在 GitHub 上开源了一部分代码。统计一下这些代码的语言使用情况，多少可以反映公司内部对语言的偏好。很多公司流行的项目都是单独建一个 repo的，没办法统计，所以这里统计大家就随便看看吧。使用了 GitHub 的 API，只有不到四十行代码，所以直接贴在这里了，复制下来装个 requests 就可以直接运行</p>
+
+<div class="highlight highlight-python"><pre><span class="pl-c"># coding: utf-8</span>
+
+<span class="pl-s1"><span class="pl-pds">"""</span></span>
+<span class="pl-s1">统计大公司github上的organization 中repo 的语言使用情况</span>
+<span class="pl-s1"><span class="pl-pds">"""</span></span>
+
+<span class="pl-k">import</span> requests
+<span class="pl-k">from</span> collections <span class="pl-k">import</span> defaultdict
+<span class="pl-k">from</span> os.path <span class="pl-k">import</span> join
+<span class="pl-k">from</span> pprint <span class="pl-k">import</span> pprint
+
+
+<span class="pl-st">class</span> <span class="pl-en">GetLangStat</span>():
+
+    api_url <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>https://api.github.com/orgs<span class="pl-pds">"</span></span>
+    ORGANIZATIONS <span class="pl-k">=</span> (
+        <span class="pl-s1"><span class="pl-pds">'</span>Microsoft<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>aws<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>google<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>twitter<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>facebook<span class="pl-pds">'</span></span>,
+        <span class="pl-s1"><span class="pl-pds">'</span>alibaba<span class="pl-pds">'</span></span>
+    )
+    stats <span class="pl-k">=</span> {org: defaultdict(<span class="pl-s3">int</span>) <span class="pl-k">for</span> org <span class="pl-k">in</span> ORGANIZATIONS}
+
+    <span class="pl-en">@<span class="pl-s3">classmethod</span></span>
+    <span class="pl-st">def</span> <span class="pl-en">get_one_org_repos</span>(<span class="pl-vpf">cls</span>, <span class="pl-vpf">org</span>):
+        <span class="pl-k">print</span>(org)
+        url <span class="pl-k">=</span> join(<span class="pl-v">cls</span>.api_url, org, <span class="pl-s1"><span class="pl-pds">'</span>repos<span class="pl-pds">'</span></span>)
+        r <span class="pl-k">=</span> requests.get(url)
+        <span class="pl-k">for</span> repo <span class="pl-k">in</span> r.json():
+            <span class="pl-v">cls</span>.stats[org][repo[<span class="pl-s1"><span class="pl-pds">'</span>language<span class="pl-pds">'</span></span>]] <span class="pl-k">+=</span> <span class="pl-c1">1</span>
+
+    <span class="pl-en">@<span class="pl-s3">classmethod</span></span>
+    <span class="pl-st">def</span> <span class="pl-en">get_all_org_repos</span>(<span class="pl-vpf">cls</span>):
+        <span class="pl-k">for</span> org <span class="pl-k">in</span> <span class="pl-v">cls</span>.ORGANIZATIONS:
+            <span class="pl-v">cls</span>.get_one_org_repos(org)
+        pprint(<span class="pl-v">cls</span>.stats)
+
+
+<span class="pl-k">if</span> <span class="pl-sv">__name__</span> <span class="pl-k">==</span> <span class="pl-s1"><span class="pl-pds">'</span>__main__<span class="pl-pds">'</span></span>:
+    GetLangStat.get_all_org_repos()</pre></div>
+
+<p>统计的公司包括 MS，amazon，google, twitter, facebook, 阿里。其中 amazon 似乎只开源了 aws 相关的代码，不过也算进来了。本来想找百度和腾讯的，结果发现百度没有一个统一的 organization，都是按产品散着的，腾讯则基本没有开源代码。。。</p>
+
+<p>下面是统计结果，每个公司只取前五名</p>
+
+<p>阿里   </p>
+
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>repo count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>13</td>
+</tr>
+<tr>
+<td>C</td>
+<td>8</td>
+</tr>
+<tr>
+<td>C++</td>
+<td>2</td>
+</tr>
+<tr>
+<td>JavaScript</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Perl</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+
+<p>google  </p>
+
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>repo count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JavaScript</td>
+<td>9</td>
+</tr>
+<tr>
+<td>C++</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Ruby</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+
+<p>twitter  </p>
+
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>repo count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scala</td>
+<td>14</td>
+</tr>
+<tr>
+<td>Ruby</td>
+<td>9</td>
+</tr>
+<tr>
+<td>Java</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Python,CSS,JavaScrit,Shell</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+<p>facebook  </p>
+
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>repo count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>8</td>
+</tr>
+<tr>
+<td>C++</td>
+<td>5</td>
+</tr>
+<tr>
+<td>PHP</td>
+<td>4</td>
+</tr>
+<tr>
+<td>C</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Python, Js, Objective-C</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
+
+<p>aws  </p>
+
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>repo count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java</td>
+<td>8</td>
+</tr>
+<tr>
+<td>Ruby</td>
+<td>6</td>
+</tr>
+<tr>
+<td>PHP</td>
+<td>4</td>
+</tr>
+<tr>
+<td>JavaScript</td>
+<td>3</td>
+</tr>
+<tr>
+<td>Objective-C</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+
+<p>咳咳，最后是大微软，说实话我也不确定要不要把微软算成互联网公司。。。</p>
+
+<table>
+<thead>
+<tr>
+<th>Language</th>
+<th>repo count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C#</td>
+<td>29</td>
+</tr>
+<tr>
+<td>C++</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+
+<p>从这个非常不靠谱的统计来看，Java 果然还是最流行的语言啊。。。不会 Java 感觉压力真的好大 orz</p>
