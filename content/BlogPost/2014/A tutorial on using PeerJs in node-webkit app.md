@@ -73,7 +73,7 @@ So `main.html` is the first HTML page node-webkit should display.
 </html>
 ```
 
-Here's the interestring part: our `main.html` doesn't contain anything to display, it's only purpose is calling `require('./main')` which will launch an express server listening on `127.0.0.0:12345`, then connects to it.
+Here's the interesting part: our `main.html` doesn't contain anything to display, it's only purpose is calling `require('./main')` which will launch an express server listening on `127.0.0.0:12345`, then connects to it.
 
 Let's see how it's done in `main.js`:
 
