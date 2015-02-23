@@ -1,25 +1,25 @@
 <p>这篇文章将简单地描述一下博客的搭建过程。博客源代码见<a href="https://github.com/laike9m/My_Blog">这里</a><br>
 首先要感谢stevelosh, 博客的基本设计参考了他的博客，来源于<a href="http://stevelosh.com/projects/stevelosh-com/">stevelosh.com</a> 这篇文章。<br>
 博客从2013.8开始搭建，暑假主要处于学习阶段，学期途中插空写了一点，2014寒假把基本框架完成了。<br>
-对于想基于代码学习/搭建博客的行为，本人不能够更欢迎，但是请至少做到：<br><strong>在运行之前修改<code>settings.py</code></strong>，再不济，请至少把这里的<strong>email替换成你自己的email</strong></p>
+对于想基于代码学习/搭建博客的行为，本人不能够更欢迎，但是请至少做到：<br>
+<strong>在运行之前修改<code>settings.py</code></strong>，再不济，请至少把这里的<strong>email替换成你自己的email</strong></p>
 
-<div class="highlight highlight-python"><pre><span class="n">ADMINS</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="c"># ('Your Name', 'your_email@example.com'),</span>
-    <span class="p">(</span><span class="s">'laike9m'</span><span class="p">,</span> <span class="s">'laike9m@gmail.com'</span><span class="p">),</span>
-<span class="p">)</span>
-</pre></div>
+<div class="highlight highlight-python"><pre>ADMINS <span class="pl-k">=</span> (
+    <span class="pl-c"># ('Your Name', 'your_email@example.com'),</span>
+    (<span class="pl-s1"><span class="pl-pds">'</span>laike9m<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>laike9m@gmail.com<span class="pl-pds">'</span></span>),
+)</pre></div>
 
 <p>否则，你的代码运行时的出错信息将被发送到我的邮箱，不利于你进行调试，也给我带来极大困扰。不胜感激！！</p>
 
 <h2>
-<a name="user-content-%E8%AE%BE%E8%AE%A1" class="anchor" href="#%E8%AE%BE%E8%AE%A1" aria-hidden="true"><span class="octicon octicon-link"></span></a>设计</h2>
+<a id="user-content-设计" class="anchor" href="#%E8%AE%BE%E8%AE%A1" aria-hidden="true"><span class="octicon octicon-link"></span></a>设计</h2>
 
 <p>在博客搭建之初，我就决定要<strong>尽可能少写前端代码</strong>。最简单的方法自然是使用CMS。实际上有不少使用Django的CMS，比如最著名的<a href="https://www.django-cms.org/en/">django CMS</a>。不过调研一番之后发现一个问题：没有一个支持Python 3。考虑到博客里必然有一堆Unicode字符，我还是希望能用Python 3的，所以就放弃了CMS。<br>
 （2014.6.25 EDIT: 目前发现django CMS已经能支持Python3.4了，至少3.0.2版本以及更新的都可以。参见<a href="https://www.django-cms.org/en/blog/2014/05/21/302-release/">3.0.2 release</a>）<br>
 好在马上找到了替代品：HTML模版。最后使用了<a href="http://www.css3templates.co.uk/templates.html">css3templates</a> 里面的一个模板。模板基本只包含HTML/CSS/JS代码，这正是我需要的东西，因为后端本来就是想从零开始写的。  </p>
 
 <h2>
-<a name="user-content-%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E7%BB%93%E6%9E%84" class="anchor" href="#%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E7%BB%93%E6%9E%84" aria-hidden="true"><span class="octicon octicon-link"></span></a>文件路径结构</h2>
+<a id="user-content-文件路径结构" class="anchor" href="#%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84%E7%BB%93%E6%9E%84" aria-hidden="true"><span class="octicon octicon-link"></span></a>文件路径结构</h2>
 
 <p>用Django建网站，<code>static</code> 和 <code>media</code> 到底怎么放置？这个问题没有标准答案，反正我没有用 <code>STATICFILES_DIRS</code>，也就是把所有static files都放在了<code>appname/static/appname</code> 里面。这样的好处是文件结构比较清晰，坏处是如果app多了同样的文件可能要存很多份，会减慢网站加载速度。下面是我的文件夹结构，供参考，文件均未列出：</p>
 
@@ -65,20 +65,19 @@
 <p>画这个东西的时候才知道Windows/Linux下有个命令叫 <a href="http://stackoverflow.com/questions/347551/what-tool-to-use-to-draw-file-tree-diagram"><code>tree</code></a>，大好评！<br>
 注意在开发的时候，<code>my_blog/static</code> 里面可以不放东西，只要 <code>DEBUG=True</code> 就行。如果要接受文件上传，那么在 <code>urlpatterns</code> 后面添加：   </p>
 
-<div class="highlight highlight-python"><pre><span class="o">+</span> <span class="n">static</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_URL</span><span class="p">,</span> <span class="n">document_root</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">MEDIA_ROOT</span><span class="p">)</span>
-</pre></div>
+<div class="highlight highlight-python"><pre><span class="pl-k">+</span> static(settings.MEDIA_URL, <span class="pl-vpf">document_root</span><span class="pl-k">=</span>settings.MEDIA_ROOT)</pre></div>
 
 <p>实际部署时该怎么来就怎么来。<br>
 有一个 app 叫做 <code>mytemplatetags</code>，它是专门用来装 custom template tags/filters 的，参见 <a href="https://docs.djangoproject.com/en/1.6/howto/custom-template-tags/">官方文档：Custom template tags and filters</a>.</p>
 
 <h2>
-<a name="user-content-%E4%B8%BB%E6%9C%BA" class="anchor" href="#%E4%B8%BB%E6%9C%BA" aria-hidden="true"><span class="octicon octicon-link"></span></a>主机</h2>
+<a id="user-content-主机" class="anchor" href="#%E4%B8%BB%E6%9C%BA" aria-hidden="true"><span class="octicon octicon-link"></span></a>主机</h2>
 
-<p>在哪里买主机是个需要好好思考的问题。使用VPS的话，可选择的范围很大。但是第一次建网站，没什么经验，怕配置不好。更重要的是用VPS不够短平快，而我希望博客能尽快投入使用。然后就查到了<a href="https://www.webfaction.com/">WebFaction</a>。虽然我并不想做广告，但真的向大家推荐这个主机服务，尤其是怕麻烦的人。Webfaction是个PaaS服务，支持许多语言/框架，而且服务很完善，不论是在它的 <a href="https://community.webfaction.com/">Q&amp;A Community</a> 提问还是open a ticket，工作人员的解答都很迅速。虽然是美国的主机（也可以选东南亚的），但是国内访问速度不错。<br>
+<p>在哪里买主机是个需要好好思考的问题。使用VPS的话，可选择的范围很大。但是第一次建网站，没什么经验，怕配置不好。更重要的是用VPS不够短平快，而我希望博客能尽快投入使用。然后就查到了 <a href="https://www.webfaction.com/?aid=49199">WebFaction</a>。虽然我并不想做广告，但真的向大家推荐这个主机服务，尤其是怕麻烦的人。Webfaction是个PaaS服务，支持许多语言/框架，而且服务很完善，不论是在它的 <a href="https://community.webfaction.com/">Q&amp;A Community</a> 提问还是open a ticket，工作人员的解答都很迅速。虽然是美国的主机（也可以选东南亚的），但是国内访问速度不错。<br>
 至于其它选择，外国人用 <a href="https://www.heroku.com/">heroku</a> 的比较多。国内主机不太了解，<code>SAE</code> 据说不错。</p>
 
 <h2>
-<a name="user-content-%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6" class="anchor" href="#%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6" aria-hidden="true"><span class="octicon octicon-link"></span></a>版本控制</h2>
+<a id="user-content-版本控制" class="anchor" href="#%E7%89%88%E6%9C%AC%E6%8E%A7%E5%88%B6" aria-hidden="true"><span class="octicon octicon-link"></span></a>版本控制</h2>
 
 <p>显然是Git+Github，没什么好说的。印象深刻的是有一次在主机上玩火敲了这个命令 <code>find . -not -name 'xxx' | xargs rm</code>，结果大家都懂。还好WebFaction重建一个Django app就是点击几下的事情，代码又在Github上，所以很容易就恢复了。<br>
 还有，<code>settings.py</code> 这个文件最好ignore掉，因为部署和开发在设置上差异很大，所以这个文件在本地和服务器上需要保存不同的版本。顺便分享一下 <code>.gitignore</code> 吧：</p>
@@ -95,21 +94,23 @@ css3two_blog/static/css3two_blog/css/unused/*
 <p>为什么<code>settings.py</code>没有包含在内呢？这个问题比较复杂，在我的另一篇文章 <a href="http://www.laike9m.com/blog/django-best-practice-how-to-deal-with-settingspy-in-git,27/">Django Best Practice: How to deal with settings.py in Git</a> 里面有详细讲述。</p>
 
 <h2>
-<a name="user-content-%E4%BD%BF%E7%94%A8markdown" class="anchor" href="#%E4%BD%BF%E7%94%A8markdown" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用Markdown</h2>
+<a id="user-content-使用markdown" class="anchor" href="#%E4%BD%BF%E7%94%A8markdown" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用Markdown</h2>
 
 <p>这是跟stevelosh学的，而且似乎越来越多的个人博客都在这么做。我的每一篇文章都是用markdown写的，然后渲染成html。关于如何渲染有不同的做法，一开始尝试了<code>pygments</code> + <code>django markup</code>，虽然可以实现代码高亮不过样式比较难看。目前采用的方法是把markdown文本发送给Github API，得到 <code>gfm</code> 格式的html。需要注意的是得到的 html 是没有样式的，所以又在网上找了别人写的 gfm 的 css，添加到页面里，显示出来的页面就和 Github 的 README 差不多了。<br>
 这部分的工作有一定难度，需要设计出一套 markdown 和 html 文件的保存机制，并且能正常应对 <code>admin</code> 界面中的修改/删除操作。具体可见
 <a href="https://github.com/laike9m/My_Blog/blob/master/css3two_blog/models.py"><code>models.py</code></a>，<a href="https://github.com/laike9m/My_Blog/blob/master/css3two_blog/admin.py"><code>admin.py</code></a></p>
 
 <h2>
-<a name="user-content-%E5%85%B6%E5%AE%83" class="anchor" href="#%E5%85%B6%E5%AE%83" aria-hidden="true"><span class="octicon octicon-link"></span></a>其它</h2>
+<a id="user-content-其它" class="anchor" href="#%E5%85%B6%E5%AE%83" aria-hidden="true"><span class="octicon octicon-link"></span></a>其它</h2>
 
 <ol>
 <li>使用 <a href="http://south.aeracode.org/"><code>south</code></a> 来应对 <code>Model</code> 的变更</li>
 <li>尽量把逻辑放在 <code>models</code> 和 <code>views</code> 来完成，因为Django的 <code>templates</code> 实在很难用</li>
 <li>虽然用了 HTML 模版，但是在前端仍然花了很多时间</li>
 <li>博客完全可以用 <a href="http://hyde.github.io/"><code>Hyde</code></a> 搭建，这样加载起来能快一些</li>
-</ol><p><br></p>
+</ol>
+
+<p><br></p>
 
 <blockquote>
 <p>初版：2014-2-5<br>

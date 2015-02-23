@@ -71,7 +71,7 @@ ADMINS = (
 
 主机
 ---
-在哪里买主机是个需要好好思考的问题。使用VPS的话，可选择的范围很大。但是第一次建网站，没什么经验，怕配置不好。更重要的是用VPS不够短平快，而我希望博客能尽快投入使用。然后就查到了[WebFaction][wf]。虽然我并不想做广告，但真的向大家推荐这个主机服务，尤其是怕麻烦的人。Webfaction是个PaaS服务，支持许多语言/框架，而且服务很完善，不论是在它的 [Q&A Community][QA] 提问还是open a ticket，工作人员的解答都很迅速。虽然是美国的主机（也可以选东南亚的），但是国内访问速度不错。  
+在哪里买主机是个需要好好思考的问题。使用VPS的话，可选择的范围很大。但是第一次建网站，没什么经验，怕配置不好。更重要的是用VPS不够短平快，而我希望博客能尽快投入使用。然后就查到了 [WebFaction][wf]。虽然我并不想做广告，但真的向大家推荐这个主机服务，尤其是怕麻烦的人。Webfaction是个PaaS服务，支持许多语言/框架，而且服务很完善，不论是在它的 [Q&A Community][QA] 提问还是open a ticket，工作人员的解答都很迅速。虽然是美国的主机（也可以选东南亚的），但是国内访问速度不错。  
 至于其它选择，外国人用 [heroku][h] 的比较多。国内主机不太了解，`SAE` 据说不错。
 
 [h]: https://www.heroku.com/
@@ -116,7 +116,7 @@ ADMINS = (
 [django-cms]: https://www.django-cms.org/en/
 [3.0.2]: https://www.django-cms.org/en/blog/2014/05/21/302-release/
 [templates]: http://www.css3templates.co.uk/templates.html
-[wf]: https://www.webfaction.com/
+[wf]: https://www.webfaction.com/?aid=49199
 [QA]: https://community.webfaction.com/
 [models]: https://github.com/laike9m/My_Blog/blob/master/css3two_blog/models.py
 [admin]: https://github.com/laike9m/My_Blog/blob/master/css3two_blog/admin.py
