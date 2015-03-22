@@ -7,7 +7,7 @@
 这一点其实还好，大多时候不会造成什么影响。就算是跨平台工作，问题也不大。顺便说一下我 msysgit 的设置一直是 line ending 强制转成 LF，checkout 的时候不修改。因为 Windows 下 \n 就可以正常完成换行工作。
 
 3. shell 不够强大  
-这是致命的弱点。对于正常的程序员来讲，很多工作用命令行完成效率的确更高。好在有个工具能够弥补：[GetGnuWin32](getgnuwin32.sourceforge.net/)。说实话，我认为有了 GetGnuWin32 之后，在 Windows 下做开发的障碍就扫清了不少（cmd.exe 太丑陋这点估计是无法改变）。但是还存在一个最大的障碍，就是第4点：
+这是致命的弱点。对于正常的程序员来讲，很多工作用命令行完成效率的确更高。好在有个工具能够弥补：[GetGnuWin32](http://getgnuwin32.sourceforge.net/)。说实话，我认为有了 GetGnuWin32 之后，在 Windows 下做开发的障碍就扫清了不少（cmd.exe 太丑陋这点估计是无法改变）。但是还存在一个最大的障碍，就是第4点：
 
 4. 工具链缺乏  
 之前我没有意识到工具链对平台的影响，认为 Windows 之所以不适合做开发要归结于OS自身的问题。某天我偶然在 Youtube 上看到了 Jessica McKellar 的一个演讲 [The Future of Python](https://www.youtube.com/watch?v=d1a4Jbjc-vU)。她主要是在讲 Python 的话题，但是其中提到了重要的一点，就是 Python 用户在 Windows 上使用 Python 的时间不够多（毕竟大家主要还是在 *nix 上工作）导致 Python 代码的 Windows 版本（不论是 stdlib 还是 third party）都更新缓慢，并且存在大量未发现的 bug。实际上，导致我最终决定要买 Mac 的原因之一就是，之前某项任务需要的几个第三方库无论如何在 Windows 上都装不好。  

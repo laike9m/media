@@ -4,7 +4,7 @@
 
 <p>WebRTC is a free, open project that enables web browsers with Real-Time Communications (RTC) capabilities via simple Javascript APIs.WebRTC allows web pages to access local multimedia devices like a webcam and microphone, and transmit these media streams to another WebRTC capable browser via a peer-to-peer network channel. These media streams can also be accompanied by a powerful data channel that lets developer exchange arbitrary data between two peers! Its mission is to enable rich, high quality, RTC applications to be developed in the browser via simple Javascript APIs and HTML5.</p>
 
-<p>Visit <a href="apprtc.appspot.com">apprtc.appspot.com</a> (one of WebRTC's official examples to show how it works), you'll find that it's just the application I use for my plugin. All I did is putting the website into an <code>&lt;iframe&gt;</code>, and that's it, incrediblely simple but works flawlessly!</p>
+<p>Visit <a href="https://apprtc.appspot.com">apprtc.appspot.com</a> (one of WebRTC's official examples to show how it works), you'll find that it's just the application I use for my plugin. All I did is putting the website into an <code>&lt;iframe&gt;</code>, and that's it, incrediblely simple but works flawlessly!</p>
 
 <p>View the <a href="https://github.com/laike9m/VideoChat/blob/master/views/default/videochat/greetings.php">code</a> for more information.</p>
 
@@ -16,59 +16,60 @@
 
 <p>Next step is to find out how elgg actually sends a message, it's rather easy once you have the experience using Chrome Devtools or firebug.It turns out that a message is an HTTP POST request.</p>
 
-<p>e.g.<br><a href="/media/content/BlogPost/images/http.jpg" target="_blank"><img src="/media/content/BlogPost/images/http.jpg" style="max-width:100%;"></a></p>
+<p>e.g.<br>
+<a href="/media/content/BlogPost/images/http.jpg" target="_blank"><img src="/media/content/BlogPost/images/http.jpg" style="max-width:100%;"></a></p>
 
 <p>There is one thing left which is implementing your own sending/inviting machanism and making a redirection once your friends clicks the link in your msg. I'll let code do the talking:</p>
 
-<div class="highlight highlight-javascript"><pre><span class="nx">li</span> <span class="o">+=</span> <span class="s1">'&lt;button id="invite" float="left" height=10 width=100&gt;invite&lt;/button&gt;'</span><span class="p">;</span>  
-<span class="nx">$</span><span class="p">(</span><span class="s1">'&lt;li&gt;'</span><span class="p">).</span><span class="nx">html</span><span class="p">(</span><span class="nx">li</span><span class="p">).</span><span class="nx">appendTo</span><span class="p">(</span><span class="nx">users</span><span class="p">);</span>
-</pre></div>
+<div class="highlight highlight-javascript"><pre>li <span class="pl-k">+=</span> <span class="pl-s"><span class="pl-pds">'</span>&lt;button id="invite" float="left" height=10 width=100&gt;invite&lt;/button&gt;<span class="pl-pds">'</span></span>;  
+$(<span class="pl-s"><span class="pl-pds">'</span>&lt;li&gt;<span class="pl-pds">'</span></span>).html(li).appendTo(users);</pre></div>
 
 <p>These two lines add the <code>invite</code> button.</p>
 
-<div class="highlight highlight-javascript"><pre><span class="kd">var</span> <span class="nx">redirect_url</span> <span class="o">=</span> <span class="nx">base_url</span> <span class="o">+</span> <span class="s2">"videochat/vc?r="</span> <span class="o">+</span> <span class="nx">rand_num</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">body</span> <span class="o">=</span> <span class="s1">'&lt;a href="'</span> <span class="o">+</span> <span class="nx">redirect_url</span> <span class="o">+</span> <span class="s1">'"&gt;请和我签订契约,加入视频聊天吧！&lt;/a&gt;'</span><span class="p">;</span>
-<span class="kd">var</span> <span class="nx">msg_params</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="nx">__elgg_ts</span><span class="o">:</span><span class="nx">elgg</span><span class="p">.</span><span class="nx">security</span><span class="p">.</span><span class="nx">token</span><span class="p">.</span><span class="nx">__elgg_ts</span><span class="p">,</span>
-    <span class="nx">__elgg_token</span><span class="o">:</span><span class="nx">elgg</span><span class="p">.</span><span class="nx">security</span><span class="p">.</span><span class="nx">token</span><span class="p">.</span><span class="nx">__elgg_token</span><span class="p">,</span>
-    <span class="nx">recipient_guid</span><span class="o">:</span> <span class="nx">info</span><span class="p">.</span><span class="nx">guid</span><span class="p">,</span>
-    <span class="nx">subject</span><span class="o">:</span><span class="s1">'有朋友邀请您参与视频聊天'</span><span class="p">,</span>
-    <span class="nx">body</span><span class="o">:</span> <span class="nx">body</span><span class="p">,</span>
-<span class="p">};</span>
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> redirect_url <span class="pl-k">=</span> base_url <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">"</span>videochat/vc?r=<span class="pl-pds">"</span></span> <span class="pl-k">+</span> rand_num;
+<span class="pl-k">var</span> body <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>&lt;a href="<span class="pl-pds">'</span></span> <span class="pl-k">+</span> redirect_url <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span>"&gt;请和我签订契约,加入视频聊天吧！&lt;/a&gt;<span class="pl-pds">'</span></span>;
+<span class="pl-k">var</span> msg_params <span class="pl-k">=</span> {
+    __elgg_ts<span class="pl-k">:</span>elgg.<span class="pl-c1">security</span>.token.__elgg_ts,
+    __elgg_token<span class="pl-k">:</span>elgg.<span class="pl-c1">security</span>.token.__elgg_token,
+    recipient_guid<span class="pl-k">:</span> info.guid,
+    subject<span class="pl-k">:</span><span class="pl-s"><span class="pl-pds">'</span>有朋友邀请您参与视频聊天<span class="pl-pds">'</span></span>,
+    body<span class="pl-k">:</span> body,
+};
 
-<span class="nx">$</span><span class="p">(</span><span class="s1">'#invite'</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
-    <span class="nx">$</span><span class="p">.</span><span class="nx">ajax</span><span class="p">({</span>
-        <span class="nx">url</span><span class="o">:</span> <span class="nx">base_url</span> <span class="o">+</span> <span class="s1">'action/messages/send'</span><span class="p">,</span>
-        <span class="nx">type</span><span class="o">:</span> <span class="s1">'POST'</span><span class="p">,</span>
-        <span class="nx">data</span><span class="o">:</span> <span class="nx">msg_params</span><span class="p">,</span>
-        <span class="nx">success</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">){</span>
-            <span class="nx">alert</span><span class="p">(</span><span class="s1">'your msg has been sent'</span><span class="p">);</span>
-        <span class="p">}</span>
-    <span class="p">})</span>
-<span class="p">});</span>
-</pre></div>
+$(<span class="pl-s"><span class="pl-pds">'</span>#invite<span class="pl-pds">'</span></span>).<span class="pl-c1">click</span>(<span class="pl-k">function</span>(){
+    $.ajax({
+        url<span class="pl-k">:</span> base_url <span class="pl-k">+</span> <span class="pl-s"><span class="pl-pds">'</span>action/messages/send<span class="pl-pds">'</span></span>,
+        type<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">'</span>POST<span class="pl-pds">'</span></span>,
+        data<span class="pl-k">:</span> msg_params,
+        <span class="pl-en">success</span>: <span class="pl-k">function</span>(<span class="pl-smi">msg</span>){
+            <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>your msg has been sent<span class="pl-pds">'</span></span>);
+        }
+    })
+});</pre></div>
 
 <p>This part send the HTTP POST request we mentioned above.Note that the content of an invite message contains a link, redirecting the invitee to the videochat page. The random number is also passed as a query string parameter, forcing the message invitee enter the same room as inviter. The code below shows how it is done.</p>
 
-<div class="highlight highlight-javascript"><pre><span class="k">if</span> <span class="p">(</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span> <span class="o">!=</span> <span class="s2">""</span> <span class="p">)</span>  <span class="c1">// has query string. </span>
-    <span class="nx">rand_num</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nx">location</span><span class="p">.</span><span class="nx">search</span><span class="p">.</span><span class="nx">substr</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>  <span class="c1">//?r=num</span>
-<span class="k">else</span>
-    <span class="nx">rand_num</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="mi">900000</span><span class="o">+</span><span class="mi">100000</span><span class="p">);</span>
-<span class="nx">$</span><span class="p">(</span><span class="s1">'#video'</span><span class="p">).</span><span class="nx">prop</span><span class="p">(</span><span class="s1">'src'</span><span class="p">,</span> <span class="s2">"https://apprtc.appspot.com/?r="</span> <span class="o">+</span> <span class="nx">rand_num</span><span class="p">);</span> 
-</pre></div>
+<div class="highlight highlight-javascript"><pre><span class="pl-k">if</span> ( <span class="pl-c1">window</span>.<span class="pl-c1">location</span>.search <span class="pl-k">!=</span> <span class="pl-s"><span class="pl-pds">"</span><span class="pl-pds">"</span></span> )  <span class="pl-c">// has query string. </span>
+    rand_num <span class="pl-k">=</span> <span class="pl-c1">window</span>.<span class="pl-c1">location</span>.search.<span class="pl-c1">substr</span>(<span class="pl-c1">3</span>);  <span class="pl-c">//?r=num</span>
+<span class="pl-k">else</span>
+    rand_num <span class="pl-k">=</span> <span class="pl-c1">Math</span>.<span class="pl-c1">floor</span>(<span class="pl-c1">Math</span>.<span class="pl-c1">random</span>()<span class="pl-k">*</span><span class="pl-c1">900000</span><span class="pl-k">+</span><span class="pl-c1">100000</span>);
+$(<span class="pl-s"><span class="pl-pds">'</span>#video<span class="pl-pds">'</span></span>).prop(<span class="pl-s"><span class="pl-pds">'</span>src<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">"</span>https://apprtc.appspot.com/?r=<span class="pl-pds">"</span></span> <span class="pl-k">+</span> rand_num); </pre></div>
 
 <h2>
-<a name="some-other-things-you-should-pay-attention-to" class="anchor" href="#some-other-things-you-should-pay-attention-to"><span class="octicon octicon-link"></span></a>some other things you should pay attention to</h2>
+<a id="user-content-some-other-things-you-should-pay-attention-to" class="anchor" href="#some-other-things-you-should-pay-attention-to" aria-hidden="true"><span class="octicon octicon-link"></span></a>some other things you should pay attention to</h2>
 
 <ol>
 <li>I use <code>ajax</code> to prevent current page from reloading after sending a request. Why? Because two people can chat if and only if their <code>iframe</code> elements have the same <code>src</code> attribute (i.e. same room). If you reload, as mentioned before, a new random number will be generated thus making the inviter enter a different room.</li>
-<li>When sending HTTP request, <code>__elgg_ts</code> and <code>__elgg_token</code> are necessary parameters. This is a machanism elgg uses to validate message. Luckily these two variables are stored in global scope:<br><a href="/media/content/BlogPost/images/s.jpg" target="_blank"><img src="/media/content/BlogPost/images/s.jpg" style="max-width:100%;"></a><br>
+<li>When sending HTTP request, <code>__elgg_ts</code> and <code>__elgg_token</code> are necessary parameters. This is a machanism elgg uses to validate message. Luckily these two variables are stored in global scope:<br>
+<a href="/media/content/BlogPost/images/s.jpg" target="_blank"><img src="/media/content/BlogPost/images/s.jpg" style="max-width:100%;"></a><br>
 </li>
-<li>If you try to search friends in another page rather than the videochat Page, you still get a <code>invite</code> button, however when clicked, you will be alerted:<br><a href="/media/content/BlogPost/images/alert.jpg" target="_blank"><img src="/media/content/BlogPost/images/alert.jpg" style="max-width:100%;"></a><br>
+<li>If you try to search friends in another page rather than the videochat Page, you still get a <code>invite</code> button, however when clicked, you will be alerted:<br>
+<a href="/media/content/BlogPost/images/alert.jpg" target="_blank"><img src="/media/content/BlogPost/images/alert.jpg" style="max-width:100%;"></a><br>
 This is done by detecting the existense of that random number since it only exists in the videochat page.</li>
-</ol><div class="highlight highlight-javascript"><pre><span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">rand_num</span> <span class="o">!=</span> <span class="s2">"undefined"</span><span class="p">){</span>
-    <span class="c1">//add invite button click EventListener, see above code</span>
-<span class="p">}</span>
-<span class="k">else</span>
-    <span class="nx">alert</span><span class="p">(</span><span class="s1">'do this on VideoChat page!'</span><span class="p">);</span>
-</pre></div>
+</ol>
+
+<div class="highlight highlight-javascript"><pre><span class="pl-k">if</span> (<span class="pl-k">typeof</span> rand_num <span class="pl-k">!=</span> <span class="pl-s"><span class="pl-pds">"</span>undefined<span class="pl-pds">"</span></span>){
+    <span class="pl-c">//add invite button click EventListener, see above code</span>
+}
+<span class="pl-k">else</span>
+    <span class="pl-c1">alert</span>(<span class="pl-s"><span class="pl-pds">'</span>do this on VideoChat page!<span class="pl-pds">'</span></span>);</pre></div>

@@ -38,7 +38,7 @@
 &lt;/<span class="pl-ent">body</span>&gt;
 &lt;/<span class="pl-ent">html</span>&gt;</pre></div>
 
-<p>It doesn't work because there's no node.js runtime in html, So you can't read from/write to local using <code>fs.write/readFileSync</code>. You probabaly know that node-webkit's node runtime can't really interact with DOM environmen——it lets you require a nodejs's script and call its function from DOM, but you CAN'T GET THE RETURN VALUE, the functon you invoked is run in node runtime and knows nothing about DOM, that's why the above code couldn't work.</p>
+<p>It doesn't work because there's no node.js runtime in html, So you can't read from/write to local using <code>fs.write/readFileSync</code>. You probabaly know that node-webkit's node runtime can't really interact with DOM environmen——it lets you require a nodejs's script and call its function from DOM, but you <strong>CAN'T GET THE RETURN VALUE</strong>, the functon you invoked is run in node runtime and knows nothing about DOM, that's why the above code couldn't work.</p>
 
 <p>Then my friend suggested me to run an express server on localhost and use socket.io to make node and DOM interact with each other. I've written a demo and put it on github to show how this works:</p>
 
@@ -129,7 +129,7 @@ As we can see, visiting <code>http://127.0.0.1:12345/</code> gets <code>index.ht
 &lt;/<span class="pl-ent">body</span>&gt;
 &lt;/<span class="pl-ent">html</span>&gt;</pre></div>
 
-<p>It contains two button: <code>send</code> and <code>receive</code>. When clicked, <code>clickSend</code> and <code>clickRecv</code> gets called. To understand what these two function do, I'll show the other part of code in <code>main.js</code>.</p>
+<p>It contains two button: <code>send</code> and <code>receive</code>. When clicked, <code>clickSend</code> and <code>clickRecv</code> gets called. To understand what these functions do, let's see the other part of <code>main.js</code>.</p>
 
 <div class="highlight highlight-javascript"><pre><span class="pl-c">// main.js part 2</span>
 io.on(<span class="pl-s1"><span class="pl-pds">'</span>connection<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">socket</span>){
@@ -141,9 +141,9 @@ io.on(<span class="pl-s1"><span class="pl-pds">'</span>connection<span class="pl
   });
 });</pre></div>
 
-<p>So you clicked the <code>receive</code> button, PeerJs create a <code>Peer</code> with id <code>receiver</code> and a valid key I registered, then it waits for connection from sender. Then you clicked the <code>send</code> button, another <code>Peer</code> is created with id <code>sender</code>. <code>sender</code> tries to connect to <code>receiver</code> and if data connection is successfully built, <code>window.socket</code> will emit a <code>send</code> event, which is handled in <code>main.js</code>. What the handler does is simply reading file content and send it back to DOM environment. Note that socket.io supports binary data transfer from 1.0, so you can't use a lower version socket.io.</p>
+<p>So you clicked the <code>receive</code> button, PeerJs create a <code>Peer</code> with id <code>receiver</code> and a valid key I registered, then it waits for connection from sender. Then you clicked the <code>send</code> button, another <code>Peer</code> is created with id <code>sender</code>. <code>sender</code> tries to connect to <code>receiver</code> and when data connection successfully built, <code>window.socket</code>emits a <code>send</code> event, which is handled in <code>main.js</code>. The handler simply reads file content and sends it back to DOM environment. Note that socket.io supports binary data transfer from version 1.0, so you can't use a lower version socket.io.</p>
 
-<p>Coming back to code in <code>clickSend</code>, we've already created an event handler on <code>sendToPeer</code> before emitting the <code>send</code> event, now it gets fired. <code>conn.send(data)</code> sends data to Peer <code>receiver</code>. In function <code>clickRecv</code>, when <code>conn</code> receives data, it uses <code>window.socket</code> to emit a <code>receive</code> event and sending the data it received from sender to Node runtime. Finally <code>fs.writeFileSync('received_gitignore', data)</code> write data to disk, all done.</p>
+<p>Coming back to code in <code>clickSend</code>, we've already created an event handler on <code>sendToPeer</code> before emitting <code>send</code> event, now it gets fired. <code>conn.send(data)</code> sends data to Peer <code>receiver</code>. In function <code>clickRecv</code>, when <code>conn</code> receives data, it uses <code>window.socket</code> to emit a <code>receive</code> event and sends data from sender to Node runtime. Finally <code>fs.writeFileSync('received_gitignore', data)</code> write data to disk, all done.</p>
 
 <p>You might wonder if it actually works for large file transfer. It does. My project is working great, it can transfer large files with decent speed, the prototype is this demo. Of course you should write many many more lines to make this prototype a usable app, for instance, data needs to be sliced when transfering large files, and you should handle all kinds of PeerJs errors.</p>
 

@@ -40,7 +40,7 @@ The node-webkit project I'm working on needs nodejs(db strorage, watching files,
 </html>
 ```   
 
-It doesn't work because there's no node.js runtime in html, So you can't read from/write to local using `fs.write/readFileSync`. You probabaly know that node-webkit's node runtime can't really interact with DOM environmen——it lets you require a nodejs's script and call its function from DOM, but you CAN'T GET THE RETURN VALUE, the functon you invoked is run in node runtime and knows nothing about DOM, that's why the above code couldn't work.
+It doesn't work because there's no node.js runtime in html, So you can't read from/write to local using `fs.write/readFileSync`. You probabaly know that node-webkit's node runtime can't really interact with DOM environmen——it lets you require a nodejs's script and call its function from DOM, but you **CAN'T GET THE RETURN VALUE**, the functon you invoked is run in node runtime and knows nothing about DOM, that's why the above code couldn't work.
 
 Then my friend suggested me to run an express server on localhost and use socket.io to make node and DOM interact with each other. I've written a demo and put it on github to show how this works:
 
@@ -139,7 +139,7 @@ As we can see, visiting `http://127.0.0.1:12345/` gets `index.html` displayed. H
 </html>
 ``` 
 
-It contains two button: `send` and `receive`. When clicked, `clickSend` and `clickRecv` gets called. To understand what these two function do, I'll show the other part of code in `main.js`.
+It contains two button: `send` and `receive`. When clicked, `clickSend` and `clickRecv` gets called. To understand what these functions do, let's see the other part of `main.js`.
 
 ```javascript
 // main.js part 2
@@ -153,9 +153,9 @@ io.on('connection', function(socket){
 });
 ```
 
-So you clicked the `receive` button, PeerJs create a `Peer` with id `receiver` and a valid key I registered, then it waits for connection from sender. Then you clicked the `send` button, another `Peer` is created with id `sender`. `sender` tries to connect to `receiver` and if data connection is successfully built, `window.socket` will emit a `send` event, which is handled in `main.js`. What the handler does is simply reading file content and send it back to DOM environment. Note that socket.io supports binary data transfer from 1.0, so you can't use a lower version socket.io.
+So you clicked the `receive` button, PeerJs create a `Peer` with id `receiver` and a valid key I registered, then it waits for connection from sender. Then you clicked the `send` button, another `Peer` is created with id `sender`. `sender` tries to connect to `receiver` and when data connection successfully built, `window.socket`emits a `send` event, which is handled in `main.js`. The handler simply reads file content and sends it back to DOM environment. Note that socket.io supports binary data transfer from version 1.0, so you can't use a lower version socket.io.
 
-Coming back to code in `clickSend`, we've already created an event handler on `sendToPeer` before emitting the `send` event, now it gets fired. `conn.send(data)` sends data to Peer `receiver`. In function `clickRecv`, when `conn` receives data, it uses `window.socket` to emit a `receive` event and sending the data it received from sender to Node runtime. Finally `fs.writeFileSync('received_gitignore', data)` write data to disk, all done.
+Coming back to code in `clickSend`, we've already created an event handler on `sendToPeer` before emitting `send` event, now it gets fired. `conn.send(data)` sends data to Peer `receiver`. In function `clickRecv`, when `conn` receives data, it uses `window.socket` to emit a `receive` event and sends data from sender to Node runtime. Finally `fs.writeFileSync('received_gitignore', data)` write data to disk, all done.
 
 You might wonder if it actually works for large file transfer. It does. My project is working great, it can transfer large files with decent speed, the prototype is this demo. Of course you should write many many more lines to make this prototype a usable app, for instance, data needs to be sliced when transfering large files, and you should handle all kinds of PeerJs errors.
 

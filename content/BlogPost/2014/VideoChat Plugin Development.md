@@ -4,7 +4,7 @@ If you have heard of WebRTC, you should be aware that modern web browsers have g
 
 WebRTC is a free, open project that enables web browsers with Real-Time Communications (RTC) capabilities via simple Javascript APIs.WebRTC allows web pages to access local multimedia devices like a webcam and microphone, and transmit these media streams to another WebRTC capable browser via a peer-to-peer network channel. These media streams can also be accompanied by a powerful data channel that lets developer exchange arbitrary data between two peers! Its mission is to enable rich, high quality, RTC applications to be developed in the browser via simple Javascript APIs and HTML5.
 
-Visit <a href='apprtc.appspot.com'>apprtc.appspot.com</a> (one of WebRTC's official examples to show how it works), you'll find that it's just the application I use for my plugin. All I did is putting the website into an `<iframe>`, and that's it, incrediblely simple but works flawlessly!
+Visit <a href='https://apprtc.appspot.com'>apprtc.appspot.com</a> (one of WebRTC's official examples to show how it works), you'll find that it's just the application I use for my plugin. All I did is putting the website into an `<iframe>`, and that's it, incrediblely simple but works flawlessly!
 
 View the <a href='https://github.com/laike9m/VideoChat/blob/master/views/default/videochat/greetings.php'>code</a> for more information.
 
