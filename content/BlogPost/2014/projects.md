@@ -1,6 +1,10 @@
 Projects
 ==
 
+* **[ezcf][]**, Python  
+Import configuration file for humans. You can directly import JSON/YAML/INI/XML just the same way as importing .py!
+[ezcf]: https://github.com/laike9m/ezcf
+
 * **[PyPunchP2P][punch]**, Python  
   Python p2p chat client/server with built-in NAT traversal (UDP hole punching).  
 [punch]: https://github.com/laike9m/PyPunchP2P
