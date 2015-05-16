@@ -29,7 +29,7 @@ logpath=/var/log/mongodb/mongod.log
 	2015-04-23T14:55:16.152+0800 I STORAGE  [initandlisten] exception in initAndListen: 29 Data directory /data/db not found., terminating
 	2015-04-23T14:55:16.152+0800 I CONTROL  [initandlisten] dbexit:  rc: 100
 
-Oops，似乎不行，说 `/data/db` 不存在。这里就是很坑爹的地方了：**虽然 `mongod.conf` 指定了 `dbpath`，但是实际上这个配置文件没有起作用！而 mongodb 本身认为 `/data/db` 才是默认路径。**毫无疑问，文档在这方面没有写清楚，因此[也有别人被坑过][3]。要想让配置生效，必须手动指定配置文件路径，即：
+Oops，似乎不行，说 `/data/db` 不存在。这里就是很坑爹的地方了：**虽然 `mongod.conf` 指定了 `dbpath`，但是实际上这个配置文件没有起作用！而 mongodb 本身认为 `/data/db` 才是默认路径。**毫无疑问，文档在这方面没有写清楚，因此[也有别人被坑过][3]。（后来发现，通过 `sudo service mongod start` 方式启动会默认使用该配置文件）要想让配置生效，必须手动指定配置文件路径，即：
 
 	mongod --storageEngine wiredTiger --replSet fbt -f /etc/mongod.conf
 
