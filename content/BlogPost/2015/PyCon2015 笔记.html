@@ -30,6 +30,6 @@ Slide：<a href="https://speakerdeck.com/dcrosta/good-test-bad-test">https://spe
 文章：<a href="http://late.am/post/2015/04/20/good-test-bad-test.html">http://late.am/post/2015/04/20/good-test-bad-test.html</a><br>
 关于测试质量的演讲，重点讲述了三个测试的误区：<br>
 (1) 过分追求 100% 覆盖率。他认为有些代码反而应该尽量避免去测试，比如依赖于网络上某个服务的代码。<br>
-(2) 使用过多 assert。他的建议是一个 test function 里面最好只有一个 assert。
+(2) 使用过多 assert。他的建议是一个 test function 里面最好只有一个 assert。<br>
 (3) Mock 一定会让测试更好。在测试中用到了数据库，与其直接 mock 一个返回值，不如用简单的代码模拟数据库的工作流程。<br>
 第二条我觉得像只用一个 assert 在很多情况下并不方便，但是把 dict 的 assert 拆分成多个键值 assert 还是可以借鉴的。关于数据库的 mock，其实有很多工具可以使用，比如见过一个专门用来为单元测试生成假数据的第三方库，还有 Django 的测试自带测试数据库。</p>

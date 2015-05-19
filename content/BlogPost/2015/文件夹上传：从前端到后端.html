@@ -15,8 +15,8 @@
 
 <p>好，假定我们的所有用户都用上了 Chrome，要怎么做才能成功上传一个文件夹呢？这里不用<code>drop</code>这种高大上的东西，就用最传统的<code>&lt;input&gt;</code>。用表单 submit 和 ajax 都可以做，先看 submit 方式。</p>
 
-<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">method</span>=<span class="pl-s1"><span class="pl-pds">"</span>POST<span class="pl-pds">"</span></span> <span class="pl-e">enctype</span>=<span class="pl-s1">multipart/form-data</span>&gt;
-  &lt;<span class="pl-ent">input</span> <span class="pl-e">type</span>=<span class="pl-s1"><span class="pl-pds">'</span>file<span class="pl-pds">'</span></span> <span class="pl-e">name</span>=<span class="pl-s1"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span> <span class="pl-e">webkitdirectory</span> &gt;
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">form</span> <span class="pl-e">method</span>=<span class="pl-s"><span class="pl-pds">"</span>POST<span class="pl-pds">"</span></span> <span class="pl-e">enctype</span>=<span class="pl-s">multipart/form-data</span>&gt;
+  &lt;<span class="pl-ent">input</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">'</span>file<span class="pl-pds">'</span></span> <span class="pl-e">name</span>=<span class="pl-s"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span> <span class="pl-e">webkitdirectory</span> &gt;
   &lt;<span class="pl-ent">button</span>&gt;upload&lt;/<span class="pl-ent">button</span>&gt;
 &lt;/<span class="pl-ent">form</span>&gt; </pre></div>
 
@@ -26,31 +26,31 @@
 
 <p>如果用 ajax 方式，我们可以省去<code>&lt;form&gt;</code>，只留下<code>&lt;input&gt;</code>就 OK。</p>
 
-<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">type</span>=<span class="pl-s1"><span class="pl-pds">'</span>file<span class="pl-pds">'</span></span> <span class="pl-e">webkitdirectory</span> &gt;  
-&lt;<span class="pl-ent">button</span> <span class="pl-e">id</span>=<span class="pl-s1"><span class="pl-pds">"</span>upload-btn<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s1"><span class="pl-pds">"</span>button<span class="pl-pds">"</span></span>&gt;upload&lt;/<span class="pl-ent">button</span>&gt;  </pre></div>
+<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">input</span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">'</span>file<span class="pl-pds">'</span></span> <span class="pl-e">webkitdirectory</span> &gt;  
+&lt;<span class="pl-ent">button</span> <span class="pl-e">id</span>=<span class="pl-s"><span class="pl-pds">"</span>upload-btn<span class="pl-pds">"</span></span> <span class="pl-e">type</span>=<span class="pl-s"><span class="pl-pds">"</span>button<span class="pl-pds">"</span></span>&gt;upload&lt;/<span class="pl-ent">button</span>&gt;  </pre></div>
 
 <p>但是这样是不够的，关键在于 Js 的使用。</p>
 
-<div class="highlight highlight-javascript"><pre><span class="pl-s">var</span> files <span class="pl-k">=</span> [];
-$(<span class="pl-s3">document</span>).ready(<span class="pl-st">function</span>(){
-  $(<span class="pl-s1"><span class="pl-pds">"</span>input<span class="pl-pds">"</span></span>).change(<span class="pl-st">function</span>(){
+<div class="highlight highlight-javascript"><pre><span class="pl-k">var</span> files <span class="pl-k">=</span> [];
+$(<span class="pl-c1">document</span>).ready(<span class="pl-k">function</span>(){
+  $(<span class="pl-s"><span class="pl-pds">"</span>input<span class="pl-pds">"</span></span>).change(<span class="pl-k">function</span>(){
     files <span class="pl-k">=</span> <span class="pl-v">this</span>.files;
   });
 });
-$(<span class="pl-s1"><span class="pl-pds">"</span>#upload-btn<span class="pl-pds">"</span></span>).<span class="pl-s3">click</span>(<span class="pl-st">function</span>(){
-  <span class="pl-s">var</span> fd <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">FormData</span>();
-  <span class="pl-k">for</span> (<span class="pl-s">var</span> i <span class="pl-k">=</span> <span class="pl-c1">0</span>; i <span class="pl-k">&lt;</span> files.<span class="pl-sc">length</span>; i<span class="pl-k">++</span>) {
-    fd.append(<span class="pl-s1"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>, files[i]);
+$(<span class="pl-s"><span class="pl-pds">"</span>#upload-btn<span class="pl-pds">"</span></span>).<span class="pl-c1">click</span>(<span class="pl-k">function</span>(){
+  <span class="pl-k">var</span> fd <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">FormData</span>();
+  <span class="pl-k">for</span> (<span class="pl-k">var</span> i <span class="pl-k">=</span> <span class="pl-c1">0</span>; i <span class="pl-k">&lt;</span> files.<span class="pl-c1">length</span>; i<span class="pl-k">++</span>) {
+    fd.append(<span class="pl-s"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>, files[i]);
   }
   $.ajax({
-    url<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>/upload/<span class="pl-pds">"</span></span>,
-    method<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>POST<span class="pl-pds">"</span></span>,
+    url<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>/upload/<span class="pl-pds">"</span></span>,
+    method<span class="pl-k">:</span> <span class="pl-s"><span class="pl-pds">"</span>POST<span class="pl-pds">"</span></span>,
     data<span class="pl-k">:</span> fd,
     contentType<span class="pl-k">:</span> <span class="pl-c1">false</span>,
     processData<span class="pl-k">:</span> <span class="pl-c1">false</span>,
     cache<span class="pl-k">:</span> <span class="pl-c1">false</span>,
-    <span class="pl-en">success</span>: <span class="pl-st">function</span>(<span class="pl-vpf">data</span>){
-      <span class="pl-en">console</span><span class="pl-s3">.log</span>(data);
+    <span class="pl-en">success</span>: <span class="pl-k">function</span>(<span class="pl-smi">data</span>){
+      <span class="pl-en">console</span><span class="pl-c1">.log</span>(data);
     }
   });
 });</pre></div>
@@ -60,11 +60,11 @@ $(<span class="pl-s1"><span class="pl-pds">"</span>#upload-btn<span class="pl-pd
 
 <p>前端说完了，再说后端。这里以 flask 为例。</p>
 
-<div class="highlight highlight-python"><pre><span class="pl-en">@</span><span class="pl-en">app.route</span>(<span class="pl-s1"><span class="pl-pds">'</span>/upload/<span class="pl-pds">'</span></span>, <span class="pl-vpf">methods</span><span class="pl-k">=</span>[<span class="pl-s1"><span class="pl-pds">'</span>POST<span class="pl-pds">'</span></span>])
-<span class="pl-st">def</span> <span class="pl-en">upload</span>():
-    pprint(request.files.getlist(<span class="pl-s1"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>))
-    pprint(request.files.getlist(<span class="pl-s1"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>)[<span class="pl-c1">2</span>].filename)
-    <span class="pl-k">return</span> <span class="pl-s1"><span class="pl-pds">"</span>upload success<span class="pl-pds">"</span></span></pre></div>
+<div class="highlight highlight-python"><pre><span class="pl-en">@</span><span class="pl-en">app.route</span>(<span class="pl-s"><span class="pl-pds">'</span>/upload/<span class="pl-pds">'</span></span>, <span class="pl-smi">methods</span><span class="pl-k">=</span>[<span class="pl-s"><span class="pl-pds">'</span>POST<span class="pl-pds">'</span></span>])
+<span class="pl-k">def</span> <span class="pl-en">upload</span>():
+    pprint(request.files.getlist(<span class="pl-s"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>))
+    pprint(request.files.getlist(<span class="pl-s"><span class="pl-pds">"</span>file<span class="pl-pds">"</span></span>)[<span class="pl-c1">2</span>].filename)
+    <span class="pl-k">return</span> <span class="pl-s"><span class="pl-pds">"</span>upload success<span class="pl-pds">"</span></span></pre></div>
 
 <p>现在可以解释为什么说所有后端框架都支持文件夹上传了，因为在后端看来文件夹上传和选中多个文件上传并没有什么不同，而后者框架都会支持。flask 的 <code>getlist</code> 方法一般用来处理提交的表单中 value 是一个 Array 的情况（前端用<code>name="key[]"</code>这种技巧实现），这里用来处理多个上传的文件。</p>
 
@@ -95,6 +95,16 @@ $(<span class="pl-s1"><span class="pl-pds">"</span>#upload-btn<span class="pl-pd
 <blockquote>
 <p>We only propagate a single file chooser mode which could be one of: { OPEN_FILE, OPEN_MULTI_FILE, FOLDER, SAVEAS_FILE }.  Only one mode can be selected and they cannot be or'ed or combined. Therefore there's no chance to enable both mode.</p>
 </blockquote>
+
+<p><strong>EDIT 2</strong><br>
+文件上传的程序给师兄和自己用了几个月，单文件上传一直很稳定。今天试图传一个包含很多文件(2000+)的文件夹上去，遇到了问题——进度条能够走到最后，但是随后就看到浏览器控制台里报错 <code>net::ERR_EMPTY_RESPONSE</code>。看了下后端的输出，Flask 并没有接到请求。首先怀疑的是文件数量过多或者大小太大，查了下，浏览器有限制但似乎是 4G，我还远远没达到，所以不是这个原因。然后看有人提到 PHP 的 timeout，即一个请求如果持续太久后端就直接断掉它。不过 Flask 似乎也没有这种设置。偶然间看到<a href="http://stackoverflow.com/questions/6816215/gunicorn-nginx-timeout-problem">这里</a>提到  gunicorn 默认 timeout 是 30s，恍然大悟，原来是 gunicorn 导致的。</p>
+
+<p>于是在 gunicorn 启动的时候加上 <code>--timeout 120</code>，这次是 500，总算有点进展，因为请求至少发到后端去了。看了 flask 的 log，错误原因是 too many open files，然后 <code>ulimit</code> 一下果然只有 1024。Flask 上传文件时，500KB 以下的直接以 StringIO Object 的形式存在内存中，大于 500KB 的用 tempfile 存在磁盘上。所以我传的文件一多，很容易开的文件描述符就超了。改 ulimit 也遇到一点小问题，最后按照<a href="http://stackoverflow.com/questions/17483723/command-not-found-when-using-sudo-ulimit">这里</a>说的用</p>
+
+<pre><code>sudo sh -c "ulimit -n 65535 &amp;&amp; exec su $LOGNAME"
+</code></pre>
+
+<p>解决。之后再次上传就没有问题了。</p>
 
 <p><br>
 参考资料:<br>
