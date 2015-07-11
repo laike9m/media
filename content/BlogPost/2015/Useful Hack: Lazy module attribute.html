@@ -1,0 +1,125 @@
+<p>昨天晚上师兄在 qq 上和我诉苦，说我们的代码测试起来太不方便了。问题大概出在这段代码：</p>
+
+<div class="highlight highlight-python"><pre><span class="pl-c"># motorclient.py</span>
+<span class="pl-k">import</span> motor
+<span class="pl-k">from</span> settings <span class="pl-k">import</span> mongo_machines, REPLICASET_NAME
+<span class="pl-k">from</span> pymongo <span class="pl-k">import</span> ReadPreference
+
+_motorclient <span class="pl-k">=</span> motor.MotorReplicaSetClient(
+    <span class="pl-s"><span class="pl-pds">'</span>,<span class="pl-pds">'</span></span>.join(mongo_machines),
+    <span class="pl-smi">replicaSet</span><span class="pl-k">=</span>REPLICASET_NAME,
+    <span class="pl-smi">readPreference</span><span class="pl-k">=</span>ReadPreference.NEAREST)
+
+fbt <span class="pl-k">=</span> _motorclient.fbt
+reward <span class="pl-k">=</span> <span class="pl-v">self</span>._motorclient.fbt_reward
+fbt_log <span class="pl-k">=</span> <span class="pl-v">self</span>._motorclient.fbt_log
+</pre></div>
+
+<p>这是我之前写的对 motor 的简单封装，无关代码已经去掉。目的很简单，他们每次要访问数据库只要先 <code>import motorclient</code>，然后用 <code>motorclient.dbname</code> 操作各个数据库就行了。问题在哪里呢？</p>
+
+<blockquote>
+<p>发现 motorclient 好蛋疼，只要一 import 就必须连接数据库，本地测试每次都要打 mock</p>
+</blockquote>
+
+<p>这是师兄的原话。我开头还不明白他是什么意思，后来弄明白了，他想在本机测试，而本机根本就没有配置副本集。但是我的 motorclient 只要一 import，就会初始化一个 <code>MotorReplicaSetClient</code>。要改成什么样？师兄希望保证现有接口不变，并且不要一 import 就初始化。怎么做呢？</p>
+
+<p>我突然想到，David Beazley 的演讲里好像提到了这个概念（关于他的演讲请参考 <a href="http://www.laike9m.com/blog/pycon2015-bi-ji,66/">PyCon2015 笔记</a>）。在 <a href="http://www.dabeaz.com/modulepackage/ModulePackage.pdf">slide</a> 的 150-152 页，他当时想实现的是，import 某个 package 的时候，不直接把 submodules/subpackage 都给 import 进来（因为很耗时间，相当于把所有文件执行一次），而是<strong>按需 import</strong>，他把这个技巧叫 "Lazy Module Assembly"。我面临的需求和他类似，也要用 "lazy" 的方式加载，只不过针对的是一个 module 里的变量。</p>
+
+<p>上网搜了搜，参考了<a href="http://stackoverflow.com/a/2447383/2142577"> SO 上的某答案</a>，完成了 lazy 版，我把它叫做 <strong>lazy module attribute</strong>。</p>
+
+<div class="highlight highlight-python"><pre><span class="pl-c"># motorclient.py</span>
+mode <span class="pl-k">=</span> <span class="pl-c1">None</span>
+<span class="pl-k">def</span> <span class="pl-en">set_mode</span>(<span class="pl-smi">m</span>):
+    <span class="pl-k">global</span> mode
+    mode <span class="pl-k">=</span> m
+
+<span class="pl-k">class</span> <span class="pl-en">Wrapper</span>:
+
+    localhost <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>127.0.0.1<span class="pl-pds">'</span></span>
+    port <span class="pl-k">=</span> <span class="pl-c1">27017</span>
+    dbs <span class="pl-k">=</span> {
+        <span class="pl-s"><span class="pl-pds">'</span>fbt<span class="pl-pds">'</span></span>: <span class="pl-c1">None</span>,
+        <span class="pl-s"><span class="pl-pds">'</span>reward<span class="pl-pds">'</span></span>: <span class="pl-c1">None</span>,
+        <span class="pl-s"><span class="pl-pds">'</span>fbt_log<span class="pl-pds">'</span></span>: <span class="pl-c1">None</span>
+    }
+
+    <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__init__</span></span>(<span class="pl-smi">self</span>, <span class="pl-smi">module</span>):
+        <span class="pl-v">self</span>.module <span class="pl-k">=</span> module
+        <span class="pl-v">self</span>._motorclient <span class="pl-k">=</span> <span class="pl-c1">None</span>
+
+    <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__getattr__</span></span>(<span class="pl-smi">self</span>, <span class="pl-smi">item</span>):
+        <span class="pl-k">if</span> item <span class="pl-k">in</span> <span class="pl-v">self</span>.dbs <span class="pl-k">and</span> <span class="pl-v">self</span>._motorclient <span class="pl-k">is</span> <span class="pl-c1">None</span>:
+            <span class="pl-k">if</span> mode <span class="pl-k">==</span> <span class="pl-s"><span class="pl-pds">'</span>test<span class="pl-pds">'</span></span>:
+                <span class="pl-v">self</span>._motorclient <span class="pl-k">=</span> motor.MotorClient(<span class="pl-smi">host</span><span class="pl-k">=</span><span class="pl-v">self</span>.localhost,
+                                                      <span class="pl-smi">port</span><span class="pl-k">=</span><span class="pl-v">self</span>.port)
+            <span class="pl-k">else</span>:
+                <span class="pl-v">self</span>._motorclient <span class="pl-k">=</span> motor.MotorReplicaSetClient(
+                    <span class="pl-s"><span class="pl-pds">'</span>,<span class="pl-pds">'</span></span>.join(mongo_machines),
+                    <span class="pl-smi">replicaSet</span><span class="pl-k">=</span>REPLICASET_NAME,
+                    <span class="pl-smi">readPreference</span><span class="pl-k">=</span>ReadPreference.NEAREST)
+
+            <span class="pl-v">self</span>.dbs[<span class="pl-s"><span class="pl-pds">'</span>fbt<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-v">self</span>._motorclient.fbt
+            <span class="pl-v">self</span>.dbs[<span class="pl-s"><span class="pl-pds">'</span>reward<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-v">self</span>._motorclient.fbt_reward
+            <span class="pl-v">self</span>.dbs[<span class="pl-s"><span class="pl-pds">'</span>fbt_log<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> <span class="pl-v">self</span>._motorclient.fbt_log
+            <span class="pl-v">self</span>.module.<span class="pl-c1">__dict__</span>.update(<span class="pl-v">self</span>.dbs)
+        <span class="pl-k">else</span>:
+            <span class="pl-k">return</span> <span class="pl-c1">getattr</span>(<span class="pl-v">self</span>.module, item)
+
+sys.modules[<span class="pl-c1">__name__</span>] <span class="pl-k">=</span> Wrapper(sys.modules[<span class="pl-c1">__name__</span>])</pre></div>
+
+<p>它的工作流程是这样：<br>
+1. 在 <code>import motorclient</code>，会创建一个 <code>Wrapper</code> 类的实例<strong>替换掉</strong>这个 module 本身，并且把原来的 module object 赋给 <code>self.module</code>，<strong>别的什么都不做</strong>。<br>
+2. 然后我们在别的文件中访问 <code>motorclient.fbt</code>，进入 <code>Wrapper</code> 实例的 <code>__getattr__</code> 方法，<code>item='fbt'</code>。因为是初次访问，<strong><code>self._motorclient is None</code></strong> 的条件满足，这时开始初始化变量。<br>
+3. 根据全局变量 <code>mode</code> 的值，我们会创建 <code>MotorClient</code> 或是 <code>MotorReplicaSetClient</code>，然后把那几个数据库变量也赋值，并且更新 <code>self.module.__dict__.update(self.dbs)</code>。这个效果就和我们的老版本初始化完全一样了，相当于直接把变量定义写在文件里。<br>
+4. OK，下一次再访问 <code>motorclient.fbt</code>，因为 <code>self._motorclient</code> 已经有值了，所以我们就不再初始化，直接把活交给 <code>self.module</code> 就好了。</p>
+
+<p></p><hr>
+下面的内容比较 internal，看不下去的同学就不要看了。。。
+
+<p>本来说到这里就差不多了，不过对 Python import 机制比较了解的同学可能会看出代码中的一个潜在问题。就是这句话：</p>
+
+<div class="highlight highlight-python"><pre>sys.modules[<span class="pl-c1">__name__</span>] <span class="pl-k">=</span> Wrapper(sys.modules[<span class="pl-c1">__name__</span>])</pre></div>
+
+<p><strong>为什么 <code>sys.modules</code> 的 key 一定就是 <strong>name</strong> 呢？</strong>下面将追根溯源，证明这一点。</p>
+
+<p>据 Brett Cannon 在《How Import Works》演讲的 <a href="https://speakerdeck.com/pyconslides/how-import-works-by-brett-cannon">slide</a> 第 27 页对 <code>load_module</code> 函数的描述，<code>sys.modules</code> 所用的 key 是 <code>fullname</code>：</p>
+
+<p><a href="https://camo.githubusercontent.com/258f71cb9a07089110ac1c5daa3b42f6fdad79a1/687474703a2f2f7777772e6c61696b65396d2e636f6d2f6d656469612f636f6e74656e742f426c6f67506f73742f696d616765732f6c6f61645f6d6f64756c652e706e67" target="_blank"><img src="https://camo.githubusercontent.com/258f71cb9a07089110ac1c5daa3b42f6fdad79a1/687474703a2f2f7777772e6c61696b65396d2e636f6d2f6d656469612f636f6e74656e742f426c6f67506f73742f696d616765732f6c6f61645f6d6f64756c652e706e67" alt="" data-canonical-src="http://www.laike9m.com/media/content/BlogPost/images/load_module.png" style="max-width:100%;"></a></p>
+
+<p>如果标准库中，也有类似 <code>module.__name__ = fullname</code> 这种东西，那么我们可以断定，<code>__name__</code> 就是 <code>fullname</code>。于是苦逼地翻了半天源码，好在终于找到了，有<a href="https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap.py#L516">这么一句话</a>：</p>
+
+<div class="highlight highlight-python"><pre>module.<span class="pl-c1">__name__</span> <span class="pl-k">=</span> spec.name</pre></div>
+
+<p>那么这个 Spec 又是什么呢？它实际上是 <a href="https://docs.python.org/3/library/importlib.html#importlib.machinery.ModuleSpec">Python3.4 里才引入的一个类</a>，官方的描述是 "A specification for a module's import-system-related state"。好，就差最后一步了！我又找到了<a href="https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap.py#L262">一句代码</a>：</p>
+
+<div class="highlight highlight-python"><pre>spec <span class="pl-k">=</span> spec_from_loader(fullname, <span class="pl-v">self</span>)</pre></div>
+
+<p>没错，Spec 初始化的第一个参数，传入的是 fullname，而它恰恰被赋给了 <code>spec.name</code>。至此，我们的推理终于完成，现在可以肯定地说，<code>sys.modules</code> 的 key 就是这个 module 的 <code>__name__</code>。（实际上这个证明针对的是 Python3.4，不过这种接口肯定是向前兼容的，对于所有版本都成立）</p>
+
+<p>Q.E.D.</p>
+
+<p>当初写 ezcf 的时候其实就遇到过这个问题，只不过没深究。我的<a href="https://github.com/laike9m/ezcf/blob/master/ezcf/_base.py#L93">代码</a>中有这么一段：</p>
+
+<div class="highlight highlight-python"><pre><span class="pl-k">class</span> <span class="pl-en">BaseLoader</span>(<span class="pl-e">_BaseClass</span>):
+
+    <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__init__</span></span>(<span class="pl-smi">self</span>, *<span class="pl-smi">args</span>, **<span class="pl-smi">kwargs</span>):
+        <span class="pl-k">pass</span>
+
+    <span class="pl-k">def</span> <span class="pl-en">load_module</span>(<span class="pl-smi">self</span>, <span class="pl-smi">fullname</span>):
+        <span class="pl-k">if</span> fullname <span class="pl-k">in</span> sys.modules:
+            mod <span class="pl-k">=</span> sys.modules[fullname]
+        <span class="pl-k">else</span>:
+            mod <span class="pl-k">=</span> sys.modules.setdefault(fullname, imp.new_module(fullname))
+
+        mod.<span class="pl-c1">__file__</span> <span class="pl-k">=</span> <span class="pl-v">self</span>.cfg_file
+        mod.<span class="pl-c1">__name__</span> <span class="pl-k">=</span> fullname  <span class="pl-c"># notice this !!</span>
+        mod.__loader__ <span class="pl-k">=</span> <span class="pl-v">self</span>
+        mod.__package__ <span class="pl-k">=</span> <span class="pl-s"><span class="pl-pds">'</span>.<span class="pl-pds">'</span></span>.join(fullname.split(<span class="pl-s"><span class="pl-pds">'</span>.<span class="pl-pds">'</span></span>)[:<span class="pl-k">-</span><span class="pl-c1">1</span>])
+
+        <span class="pl-k">return</span> mod</pre></div>
+
+<p>当时看到别人都写 <code>self.__name__ = fullname</code>，于是就跟着这么写了，并不明白其中原理。现在终于弄清了，这是 convention，必须得这么写。</p>
+
+<p>不是后记：<br>
+感觉好久都没有写文章了啊。。空余时间基本都去刷题了啊。。。跪求 Offer<br>
+以及如果读者中有能内推的请联系我（然而并没有什么读者(╥﹏╥)</p>
