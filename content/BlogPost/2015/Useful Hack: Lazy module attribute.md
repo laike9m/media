@@ -12,16 +12,21 @@ _motorclient = motor.MotorReplicaSetClient(
     readPreference=ReadPreference.NEAREST)
 
 fbt = _motorclient.fbt
-reward = self._motorclient.fbt_reward
-fbt_log = self._motorclient.fbt_log
-
+reward = _motorclient.fbt_reward
+fbt_log = _motorclient.fbt_log
 ```
 
 这是我之前写的对 motor 的简单封装，无关代码已经去掉。目的很简单，他们每次要访问数据库只要先 `import motorclient`，然后用 `motorclient.dbname` 操作各个数据库就行了。问题在哪里呢？
 
 > 发现 motorclient 好蛋疼，只要一 import 就必须连接数据库，本地测试每次都要打 mock
 
-这是师兄的原话。我开头还不明白他是什么意思，后来弄明白了，他想在本机测试，而本机根本就没有配置副本集。但是我的 motorclient 只要一 import，就会初始化一个 `MotorReplicaSetClient`。要改成什么样？师兄希望保证现有接口不变，并且不要一 import 就初始化。怎么做呢？
+这是他的原话，他想在没有配置副本集的本机进行测试，然而 motorclient 只要一 import 就会初始化一个 `MotorReplicaSetClient`，于是只能 Mock。于是现在有如下需求：
+
+1. 希望保证现有接口不变  
+2. 不要一 import 就初始化  
+3. 能非常容易地变成只连接本地数据库而不是副本集
+
+怎么做呢？
 
 我突然想到，David Beazley 的演讲里好像提到了这个概念（关于他的演讲请参考 [PyCon2015 笔记](http://www.laike9m.com/blog/pycon2015-bi-ji,66/)）。在 [slide](http://www.dabeaz.com/modulepackage/ModulePackage.pdf) 的 150-152 页，他当时想实现的是，import 某个 package 的时候，不直接把 submodules/subpackage 都给 import 进来（因为很耗时间，相当于把所有文件执行一次），而是**按需 import**，他把这个技巧叫 "Lazy Module Assembly"。我面临的需求和他类似，也要用 "lazy" 的方式加载，只不过针对的是一个 module 里的变量。
 
@@ -63,8 +68,8 @@ class Wrapper:
             self.dbs['reward'] = self._motorclient.fbt_reward
             self.dbs['fbt_log'] = self._motorclient.fbt_log
             self.module.__dict__.update(self.dbs)
-        else:
-            return getattr(self.module, item)
+
+        return getattr(self.module, item)
 
 sys.modules[__name__] = Wrapper(sys.modules[__name__])
 ```
@@ -73,7 +78,8 @@ sys.modules[__name__] = Wrapper(sys.modules[__name__])
 1. 在 `import motorclient`，会创建一个 `Wrapper` 类的实例**替换掉**这个 module 本身，并且把原来的 module object 赋给 `self.module`，**别的什么都不做**。  
 2. 然后我们在别的文件中访问 `motorclient.fbt`，进入 `Wrapper` 实例的 `__getattr__` 方法，`item='fbt'`。因为是初次访问，**`self._motorclient is None`** 的条件满足，这时开始初始化变量。  
 3. 根据全局变量 `mode` 的值，我们会创建 `MotorClient` 或是 `MotorReplicaSetClient`，然后把那几个数据库变量也赋值，并且更新 `self.module.__dict__.update(self.dbs)`。这个效果就和我们的老版本初始化完全一样了，相当于直接把变量定义写在文件里。  
-4. OK，下一次再访问 `motorclient.fbt`，因为 `self._motorclient` 已经有值了，所以我们就不再初始化，直接把活交给 `self.module` 就好了。
+4. 然后调用 `getattr(self.module, item)`，因为我们已经更新过 `self.module` 的 `__dict__`，所以能够正常返回属性值。第一次访问至此结束   
+5. OK，下一次再访问 `motorclient.fbt`，因为 `self._motorclient` 已经有值了，所以我们就不再初始化，直接把活交给 `self.module` 就好了。
 
 <hr></hr>
 下面的内容比较 internal，看不下去的同学就不要看了。。。
@@ -89,7 +95,7 @@ sys.modules[__name__] = Wrapper(sys.modules[__name__])
 
 ![](http://www.laike9m.com/media/content/BlogPost/images/load_module.png)
 
-如果标准库中，也有类似 `module.__name__ = fullname` 这种东西，那么我们可以断定，`__name__` 就是 `fullname`。于是苦逼地翻了半天源码，好在终于找到了，有[这么一句话](https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap.py#L516)：
+如果标准库中有类似 `module.__name__ = fullname` 这种东西，那么我们可以断定 `__name__` 就是 `fullname`。于是苦逼地翻了半天源码，好在终于找到了，有[这么一句话](https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap.py#L516)：
 ```python
 module.__name__ = spec.name
 ```
