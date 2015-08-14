@@ -1,3 +1,5 @@
+**Looking for fulltime job, see my [résumé](http://www.laike9m.com/media/files/pdf/resume_Yao Zuo.pdf) or [简历](http://www.laike9m.com/media/files/pdf/简历_左遥_中科院计算所.pdf).**
+
 I'm **Yao Zuo**. [laike9m][laike9m] is the ID I use on Internet. I'm from [Beijing, China][Beijing].  
 I do a lot of different things.
 
@@ -55,7 +57,7 @@ Novels
 I love reading **detective novels** and **science fictions**. I used to be the 
 president of Tsinghua Student Association of Detective and Mystery.
 
-About the Site
+About This Site
 -----------
 
 If you want to know more about my site you should check out the [blogpost][blog] about how I wrote it. (It's in 中文)
