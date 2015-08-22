@@ -33,3 +33,10 @@ Slide：<a href="https://speakerdeck.com/dcrosta/good-test-bad-test">https://spe
 (2) 使用过多 assert。他的建议是一个 test function 里面最好只有一个 assert。<br>
 (3) Mock 一定会让测试更好。在测试中用到了数据库，与其直接 mock 一个返回值，不如用简单的代码模拟数据库的工作流程。<br>
 第二条我觉得像只用一个 assert 在很多情况下并不方便，但是把 dict 的 assert 拆分成多个键值 assert 还是可以借鉴的。关于数据库的 mock，其实有很多工具可以使用，比如见过一个专门用来为单元测试生成假数据的第三方库，还有 Django 的测试自带测试数据库。</p>
+
+<h2>
+<a id="user-content-5-raymond-hettinger---super-considered-super" class="anchor" href="#5-raymond-hettinger---super-considered-super" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. Raymond Hettinger - Super considered super!</h2>
+
+<p>视频：<a href="https://www.youtube.com/watch?v=EiOglTERPEo">https://www.youtube.com/watch?v=EiOglTERPEo</a><br>
+Reddit 讨论：<a href="http://dwz.cn/1ns168">http://dwz.cn/1ns168</a><br>
+Raymond Hettinger 2 Hit! 然而这不是最主要的，最重要的是 Raymond 去讲 <code>super</code> 了。没错，在写出著名的<a href="https://rhettinger.wordpress.com/2011/05/26/super-considered-super/">《Python’s super() considered super!》</a><strong>四年</strong>之后，Raymond 终于在 PyCon 上讲了这个主题。这个迟到了四年的演讲的内容除了文章里的那些，就是在逐条批驳 <a href="https://fuhm.net/super-harmful/">《Python's Super Considered Harmful》</a> 里的观点，不过我之前并没有读过 Harmful 一文，等读了再来补充。</p>

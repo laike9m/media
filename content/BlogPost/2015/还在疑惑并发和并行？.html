@@ -131,9 +131,9 @@ feature of a multiprocessor architecture is the memory model, specifically
 whether it’s shared or distributed.</p>
 </blockquote>
 
-<p>最关键的一点是，<strong>计算机在不同层次上都使用了并行技术</strong>。之前我讨论的实际上仅限于 Task-Level 这一层，在这一层上，并行无疑是并发的一个子集。但是并行并非并发的子集，因为在 Bit-Level 和 Instruction-Level 上的并行，并不属于并发——比如引文中举的 32 位计算机执行 32 位数加法的例子，同时处理 4 个字节显然是一种并行，但是它们都属于 32 位加法这一个任务，并不存在多个任务，也就根本没有并发。</p>
+<p>最关键的一点是，<strong>计算机在不同层次上都使用了并行技术</strong>。之前我讨论的实际上仅限于 Task-Level 这一层，在这一层上，并行无疑是并发的一个子集。但是并行并非并发的子集，因为在 Bit-Level 和 Instruction-Level 上的并行不属于并发——比如引文中举的 32 位计算机执行 32 位数加法的例子，同时处理 4 个字节显然是一种并行，但是它们都属于 32 位加法这一个任务，并不存在多个任务，也就根本没有并发。</p>
 
 <p>所以，正确的说法是这样：<br>
-<strong>并行指物理上同时执行，并发指逻辑上交织执行</strong></p>
+<strong>并行指物理上同时执行，并发指能够让多个任务在逻辑上交织执行的程序设计</strong></p>
 
 <p>按照我现在的理解，并发针对的是 Task-Level 及更高层，并行则不限。这也是它们的区别。</p>
