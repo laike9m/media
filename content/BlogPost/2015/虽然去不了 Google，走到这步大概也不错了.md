@@ -10,3 +10,26 @@ B 同学是研究生实验室的同学，一看就是很牛的那种。然而他
 
 虽然能进 hc 我已经挺满意的了，但是一想到花了这么多精力最后还是去不了，又觉得时间都白费了  
 (╥﹏╥)
+
+**更新**  
+在 Quora 上看到了一个[问题](http://www.quora.com/I-was-rejected-by-Googles-hiring-committee-despite-significant-j%C2%B7)，彻底浇灭了我的念想：
+
+>I was rejected by Google's hiring committee despite significant job-related experience, excellent interview feedback, and stellar references. Where do I go from here?
+
+意思是提问者也是进了 hc 然后被 Google 拒了，但是他自己觉得表现很好。Gayle，也就是 cc150 的作者，给了一个回答：
+
+> It was almost certainly your interviews. 
+
+> Going to the hiring doesn't mean much. Only about 10% of candidates presented to hiring committee get an offer. 
+
+> (Note: this was roughly the statistic for my hiring committee, where almost all candidates were presented to the hiring committee. It varies by hiring committee. In any case, most candidates who reach the hiring committee do not get hired.)
+
+意思是基本上所有人都会进 hiring committee，但是大部分都会被拒。
+
+在评论里她回复了提问者：
+
+> Still, I'm fairly certain that it was your interviews. Your perception of your performance has no correlation, in my experience, with how you actually did. Think about it: why do you think you did BETTER (and, in fact, much better) than other candidates on those interview questions?
+
+所以说，Google 并不在乎你的表现如何，在乎的是你的表现必须超出别的应聘者一大截。对我来讲，这是不可能做到的事，至少我没法在中国做到。
+
+去年实验室有四个人拿到 Google 的 Offer，我觉得他们都是神。
