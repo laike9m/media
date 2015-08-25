@@ -33,3 +33,36 @@ Raymond Hettinger 2 Hit! 然而这不是最主要的，最重要的是 Raymond �
 
 [super]: https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
 [harmful]: https://fuhm.net/super-harmful/
+
+### 6. Ned Batchelder - Facts and Myths about Python names and values
+视频：https://www.youtube.com/watch?v=_AEJHKGk9ns  
+Slide：http://nedbatchelder.com/text/names1.html  
+比较初学者向的 talk，解释了 Python 的 name 到底是什么。比较经典的几句话是：  
+**Assignment never copies data**  
+**Mutable and immutable are assigned the same**  
+**Function arguments are assignments**  
+前两句话的意思是，Python 的 assignment 做的事仅仅是把左边的 name refer 到右边的值，而右边给的值是什么，其实和这个 assignment 操作是没有关系的。  
+还有一个最佳实践，就是最好不要在函数中原地 modify 作为参数的 list，最好返回一个 new list 并在外面接收。  
+一个测试对 Python 了解程度的问题：`a = []`，`a += [1]` 是否等价于 `a = a + [1]`。答案是**否**。
+
+### 7. Brett Slatkin - How to Be More Effective with Functions
+视频：https://www.youtube.com/watch?v=WjJUPxKB164   
+Slide：http://www.onebigfluke.com/2015/04/how-to-be-more-effective-with-functions.html  
+虽然题目是讲 Function，不过核心内容却是在说 iterator 和 generator，以及卖书。。。 
+Brett 提倡尽可能不 return list，而是 return generator。说到 `iter(iter(some_list))` 其实和 `iter(some_list)` 返回一样的结果，也就是同一个 iterator。  
+然后就是讲了一个使用 iterator 时经常会碰到的问题：一个 iterator 被 exhaust 之后，再遍历就没东西了。他提出的解决方案是：  
+1. 如果要多次遍历一个 iterator，假定叫 `it`，使用 `if iter(it) is iter(it): raise xxx` 来防止问题发生；  
+2. 当然光有1还不行，他提出使用“generator container”，说白了就是自定义 `__iter__`，比如
+```python
+class LoadCities(object):
+
+  def __init__(self, path):
+    self.path = path
+
+  def __iter__(self):
+    with open(self.path) as handle:
+      for line in handle:
+        city, count = line.split('\t')
+        yield city, int(count)
+```
+然后用 `for x in LoadCities('pop.tsv')` 来遍历。因为每次是返回一个新的 iterator，所以不会出现之前的问题。不过其实吧，用 [`itertools.tee`](https://docs.python.org/3/library/itertools.html#itertools.tee) 可能更简单点。

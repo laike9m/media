@@ -12,7 +12,7 @@ B 同学是研究生实验室的同学，一看就是很牛的那种。然而他
 (╥﹏╥)
 
 **更新**  
-在 Quora 上看到了一个[问题](http://www.quora.com/I-was-rejected-by-Googles-hiring-committee-despite-significant-j%C2%B7)，彻底浇灭了我的念想：
+在 Quora 上看到了一个[问题][1]，彻底浇灭了我的念想：
 
 >I was rejected by Google's hiring committee despite significant job-related experience, excellent interview feedback, and stellar references. Where do I go from here?
 
@@ -33,3 +33,5 @@ B 同学是研究生实验室的同学，一看就是很牛的那种。然而他
 所以说，Google 并不在乎你的表现如何，在乎的是你的表现必须超出别的应聘者一大截。对我来讲，这是不可能做到的事，至少我没法在中国做到。
 
 去年实验室有四个人拿到 Google 的 Offer，我觉得他们都是神。
+
+[1]: http://www.quora.com/I-was-rejected-by-Googles-hiring-committee-despite-significant-job-related-experience-excellent-interview-feedback-and-stellar-references-Where-do-I-go-from-here
