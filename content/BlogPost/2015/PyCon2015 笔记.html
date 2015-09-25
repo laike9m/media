@@ -4,13 +4,13 @@
 <a id="user-content-1-type-hints---guido-van-rossum" class="anchor" href="#1-type-hints---guido-van-rossum" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Type Hints - Guido van Rossum</h2>
 
 <p>视频：<a href="https://www.youtube.com/watch?v=2wDvzy6Hgxg">https://www.youtube.com/watch?v=2wDvzy6Hgxg</a><br>
-主要就是讲 PEP 484 - Type Hints，通过 typing 这个模块，从 3.5 版本开始，Python 也可以做静态检查了！</p>
+主要就是讲 PEP 484 - Type Hints，通过 typing 这个模块，从 3.5 版本开始，Python 也可以做静态检查了！（更新：实际上 3.5 里还不能做静态检查，只是加入了类型标记，参见<a href="https://docs.python.org/3.6/whatsnew/3.5.html">What's New In Python 3.5</a>）</p>
 
 <h2>
 <a id="user-content-2-raymond-hettinger---beyond-pep-8----best-practices-for-beautiful-intelligible-code" class="anchor" href="#2-raymond-hettinger---beyond-pep-8----best-practices-for-beautiful-intelligible-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Raymond Hettinger - Beyond PEP 8 -- Best practices for beautiful intelligible code</h2>
 
 <p>视频：<a href="https://www.youtube.com/watch?v=wf-BqAjZb8M">https://www.youtube.com/watch?v=wf-BqAjZb8M</a><br>
-强烈推荐！Raymond Hettinger 的演讲适合所有层次的程序员看。这个演讲说的是，我们都知道 PEP8 来规划 Python 代码，但是这样是否就够了呢？我们可能忽视了一件更重要的事：Pythonic！这个演讲举了几个例子，怎么 make code more pythonic，比如使用 context manager，使用 <code>@property</code>，使用 Adapter 包装已有代码让 <code>import</code> 更简洁。不过其中最神的我觉得还是通过定义 <code>__len__</code> 和 <code>__getitem__</code> 来构造一个 sequence，然后这个 sequence 自动就是 iterable 的，之前我一直以为必须通过定义 <code>__iter__</code> 和 <code>__next__</code> 方法构造 iterator 才能达到让类支持 for in 的效果。<br>
+强烈推荐！Raymond Hettinger 的演讲适合所有层次的程序员看。这个演讲说的是，我们都知道用 PEP8 来规范 Python 代码，但是这样是否就够了呢？我们可能忽视了一件更重要的事：Pythonic！这个演讲举了几个例子，怎么 make code more pythonic，比如使用 context manager，使用 <code>@property</code>，使用 Adapter 包装已有代码让 <code>import</code> 更简洁。不过其中最神的我觉得还是通过定义 <code>__len__</code> 和 <code>__getitem__</code> 来构造一个 sequence，然后这个 sequence 自动就是 iterable 的，之前我一直以为必须通过定义 <code>__iter__</code> 和 <code>__next__</code> 方法构造 iterator 才能达到让类支持 for in 的效果。<br>
 这个演讲没有 slide，不过代码不多。</p>
 
 <h2>
@@ -18,8 +18,8 @@
 
 <p>视频：<a href="https://www.youtube.com/watch?v=0oTh1CXRaQ0">https://www.youtube.com/watch?v=0oTh1CXRaQ0</a><br>
 Slide: <a href="http://www.dabeaz.com/modulepackage/ModulePackage.pdf">http://www.dabeaz.com/modulepackage/ModulePackage.pdf</a><br>
-代码：dabeaz/modulepackage · GitHub<br>
-David Beazley 以前的视频我也看过几个，他的演讲最大特点就是 mind-blowing，会在短时间内让你意识到你根本就不会 Python！ 如果有人能在不查资料的情况下理解他的演讲的50%内容，那这个人绝对是 Python 高手。这次的视频也是一如既往的烧脑，讲的是和 import 相关的各种知识，因为之前写 ezcf 的缘故这次终于能看懂稍微多一点。。。实在不想介绍了，各位可以自己去看。<br>
+代码：<a href="https://github.com/dabeaz/modulepackage">https://github.com/dabeaz/modulepackage</a><br>
+David Beazley 以前的视频我也看过几个，他的演讲最大特点就是 mind-blowing，会在短时间内让你意识到你根本就不会 Python！ 如果有人能在不查资料的情况下理解他的演讲的 50% 内容，那这个人绝对是 Python 高手。这次的视频也是一如既往得烧脑，讲的是和 import 相关的各种知识，因为之前写 <a href="https://github.com/laike9m/ezcf">ezcf</a> 的缘故这次终于能看懂稍微多一点。。。实在不想介绍了，各位可以自己去看。<br>
 之前有人问 Python 里有哪些黑魔法。那个问题我没有答，我只想说 David Beazley 的每一个演讲都充斥着黑魔法。。。</p>
 
 <h2>
@@ -39,7 +39,7 @@ Slide：<a href="https://speakerdeck.com/dcrosta/good-test-bad-test">https://spe
 
 <p>视频：<a href="https://www.youtube.com/watch?v=EiOglTERPEo">https://www.youtube.com/watch?v=EiOglTERPEo</a><br>
 Reddit 讨论：<a href="http://dwz.cn/1ns168">http://dwz.cn/1ns168</a><br>
-Raymond Hettinger 2 Hit! 然而这不是最主要的，最重要的是 Raymond 去讲 <code>super</code> 了。没错，在写出著名的<a href="https://rhettinger.wordpress.com/2011/05/26/super-considered-super/">《Python’s super() considered super!》</a><strong>四年</strong>之后，Raymond 终于在 PyCon 上讲了这个主题。这个迟到了四年的演讲的内容除了文章里的那些，就是在逐条批驳 <a href="https://fuhm.net/super-harmful/">《Python's Super Considered Harmful》</a> 里的观点，不过我之前并没有读过 Harmful 一文，等读了再来补充。</p>
+Raymond Hettinger 2 Hit！然而这不是最主要的，最重要的是 Raymond 去讲 <code>super</code> 了。没错，在写出著名的<a href="https://rhettinger.wordpress.com/2011/05/26/super-considered-super/">《Python’s super() considered super!》</a><strong>四年</strong>之后，Raymond 终于在 PyCon 上讲了这个主题。这个迟到了四年的演讲的内容除了文章里的那些，就是在逐条批驳 <a href="https://fuhm.net/super-harmful/">《Python's Super Considered Harmful》</a> 里的观点，不过我之前并没有读过 Harmful 一文，等读了再来补充。</p>
 
 <h3>
 <a id="user-content-6-ned-batchelder---facts-and-myths-about-python-names-and-values" class="anchor" href="#6-ned-batchelder---facts-and-myths-about-python-names-and-values" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. Ned Batchelder - Facts and Myths about Python names and values</h3>
@@ -65,15 +65,15 @@ Brett 提倡尽可能不 return list，而是 return generator。说到 <code>it
 1. 如果要多次遍历一个 iterator，假定叫 <code>it</code>，使用 <code>if iter(it) is iter(it): raise xxx</code> 来防止问题发生；<br>
 2. 当然光有1还不行，他提出使用“generator container”，说白了就是自定义 <code>__iter__</code>，比如</p>
 
-<div class="highlight highlight-python"><pre><span class="pl-k">class</span> <span class="pl-en">LoadCities</span>(<span class="pl-e"><span class="pl-c1">object</span></span>):
+<div class="highlight highlight-source-python"><pre><span class="pl-k">class</span> <span class="pl-en">LoadCities</span>(<span class="pl-e"><span class="pl-c1">object</span></span>):
 
-  <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__init__</span></span>(<span class="pl-smi">self</span>, <span class="pl-smi">path</span>):
-    <span class="pl-v">self</span>.path <span class="pl-k">=</span> path
+    <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__init__</span></span>(<span class="pl-smi">self</span>, <span class="pl-smi">path</span>):
+        <span class="pl-v">self</span>.path <span class="pl-k">=</span> path
 
-  <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__iter__</span></span>(<span class="pl-smi">self</span>):
-    <span class="pl-k">with</span> <span class="pl-c1">open</span>(<span class="pl-v">self</span>.path) <span class="pl-k">as</span> handle:
-      <span class="pl-k">for</span> line <span class="pl-k">in</span> handle:
-        city, count <span class="pl-k">=</span> line.split(<span class="pl-s"><span class="pl-pds">'</span><span class="pl-cce">\t</span><span class="pl-pds">'</span></span>)
-        <span class="pl-k">yield</span> city, <span class="pl-c1">int</span>(count)</pre></div>
+    <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__iter__</span></span>(<span class="pl-smi">self</span>):
+        <span class="pl-k">with</span> <span class="pl-c1">open</span>(<span class="pl-v">self</span>.path) <span class="pl-k">as</span> handle:
+            <span class="pl-k">for</span> line <span class="pl-k">in</span> handle:
+                city, count <span class="pl-k">=</span> line.split(<span class="pl-s"><span class="pl-pds">'</span><span class="pl-cce">\t</span><span class="pl-pds">'</span></span>)
+                <span class="pl-k">yield</span> city, <span class="pl-c1">int</span>(count)</pre></div>
 
 <p>然后用 <code>for x in LoadCities('pop.tsv')</code> 来遍历。因为每次是返回一个新的 iterator，所以不会出现之前的问题。不过其实吧，用 <a href="https://docs.python.org/3/library/itertools.html#itertools.tee"><code>itertools.tee</code></a> 可能更简单点。</p>
