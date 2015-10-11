@@ -3,7 +3,7 @@
 
 <ol>
 <li>
-<p>Dump PostgreSQL data  </p>
+<p><strong>Dump PostgreSQL data</strong>  </p>
 
 <pre><code>pg_dump -U laike9m -f dump.sql database1
 </code></pre>
@@ -18,13 +18,13 @@ sudo apt-get install postgresql postgresql-contrib
 还要给用户 laike9m 数据库的管理员权限。先切到 postgres 用户，然后参考 <a href="http://stackoverflow.com/questions/4368789/error-must-be-owner-of-language-plpgsql">error-must-be-owner-of-language-plpgsql</a> 给 laike9m 管理员权限。</p>
 </li>
 <li>
-<p>Load data</p>
+<p><strong>Load data</strong></p>
 
 <pre><code>psql -U laike9m database1 &lt; dump.sql
 </code></pre>
 </li>
 <li>
-<p>配置虚拟环境<br>
+<p><strong>配置虚拟环境</strong><br>
 安装 virtualenvwrapper，<code>mkvirtualenv</code>, 安装依赖。在安装之前先</p>
 
 <pre><code>sudo apt-get install libpq-dev
@@ -34,7 +34,7 @@ sudo apt-get install python3-dev
 <p>因为要安装 psycopg2。</p>
 </li>
 <li>
-<p>下载并修改代码<br>
+<p><strong>下载并修改代码</strong><br>
 在家目录创建 static, media 文件夹作为 <code>STATIC_ROOT</code> 和 <code>MEDIA_ROOT</code>。
 clone <a href="https://github.com/laike9m/My_Blog">代码</a>，clone <a href="https://github.com/laike9m/media">media 文件夹</a>，按照新路径修改 settings.py，
 下载 media 文件。设定密码环境变量（实际上这个用不到了）。<br>
@@ -86,11 +86,10 @@ Migrations <span class="pl-k">for</span> <span class="pl-smi">'css3two_blog</spa
 这个内置 south 的重大改进版本，没想到居然顺利完成了。</p>
 </li>
 <li>
-<p>安装配置 Nginx, uWSGI<br>
+<p><strong>安装配置 Nginx, uWSGI</strong><br>
 Nginx 我比较熟了，但是每次遇到 uWSGI 都很麻烦，这次也是。花了很长时间去解决
-<a href="http://stackoverflow.com/questions/32888850/uwsgi-nginx-uwsgi-cant-receive-request">这个问题</a>。后来发现在<a href="http://uwsgi-docs.readthedocs.org/en/latest/ThingsToKnow.html">文档</a>里已经有说明。</p>
-
-<p>uWSGI 配置文件 <code>uwsgi.ini</code> 如下</p>
+<a href="http://stackoverflow.com/questions/32888850/uwsgi-nginx-uwsgi-cant-receive-request">这个问题</a>。后来发现在<a href="http://uwsgi-docs.readthedocs.org/en/latest/ThingsToKnow.html">文档</a>里已经有说明。<br>
+uWSGI 配置文件 <code>uwsgi.ini</code> 如下</p>
 
 <div class="highlight highlight-source-ini"><pre><span class="pl-en">[uwsgi]</span>
 <span class="pl-k">chdir</span>           = /home/laike9m/Envs/blog/My_Blog
@@ -124,7 +123,7 @@ exec /usr/local/bin/uwsgi --ini /home/laike9m/Envs/blog/My_Blog/uwsgi.ini
 <p>这样之后用 <code>sudo service uwsgi start/stop/restart</code> 就能操作 uWSGI 了</p>
 </li>
 <li>
-<p>添加 HTTPS<br>
+<p><strong>添加 HTTPS</strong><br>
 证书还是用之前的，主要是修改 Nginx 配置。对 80 端口的访问要自动跳转。<br>
 这里只贴关键部分的配置。</p>
 
@@ -142,7 +141,8 @@ exec /usr/local/bin/uwsgi --ini /home/laike9m/Envs/blog/My_Blog/uwsgi.ini
     <span class="pl-k">ssl_certificate_key</span> /home/laike9m/files/laike9m_com/key;
     ...
 }</pre></div>
+
+<p><br>
+基本就是这样了。</p>
 </li>
 </ol>
-
-<p>基本就是这样了。</p>
