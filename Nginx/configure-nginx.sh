@@ -21,4 +21,5 @@
 --with-mail \
 --with-mail_ssl_module \
 --with-pcre \
---with-debug
+--with-debug \
+--with-http_v2_module
