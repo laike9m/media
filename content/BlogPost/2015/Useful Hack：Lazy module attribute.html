@@ -1,6 +1,6 @@
 <p>昨天晚上师兄在 qq 上和我诉苦，说我们的代码测试起来太不方便了。问题大概出在这段代码：</p>
 
-<div class="highlight highlight-python"><pre><span class="pl-c"># motorclient.py</span>
+<div class="highlight highlight-source-python"><pre><span class="pl-c"># motorclient.py</span>
 <span class="pl-k">import</span> motor
 <span class="pl-k">from</span> settings <span class="pl-k">import</span> mongo_machines, REPLICASET_NAME
 <span class="pl-k">from</span> pymongo <span class="pl-k">import</span> ReadPreference
@@ -36,7 +36,7 @@ fbt_log <span class="pl-k">=</span> _motorclient.fbt_log</pre></div>
 
 <p>上网搜了搜，参考了<a href="http://stackoverflow.com/a/2447383/2142577"> SO 上的某答案</a>，完成了 lazy 版，我把它叫做 <strong>lazy module attribute</strong>。</p>
 
-<div class="highlight highlight-python"><pre><span class="pl-c"># motorclient.py</span>
+<div class="highlight highlight-source-python"><pre><span class="pl-c"># motorclient.py</span>
 mode <span class="pl-k">=</span> <span class="pl-c1">None</span>
 <span class="pl-k">def</span> <span class="pl-en">set_mode</span>(<span class="pl-smi">m</span>):
     <span class="pl-k">global</span> mode
@@ -88,7 +88,7 @@ sys.modules[<span class="pl-c1">__name__</span>] <span class="pl-k">=</span> Wra
 
 <p>本来说到这里就差不多了，不过对 Python import 机制比较了解的同学可能会看出代码中的一个潜在问题。就是这句话：</p>
 
-<div class="highlight highlight-python"><pre>sys.modules[<span class="pl-c1">__name__</span>] <span class="pl-k">=</span> Wrapper(sys.modules[<span class="pl-c1">__name__</span>])</pre></div>
+<div class="highlight highlight-source-python"><pre>sys.modules[<span class="pl-c1">__name__</span>] <span class="pl-k">=</span> Wrapper(sys.modules[<span class="pl-c1">__name__</span>])</pre></div>
 
 <p><strong>为什么 <code>sys.modules</code> 的 key 一定就是 <strong>name</strong> 呢？</strong>下面将追根溯源，证明这一点。</p>
 
@@ -98,11 +98,11 @@ sys.modules[<span class="pl-c1">__name__</span>] <span class="pl-k">=</span> Wra
 
 <p>如果标准库中有类似 <code>module.__name__ = fullname</code> 这种东西，那么我们可以断定 <code>__name__</code> 就是 <code>fullname</code>。于是苦逼地翻了半天源码，好在终于找到了，有<a href="https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap.py#L516">这么一句话</a>：</p>
 
-<div class="highlight highlight-python"><pre>module.<span class="pl-c1">__name__</span> <span class="pl-k">=</span> spec.name</pre></div>
+<div class="highlight highlight-source-python"><pre>module.<span class="pl-c1">__name__</span> <span class="pl-k">=</span> spec.name</pre></div>
 
 <p>那么这个 Spec 又是什么呢？它实际上是 <a href="https://docs.python.org/3/library/importlib.html#importlib.machinery.ModuleSpec">Python3.4 里才引入的一个类</a>，官方的描述是 "A specification for a module's import-system-related state"。好，就差最后一步了！我又找到了<a href="https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap.py#L262">一句代码</a>：</p>
 
-<div class="highlight highlight-python"><pre>spec <span class="pl-k">=</span> spec_from_loader(fullname, <span class="pl-v">self</span>)</pre></div>
+<div class="highlight highlight-source-python"><pre>spec <span class="pl-k">=</span> spec_from_loader(fullname, <span class="pl-v">self</span>)</pre></div>
 
 <p>没错，Spec 初始化的第一个参数，传入的是 fullname，而它恰恰被赋给了 <code>spec.name</code>。至此，我们的推理终于完成，现在可以肯定地说，<code>sys.modules</code> 的 key 就是这个 module 的 <code>__name__</code>。（实际上这个证明针对的是 Python3.4，不过这种接口肯定是向前兼容的，对于所有版本都成立）</p>
 
@@ -110,7 +110,7 @@ sys.modules[<span class="pl-c1">__name__</span>] <span class="pl-k">=</span> Wra
 
 <p>当初写 ezcf 的时候其实就遇到过这个问题，只不过没深究。我的<a href="https://github.com/laike9m/ezcf/blob/master/ezcf/_base.py#L93">代码</a>中有这么一段：</p>
 
-<div class="highlight highlight-python"><pre><span class="pl-k">class</span> <span class="pl-en">BaseLoader</span>(<span class="pl-e">_BaseClass</span>):
+<div class="highlight highlight-source-python"><pre><span class="pl-k">class</span> <span class="pl-en">BaseLoader</span>(<span class="pl-e">_BaseClass</span>):
 
     <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__init__</span></span>(<span class="pl-smi">self</span>, *<span class="pl-smi">args</span>, **<span class="pl-smi">kwargs</span>):
         <span class="pl-k">pass</span>

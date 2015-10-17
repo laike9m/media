@@ -6,7 +6,9 @@
 <li>Should I upload <code>settings.py</code> from developement environment to Git server? If I did, does that mean I have to change the file every time after doing <code>Git pull</code> on deployment server?<br>
 </li>
 <li>If I choose not to upload <code>settings.py</code>, there is a risk of losing data.</li>
-</ol><p>My purpose is to <strong>keep different versions of <code>settings.py</code></strong>. Here's what I did:  </p>
+</ol>
+
+<p>My purpose is to <strong>keep different versions of <code>settings.py</code></strong>. Here's what I did:  </p>
 
 <ol>
 <li>First, on the computer I do developing, <code>commit</code> and <code>push</code> everything as you normally do, including <code>settings.py</code>.</li>
@@ -18,8 +20,9 @@
 <code>commit</code> and <code>push</code> to branch <code>deploy</code>.</li>
 <li>Back to developing environment, type this command:<br>
 </li>
-</ol><div class="highlight highlight-bash"><pre>git update-index --assume-unchanged my_blog/settings.py
-</pre></div>
+</ol>
+
+<div class="highlight highlight-source-shell"><pre>git update-index --assume-unchanged my_blog/settings.py</pre></div>
 
 <p>Done :)</p>
 
@@ -45,20 +48,19 @@ When these flags are specified, the object names recorded for the paths are not 
 
 <p>Now you've pushed some new commits to Github and want to apply it on your server. Here are the steps:</p>
 
-<div class="highlight highlight-bash"><pre><span class="c"># step 1</span>
-make sure you<span class="err">'</span>re on master branch, <span class="k">if</span> not, git checkout master
-
-<span class="c"># step 2</span>
-<span class="nv">$ </span>git pull
-
-<span class="c"># step 3</span>
-<span class="nv">$ </span>git checkout deploy
-
-<span class="c"># step 4</span>
-<span class="nv">$ </span>git rebase master
-
-<span class="c"># step 5</span>
-<span class="nv">$ </span>git push origin deploy
-</pre></div>
+<div class="highlight highlight-source-shell"><pre><span class="pl-c"># step 1</span>
+make sure you<span class="pl-s"><span class="pl-pds">'</span>re on master branch, if not, git checkout master</span>
+<span class="pl-s"></span>
+<span class="pl-s"># step 2</span>
+<span class="pl-s">$ git pull</span>
+<span class="pl-s"></span>
+<span class="pl-s"># step 3</span>
+<span class="pl-s">$ git checkout deploy</span>
+<span class="pl-s"></span>
+<span class="pl-s"># step 4</span>
+<span class="pl-s">$ git rebase master</span>
+<span class="pl-s"></span>
+<span class="pl-s"># step 5</span>
+<span class="pl-s">$ git push origin deploy</span></pre></div>
 
 <p>I'm open to changes and suggestions, if you have better ideas, feel free to comment.</p>
