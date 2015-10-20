@@ -1,0 +1,107 @@
+<p>去年写过一篇文章《<a href="https://laike9m.com/blog/bo-ke-xing-neng-you-hua,33/">博客性能优化</a>》。
+网站搬迁之后，需要重新优化一下。下面的测试结果都来自 <a href="http://www.webpagetest.org/">webpagetest</a>。</p>
+
+<p>优化之前<br>
+<a href="/media/content/BlogPost/images/blog_opt2/waterfall1.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/waterfall1.png" alt="" style="max-width:100%;"></a>
+<a href="/media/content/BlogPost/images/blog_opt2/before.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/before.png" alt="" style="max-width:100%;"></a></p>
+
+<p><strong>对字体开启压缩</strong><br>
+按照 <a href="http://drawingablank.me/blog/font-mime-types-in-nginx.html">FONT MIME TYPES IN NGINX</a> 这篇文章里说的，在 Nginx 的 <code>mime.types</code> 文件中加入下面几行：</p>
+
+<pre><code>font/ttf                      ttf;
+font/opentype                 otf;
+application/font-woff         woff;
+application/vnd.ms-fontobject eot;
+</code></pre>
+
+<p>在 <code>nginx.conf</code> 的 gzip 类型中添加</p>
+
+<pre><code>gzip_types [...] font/ttf font/opentype application/vnd.ms-fontobject image/svg+xml;
+</code></pre>
+
+<p>除了 woff 文件，其它的字体都可以压缩。woff 本身就是压缩过的。</p>
+
+<p><strong>让客户端缓存静态文件</strong><br>
+之前静态文件的配置很简单：</p>
+
+<pre><code>location /static {
+    alias /home/laike9m/static;
+}
+</code></pre>
+
+<p>完全没有客户端缓存。现在加上了：</p>
+
+<pre><code>location /static {
+    alias /home/laike9m/static;
+    etag on; 
+    expires max;
+    add_header Pragma public;
+    add_header Cache-Control "public";
+    access_log off;
+}
+</code></pre>
+
+<p>对 <code>/media</code> 作同样配置。<br>
+特别地，我希望 css 文件不要缓存那么久，因为我经常修改 css，希望第二天就能看到效果。</p>
+
+<pre><code>location ~* ^/static/(.+\.css)$ {
+    alias /home/laike9m/static/$1;
+    etag on; 
+    expires 1d;
+    add_header Pragma public;
+    add_header Cache-Control "public";
+    access_log off;
+}
+</code></pre>
+
+<p>这个 <code>alias</code> 写不对很容易就 404 了。还有就是注意要把 css 的这个 location 放在 /static 之前，因为
+Nginx 在正则匹配的时候是 sequential 的，即放在前面的会先匹配，而不是像前缀匹配取最长的那个。  </p>
+
+<p>效果<br>
+<a href="/media/content/BlogPost/images/blog_opt2/waterfall2.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/waterfall2.png" alt="" style="max-width:100%;"></a>
+<a href="/media/content/BlogPost/images/blog_opt2/after.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/after.png" alt="" style="max-width:100%;"></a><br>
+似乎加载时间反而变长了。。。不过缓存对初次加载本来就没啥用。</p>
+
+<p><strong>开启 HTTP/2</strong><br>
+如果不是因为想尝试 HTTP/2，我也不会写这篇文章了。Nginx 从 <a href="https://www.nginx.com/blog/nginx-1-9-5/">1.9.5 版开始正式支持 HTTP/2</a>。</p>
+
+<p>首先要重新编译 Nginx，在 configure 时加入 <code>--with-http_v2_module</code>。<br>
+然后安装 OpenSSL 1.0.2。官方的说法是“This is required to support the ALPN extension to TLS that our HTTP/2 implementation uses.”。</p>
+
+<p>然后就发现网站没法访问了_(:3」∠)_，出现错误 <code>ERR_SPDY_INADEQUATE_TRANSPORT_SECURITY</code>。<br>
+找到了两篇相关文章：<br>
+<a href="https://weakdh.org/sysadmin.html">Guide to Deploying Diffie-Hellman for TLS</a><br>
+<a href="https://wiki.mozilla.org/Security/Server_Side_TLS">Security/Server Side TLS</a><br>
+某论坛的一个<a href="https://www.litespeedtech.com/support/forum/threads/solved-ls-5-0-stable-protocol-error-with-ssl-sites.11459/#post-86675">回复</a>里说</p>
+
+<blockquote>
+<p>To use HTTP/2, you need to make sure cipher ECDHE-RSA-AES128-GCM-SHA256 is the first one in your cipher configuration.</p>
+</blockquote>
+
+<p>总之随便复制了一个以 <code>ECDHE-RSA-AES128-GCM-SHA256</code> 为起始的 <code>ssl_ciphers</code> 之后，网站就可以工作了。<br>
+效果<br>
+<a href="/media/content/BlogPost/images/blog_opt2/waterfall3.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/waterfall3.png" alt="" style="max-width:100%;"></a><br>
+HTTP/2 的 Multipexing 在这张图里体现得很明显，不会开多个连接去下载静态资源了。然而速度上似乎并没有提升。</p>
+
+<p>可能的后续优化<br>
+<a href="https://github.com/lebinh/nginx-conf#open-file-cache">Nginx Configuration Snippets</a><br>
+<a href="https://imququ.com/post/my-nginx-conf-for-wpo.html">本博客 Nginx 配置之性能篇</a></p>
+
+<p>另外，webpagetest 给我的 First Byte Time 这一项评分是 B。官方的解释是：</p>
+
+<blockquote>
+<p>The First Byte time is the time from when the user started navigating to the page until the first bit of the server response arrived.  The bulk of this time is usually referred to the "back-end time" and is the amount of time the server spent building the page for the user.</p>
+</blockquote>
+
+<p>评分标准</p>
+
+<blockquote>
+<p>The target time is the time needed for the DNS, socket and SSL negotiations + 100ms. A single letter grade will be deducted for every 100ms beyond the target.</p>
+</blockquote>
+
+<p><a href="/media/content/BlogPost/images/blog_opt2/TTFB.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/TTFB.png" alt="" style="max-width:100%;"></a><br>
+这一项没有达标的原因大概是后端现在什么缓存都没开。其实原来是有用 Memcached 缓存全站，但是不够令人满意。
+因为我在发布文章之后的一段时间可能会编辑文章，而加缓存之后总是要很慢才能生效。目前还在寻求更好的方法。
+理想状况是最新的一篇文章永远不缓存，或者是更新文章之后让缓存失效。这些都需要更精细的代码层面的控制。</p>
+
+<p>这篇文章之后应该还会更新。</p>
