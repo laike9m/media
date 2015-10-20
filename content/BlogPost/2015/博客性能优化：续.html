@@ -105,3 +105,20 @@ HTTP/2 的 Multipexing 在这张图里体现得很明显，不会开多个连接
 理想状况是最新的一篇文章永远不缓存，或者是更新文章之后让缓存失效。这些都需要更精细的代码层面的控制。</p>
 
 <p>这篇文章之后应该还会更新。</p>
+
+<p>2015.10.20<br>
+<strong>添加 OCSP Stapling</strong><br>
+引用 <a href="https://imququ.com/post/my-nginx-conf-for-wpo.html">JerryQu 的说法</a></p>
+
+<blockquote>
+<p>浏览器可能会在建立 TLS 连接时在线验证证书有效性，从而阻塞 TLS 握手，拖慢整体速度。OCSP stapling 是一种优化措施，服务端通过它可以在证书链中封装证书颁发机构的 OCSP（Online Certificate Status Protocol）响应，从而让浏览器跳过在线查询。服务端获取 OCSP 一方面更快（因为服务端一般有更好的网络环境），另一方面可以更好地缓存。</p>
+</blockquote>
+
+<p>在 <code>nginx.conf</code> 添加上这三行就可以了：</p>
+
+<pre><code>ssl_stapling on;
+ssl_stapling_verify on;
+ssl_trusted_certificate /home/laike9m/files/laike9m_com/laike9m_com.chain.crt;
+</code></pre>
+
+<p><code>ssl_trusted_certificate</code> 所需要的 pem 文件其实就是 chained crt（问了 gogetssl 员工得知）。</p>
