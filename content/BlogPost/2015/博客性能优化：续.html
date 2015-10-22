@@ -78,8 +78,14 @@ Nginx 在正则匹配的时候是 sequential 的，即放在前面的会先匹�
 <p>To use HTTP/2, you need to make sure cipher ECDHE-RSA-AES128-GCM-SHA256 is the first one in your cipher configuration.</p>
 </blockquote>
 
-<p>总之随便复制了一个以 <code>ECDHE-RSA-AES128-GCM-SHA256</code> 为起始的 <code>ssl_ciphers</code> 之后，网站就可以工作了。<br>
-效果<br>
+<p>首先按第一篇文章说的生成一个新的 "Diffie-Hellman group"，作为 <code>ssl_dhparam</code> 的值。</p>
+
+<pre><code>openssl dhparam -out dhparams.pem 2048
+</code></pre>
+
+<p>然后复制了一个以 <code>ECDHE-RSA-AES128-GCM-SHA256</code> 为起始的值作为 <code>ssl_ciphers</code>，网站就可以工作了。    </p>
+
+<p>效果<br>
 <a href="/media/content/BlogPost/images/blog_opt2/waterfall3.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/waterfall3.png" alt="" style="max-width:100%;"></a><br>
 HTTP/2 的 Multipexing 在这张图里体现得很明显，不会开多个连接去下载静态资源了。然而速度上似乎并没有提升。</p>
 
