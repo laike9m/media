@@ -1,11 +1,9 @@
-**Looking for fulltime job, see my [résumé](http://www.laike9m.com/media/files/pdf/resume_Yao Zuo.pdf) or [简历](http://www.laike9m.com/media/files/pdf/简历_左遥_中科院计算所.pdf).**
-
-I'm **Yao Zuo**. [laike9m][laike9m] is the ID I use on Internet. I'm from [Beijing, China][Beijing].  
+I'm **Zuo Yao**. [laike9m][laike9m] is the ID I use on Internet. I'm from [Beijing, China][Beijing].  
 I do a lot of different things.
 
 If you want to get in touch with me you can [email
 me](mailto:laike9m@gmail.com) or find me on [GitHub][], [Twitter][], [Facebook][]
-[Renren][], [Stackoverflow][SO] or [G+][].
+[Renren][], [Stackoverflow][SO], [G+][] and [zhihu][].
 
 [laike9m]: https://www.google.com/#newwindow=1&q=laike9m
 [Beijing]: http://en.wikipedia.org/wiki/Beijing
@@ -15,6 +13,7 @@ me](mailto:laike9m@gmail.com) or find me on [GitHub][], [Twitter][], [Facebook][
 [Renren]: http://www.renren.com/282456584
 [SO]: http://stackoverflow.com/users/2142577/laike9m
 [G+]: https://plus.google.com/+Yaolaike9mZuo/posts
+[zhihu]: http://www.zhihu.com/people/laike9m
 
 Programming
 -----------

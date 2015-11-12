@@ -128,3 +128,47 @@ ssl_trusted_certificate /home/laike9m/files/laike9m_com/laike9m_com.chain.crt;
 </code></pre>
 
 <p><code>ssl_trusted_certificate</code> 所需要的 pem 文件其实就是 chained crt（问了 gogetssl 员工得知）。</p>
+
+<p>2015.10.30<br>
+<strong>启用 Session Ticket</strong>  </p>
+
+<pre><code>ssl_session_tickets  on;
+</code></pre>
+
+<p>Session Ticket 和 Session Cache 一样，也是简化 TLS 握手的方案。我不是很清楚在服务器都支持的情况下浏览器会选择哪一种。</p>
+
+<p><strong>修改 <code>ssl_buffer_size</code></strong><br>
+关于 <code>ssl_buffer_size</code>，<a href="http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_buffer_size">Nginx 文档</a>是这么解释的：</p>
+
+<blockquote>
+<p>Sets the size of the buffer used for sending data.</p>
+
+<p>By default, the buffer size is 16k, which corresponds to minimal overhead when sending big responses. To minimize Time To First Byte it may be beneficial to use smaller values, for example:</p>
+
+<p>ssl_buffer_size 4k;</p>
+</blockquote>
+
+<p>然而到底设成多少比较好，网上找不到相关的说明/测试。在 <a href="https://github.com/igrigorik/istlsfastyet.com/blob/master/nginx/nginx.conf#L15">Is TLS fast yet</a> 里 Ilya Grigorik 把这个值设成了 1400：</p>
+
+<blockquote>
+<p>ssl_buffer_size 1400;              # 1400 bytes to fit in one MTU</p>
+</blockquote>
+
+<p>然后我也学着设成了 1400。不严谨的测试结果表明，TTFB 确实减小了，但是总的 download time 增大了一点。</p>
+
+<p><strong>开启 <code>tcp_nopush</code> + <code>tcp_nodelay</code> + <code>sendfile</code></strong>  </p>
+
+<pre><code>sendfile            on;
+tcp_nopush      on;
+tcp_nodelay     on;
+</code></pre>
+
+<p><a href="https://t37.net/nginx-optimization-understanding-sendfile-tcp_nodelay-and-tcp_nopush.html">这篇文章</a>详细讲了为什么要这么配置。简单来说就是 <code>sendfile on</code> 启用了 <code>sendfile(2)</code> 这个系统调用，相比 <code>read()</code>/<code>write()</code> 有诸多优点；<code>tcp_nopush</code> 和 <code>tcp_nodelay</code> 结合起来保证充分利用 MTU 的同时还能尽快地把数据包发出去而不等 0.2s。</p>
+
+<p>2015.11.1<br>
+<strong>压缩 png/jpg</strong><br>
+神器 <a href="https://tinypng.com/">tinypng.com</a>。</p>
+
+<p><strong>减小 favicon.ico 的大小</strong><br>
+原来的 favicon.ico 竟然有 30KB。上网一查才知道，ico 其实就是多层未压缩的 bmp。本来想用 Photoshop 编辑，但是居然打不开。安了一个插件之后能打开了，然而编辑功能简直糟糕，多图层都没法显示。好在找到一枚神器 <a href="http://icofx.ro/">IcoFX</a>，花钱买了正版。<br>
+按照<a href="https://zoompf.com/blog/2012/04/instagram-and-optimizing-favicons">这篇文章</a>讲的，删掉了 64*64，24 * 24 两个图层。保留 32 * 32 是因为 Disqus 的站点缩略图可能要用。颜色也没有换成 4bit，仍然保留 8bit 256 色，毕竟已经减到 3KB 了。  </p>
