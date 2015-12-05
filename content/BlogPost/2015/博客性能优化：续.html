@@ -172,3 +172,25 @@ tcp_nodelay     on;
 <p><strong>减小 favicon.ico 的大小</strong><br>
 原来的 favicon.ico 竟然有 30KB。上网一查才知道，ico 其实就是多层未压缩的 bmp。本来想用 Photoshop 编辑，但是居然打不开。安了一个插件之后能打开了，然而编辑功能简直糟糕，多图层都没法显示。好在找到一枚神器 <a href="http://icofx.ro/">IcoFX</a>，花钱买了正版。<br>
 按照<a href="https://zoompf.com/blog/2012/04/instagram-and-optimizing-favicons">这篇文章</a>讲的，删掉了 64*64，24 * 24 两个图层。保留 32 * 32 是因为 Disqus 的站点缩略图可能要用。颜色也没有换成 4bit，仍然保留 8bit 256 色，毕竟已经减到 3KB 了。  </p>
+
+<p>2015.12.5<br>
+参照 <a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#sendfile">sendfile</a> 官方文档加上了 <code>aio on</code>：  </p>
+
+<blockquote>
+<p>aio can be used to pre-load data for sendfile()</p>
+</blockquote>
+
+<p>然后我无意之中发现，<code>sendfile on</code> 和 <code>gzip on</code> 无法同时起作用，来自官方的<a href="https://www.nginx.com/blog/tuning-nginx/">《Tuning NGINX for Performance》</a> 一文：  </p>
+
+<blockquote>
+<p>Note, however, that because data copied with sendfile() bypasses user space, it is not subject to the regular NGINX processing chain and filters that change content, such as gzip. When a configuration context includes both the sendfile directive and directives that activate a content-changing filter, NGINX automatically disables sendfile for that context.</p>
+</blockquote>
+
+<p>因为 <code>sendfile on</code> 使用的是系统调用 <code>sendfile(2)</code>，实现了 zero-copy，文件内根本就不会被拷贝到用户态（“bypasses user space”），因此 Nginx 无法进行压缩处理。</p>
+
+<p>上网查了一下，唯一既能利用 zero-copy 又能利用 gzip 压缩的方案是启用 <a href="http://nginx.org/en/docs/http/ngx_http_gzip_static_module.html"><code>gzip_static</code></a>。这个功能并非开箱即用，而是要求使用者先把文件压缩好，这样 Nginx 才能找到，如果没找到，就 fall back 回普通的 gzip。因为比较麻烦，这次先不弄了。计划是添加一个 Django command 实现原来指定 gzip 压缩的那些格式的文件。几个可能有用的链接：<br>
+<a href="http://stackoverflow.com/questions/15793847/nginx-gzip-per-request-vs-static-gzip">Gzip per request vs static gzip</a>  比较两种 gzip 方式<br>
+<a href="http://wiki.linuxwall.info/doku.php/en:ressources:dossiers:nginx:nginx_performance_tuning#gzip_static_on">Nginx Performance Tuning</a> 对于 gzip_static 讲得比官方文档清楚<br>
+<a href="http://inosin.iteye.com/blog/1299705">Nginx中gzip_static模块的使用</a> 使用 gzip_static 的一些注意事项  </p>
+
+<p>还有把 <code>gzip_comp_level</code> 从 6 改成了 9，提高压缩的程度，代价是更消耗 CPU，不过感觉 CPU 用的不多，所以无所谓。</p>
