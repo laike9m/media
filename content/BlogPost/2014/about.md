@@ -1,16 +1,11 @@
-I'm **Zuo Yao**. [laike9m][laike9m] is the ID I use on Internet. I'm from [Beijing, China][Beijing].  
-I do a lot of different things.
+Hi, I'm laike9m. I do a lot of different things.
 
 If you want to get in touch with me you can [email
-me](mailto:laike9m@gmail.com) or find me on [GitHub][], [Twitter][], [Facebook][]
-[Renren][], [Stackoverflow][SO], [G+][] and [zhihu][].
+me](mailto:laike9m@gmail.com) or find me on [GitHub][], [Twitter][], [Stackoverflow][SO], [G+][] and [zhihu][].
 
 [laike9m]: https://www.google.com/#newwindow=1&q=laike9m
-[Beijing]: http://en.wikipedia.org/wiki/Beijing
 [GitHub]: http://github.com/laike9m
 [Twitter]: https://twitter.com/laike9m
-[Facebook]: https://www.facebook.com/profile.php?id=100006759452835
-[Renren]: http://www.renren.com/282456584
 [SO]: http://stackoverflow.com/users/2142577/laike9m
 [G+]: https://plus.google.com/+Yaolaike9mZuo/posts
 [zhihu]: http://www.zhihu.com/people/laike9m
@@ -18,7 +13,6 @@ me](mailto:laike9m@gmail.com) or find me on [GitHub][], [Twitter][], [Facebook][
 Programming
 -----------
 
-I went to [Tsinghua University][THU] for a degree in Electronic Engineering.
 I'm a graduate student of [Institute of Computing Technology][ICT].
 
 I didn't really start programming before I became a Junior student. Since then, I've done a lot of different things, most of which are tools for my personal use, but you may find some useful too.  Right now the things
@@ -30,7 +24,6 @@ You can take a look at my [projects][PRO] to see some of the major stuff I've
 worked on, or cut to the chase and look at my [Github account][Github].
 
 [projects]: /projects/
-[THU]: http://www.tsinghua.edu.cn/publish/then/
 [ICT]: http://www.ict.ac.cn/
 [PRO]: /blog/projects
 [FBT]: http://friendsbt.com/
