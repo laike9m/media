@@ -24,9 +24,9 @@ class Child(Parent):<br>
 忘记了这件事之后，再去看这篇文章：<a href="https://rhettinger.wordpress.com/2011/05/26/super-considered-super/">Python’s super() considered super!</a>
 这是 Raymond Hettinger 写的一篇文章，也是全世界公认的对 <code>super</code> 讲解最透彻的一篇文章，凡是讨论 super 都一定会提到它（当然还有一篇 Python's Super Considered Harmful）。</p>
 
-<p>如果不想看长篇大论就去看这个答案，<code>super</code> 其实干的是这件事：</p>
+<p>如果不想看长篇大论就去看<a href="http://stackoverflow.com/questions/15896265/python-super-inheritance-and-arguments-needed/15896594#15896594">这个答案</a>，<code>super</code> 其实干的是这件事：</p>
 
-<div class="highlight highlight-python"><pre><span class="pl-k">def</span> <span class="pl-en">super</span>(<span class="pl-smi">cls</span>, <span class="pl-smi">inst</span>):
+<div class="highlight highlight-source-python"><pre><span class="pl-k">def</span> <span class="pl-en">super</span>(<span class="pl-smi">cls</span>, <span class="pl-smi">inst</span>):
     mro <span class="pl-k">=</span> inst.<span class="pl-c1">__class__</span>.mro()
     <span class="pl-k">return</span> mro[mro.index(<span class="pl-v">cls</span>) <span class="pl-k">+</span> <span class="pl-c1">1</span>]</pre></div>
 
@@ -38,7 +38,7 @@ MRO 全称 Method Resolution Order，它代表了类继承的顺序。后面详�
 
 <p>举个例子</p>
 
-<div class="highlight highlight-python"><pre><span class="pl-k">class</span> <span class="pl-en">Root</span>(<span class="pl-e"><span class="pl-c1">object</span></span>):
+<div class="highlight highlight-source-python"><pre><span class="pl-k">class</span> <span class="pl-en">Root</span>(<span class="pl-e"><span class="pl-c1">object</span></span>):
     <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__init__</span></span>(<span class="pl-smi">self</span>):
         <span class="pl-k">print</span>(<span class="pl-s"><span class="pl-pds">"</span>this is Root<span class="pl-pds">"</span></span>)
 

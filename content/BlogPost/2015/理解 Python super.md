@@ -21,7 +21,7 @@ class Child(Parent):
 忘记了这件事之后，再去看这篇文章：[Python’s super() considered super!][2]
 这是 Raymond Hettinger 写的一篇文章，也是全世界公认的对 `super` 讲解最透彻的一篇文章，凡是讨论 super 都一定会提到它（当然还有一篇 Python's Super Considered Harmful）。
 
-如果不想看长篇大论就去看这个答案，`super` 其实干的是这件事：
+如果不想看长篇大论就去看[这个答案][an]，`super` 其实干的是这件事：
 ```python
 def super(cls, inst):
     mro = inst.__class__.mro()
@@ -92,3 +92,4 @@ super(B, self).__init__()
 
 [1]: http://www.zhihu.com/question/20040039/answer/57883315
 [2]: https://rhettinger.wordpress.com/2011/05/26/super-considered-super/
+[an]: http://stackoverflow.com/questions/15896265/python-super-inheritance-and-arguments-needed/15896594#15896594
