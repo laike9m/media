@@ -1,0 +1,76 @@
+<p>Requests 本身不提供代理池，然而爬数据又要用，所以只能自己搞。其实还挺简单的。我也不知道为什么这么有用的 feature 一直没有被加入。</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> requests
+
+
+<span class="pl-k">class</span> <span class="pl-en">Client</span>:
+
+    <span class="pl-k">def</span> <span class="pl-c1">__init__</span>(<span class="pl-smi"><span class="pl-smi">self</span></span>):
+        <span class="pl-v">self</span>._session <span class="pl-k">=</span> requests.Session()
+        <span class="pl-v">self</span>.proxies <span class="pl-k">=</span> <span class="pl-c1">None</span>
+
+    <span class="pl-k">def</span> <span class="pl-en">set_proxy_pool</span>(<span class="pl-smi"><span class="pl-smi">self</span></span>, <span class="pl-smi">proxies</span>, <span class="pl-smi">auth</span><span class="pl-k">=</span><span class="pl-c1">None</span>, <span class="pl-smi">https</span><span class="pl-k">=</span><span class="pl-c1">True</span>):
+        <span class="pl-s"><span class="pl-pds">"""</span>Randomly choose a proxy for every GET/POST request        </span>
+<span class="pl-s">        :param proxies: list of proxies, like ["ip1:port1", "ip2:port2"]</span>
+<span class="pl-s">        :param auth: if proxy needs auth</span>
+<span class="pl-s">        :param https: default is True, pass False if you don't need https proxy</span>
+<span class="pl-s">        <span class="pl-pds">"""</span></span>
+        <span class="pl-k">from</span> random <span class="pl-k">import</span> choice
+
+        <span class="pl-k">if</span> https:
+            <span class="pl-v">self</span>.proxies <span class="pl-k">=</span> [{<span class="pl-s"><span class="pl-pds">'</span>http<span class="pl-pds">'</span></span>: p, <span class="pl-s"><span class="pl-pds">'</span>https<span class="pl-pds">'</span></span>: p} <span class="pl-k">for</span> p <span class="pl-k">in</span> proxies]
+        <span class="pl-k">else</span>:
+            <span class="pl-v">self</span>.proxies <span class="pl-k">=</span> [{<span class="pl-s"><span class="pl-pds">'</span>http<span class="pl-pds">'</span></span>: p} <span class="pl-k">for</span> p <span class="pl-k">in</span> proxies]
+
+        <span class="pl-k">def</span> <span class="pl-en">get_with_random_proxy</span>(<span class="pl-smi">url</span>, <span class="pl-k">**</span><span class="pl-smi">kwargs</span>):
+            proxy <span class="pl-k">=</span> choice(<span class="pl-v">self</span>.proxies)
+            kwargs[<span class="pl-s"><span class="pl-pds">'</span>proxies<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> proxy
+            <span class="pl-k">if</span> auth:
+                kwargs[<span class="pl-s"><span class="pl-pds">'</span>auth<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> auth
+            <span class="pl-k">return</span> <span class="pl-v">self</span>._session.original_get(url, <span class="pl-k">**</span>kwargs)
+
+        <span class="pl-k">def</span> <span class="pl-en">post_with_random_proxy</span>(<span class="pl-smi">url</span>, <span class="pl-k">*</span><span class="pl-smi">args</span>, <span class="pl-k">**</span><span class="pl-smi">kwargs</span>):
+            proxy <span class="pl-k">=</span> choice(<span class="pl-v">self</span>.proxies)
+            kwargs[<span class="pl-s"><span class="pl-pds">'</span>proxies<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> proxy
+            <span class="pl-k">if</span> auth:
+                kwargs[<span class="pl-s"><span class="pl-pds">'</span>auth<span class="pl-pds">'</span></span>] <span class="pl-k">=</span> auth
+            <span class="pl-k">return</span> <span class="pl-v">self</span>._session.original_post(url, <span class="pl-k">*</span>args, <span class="pl-k">**</span>kwargs)
+
+        <span class="pl-v">self</span>._session.original_get <span class="pl-k">=</span> <span class="pl-v">self</span>._session.get
+        <span class="pl-v">self</span>._session.get <span class="pl-k">=</span> get_with_random_proxy
+        <span class="pl-v">self</span>._session.original_post <span class="pl-k">=</span> <span class="pl-v">self</span>._session.post
+        <span class="pl-v">self</span>._session.post <span class="pl-k">=</span> post_with_random_proxy
+
+    <span class="pl-k">def</span> <span class="pl-en">remove_proxy_pool</span>(<span class="pl-smi"><span class="pl-smi">self</span></span>):
+        <span class="pl-v">self</span>.proxies <span class="pl-k">=</span> <span class="pl-c1">None</span>
+        <span class="pl-v">self</span>._session.get <span class="pl-k">=</span> <span class="pl-v">self</span>._session.original_get
+        <span class="pl-v">self</span>._session.post <span class="pl-k">=</span> <span class="pl-v">self</span>._session.original_post
+        <span class="pl-k">del</span> <span class="pl-v">self</span>._session.original_get
+        <span class="pl-k">del</span> <span class="pl-v">self</span>._session.original_post
+
+    <span class="pl-c"># You can define whatever operations using self._session</span></pre></div>
+
+<p>替换掉 <code>Session</code> 原本的 <code>get</code> 和 <code>post</code> 方法就行了，不会有什么副作用。<code>class Client</code> 并不必需，直接操作 <code>Session</code> 是一样的。  </p>
+
+<p>可以用 <a href="https://httpbin.org/">httpbin</a> 来做验证</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">def</span> <span class="pl-en">test_proxy</span>():
+    <span class="pl-c"># visit http://cn-proxy.com/ to get available proxies if test failed</span>
+    proxy_ips <span class="pl-k">=</span> [<span class="pl-s"><span class="pl-pds">'</span>112.25.41.136<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>180.97.29.57<span class="pl-pds">'</span></span>]
+    client <span class="pl-k">=</span> Client()
+    client.set_proxy_pool(proxy_ips)
+    <span class="pl-k">for</span> _ <span class="pl-k">in</span> <span class="pl-c1">range</span>(<span class="pl-c1">5</span>):
+        result <span class="pl-k">=</span> client._session.get(<span class="pl-s"><span class="pl-pds">'</span>http://httpbin.org/ip<span class="pl-pds">'</span></span>).json()
+        <span class="pl-k">assert</span> result[<span class="pl-s"><span class="pl-pds">'</span>origin<span class="pl-pds">'</span></span>] <span class="pl-k">in</span> proxy_ips
+        result <span class="pl-k">=</span> client._session.post(<span class="pl-s"><span class="pl-pds">'</span>http://httpbin.org/post<span class="pl-pds">'</span></span>,
+                                      <span class="pl-v">data</span><span class="pl-k">=</span>{<span class="pl-s"><span class="pl-pds">'</span>m<span class="pl-pds">'</span></span>:<span class="pl-s"><span class="pl-pds">'</span>1<span class="pl-pds">'</span></span>}).json()
+        <span class="pl-k">assert</span> result[<span class="pl-s"><span class="pl-pds">'</span>form<span class="pl-pds">'</span></span>] <span class="pl-k">==</span> {<span class="pl-s"><span class="pl-pds">'</span>m<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>1<span class="pl-pds">'</span></span>}
+        <span class="pl-c1">print</span>(result[<span class="pl-s"><span class="pl-pds">'</span>origin<span class="pl-pds">'</span></span>])
+        <span class="pl-k">assert</span> result[<span class="pl-s"><span class="pl-pds">'</span>origin<span class="pl-pds">'</span></span>] <span class="pl-k">in</span> proxy_ips
+
+    client.remove_proxy_pool()
+    client.set_proxy_pool(proxy_ips, <span class="pl-v">https</span><span class="pl-k">=</span><span class="pl-c1">False</span>)
+    <span class="pl-k">for</span> _ <span class="pl-k">in</span> <span class="pl-c1">range</span>(<span class="pl-c1">5</span>):
+        result <span class="pl-k">=</span> client._session.get(<span class="pl-s"><span class="pl-pds">'</span>http://httpbin.org/ip<span class="pl-pds">'</span></span>).json()
+        <span class="pl-c1">print</span>(result[<span class="pl-s"><span class="pl-pds">'</span>origin<span class="pl-pds">'</span></span>])
+        <span class="pl-k">assert</span> result[<span class="pl-s"><span class="pl-pds">'</span>origin<span class="pl-pds">'</span></span>] <span class="pl-k">in</span> proxy_ips</pre></div>

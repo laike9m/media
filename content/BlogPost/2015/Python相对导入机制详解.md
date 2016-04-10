@@ -53,14 +53,14 @@ Edit: The imports were done from the console.
 
 一个特例是直接运行 python REPL，这个 REPL 的 session 的名字是 `__main__`。
 
-关于你遇到的错误信息，关键点来了：** 如果一个 module 的名字中没有点（即 package.subpackage1 中的那个点，译者注），那么它就被认为不属于任何一个 package**。文件在磁盘上的位置在哪里都不影响，唯一起决定作用的就是 * module 的名字 *，而这又取决于它是如何被加载的。
+关于你遇到的错误信息，关键点来了：**如果一个 module 的名字中没有点（即 package.subpackage1 中的那个点，译者注），那么它就被认为不属于任何一个 package**。文件在磁盘上的位置在哪里都不影响，唯一起决定作用的就是 **module 的名字**，而这又取决于它是如何被加载的。
 
 先在我们看看你在问题中引用的这段话
 > Relative imports use a module's name attribute to determine that module's position in the package hierarchy. If the module's name does not contain any package information (e.g. it is set to'main') then relative imports are resolved as if the module were a top level module, regardless of where the module is actually located on the file system.  
 
 relative import 使用 module 的名字来决定它是否属于一个 package，属于哪个 package。当你使用这种 relative import `from .. import foo`，其中的点的数量代表了 package 结构中的某个层次。例如，如果当前 module 的名字是 `package.subpackage1.moduleX`，那么 `..moduleA` 代表 `package.moduleA`。为了让形如 `from .. import` 的这种导入能够正常工作，module 的名字里的点数量应当至少和 import 语句中一样多。
 
-前面说了，如果 module 的名字是 `__main__`，那么 Python 就不认为它属于某个 package。** 由于名字里不包含点，所以在这个 py 文件中 `from .. import` 语句无法正常工作 **。试图执行这条语句就会报 "relative-import in non-package" 错误。
+前面说了，如果 module 的名字是 `__main__`，那么 Python 就不认为它属于某个 package。**由于名字里不包含点，所以在这个 py 文件中 `from .. import` 语句无法正常工作**。试图执行这条语句就会报 "relative-import in non-package" 错误。
 
 你犯的错误可能是从命令行运行 `moduleX` 或类似的操作。当你执行这个操作，moduleX 的名字被设置成 `__main__`，所以 relative imports 失败了，因为不包含 package 信息。正如前面说的，如果在同一个路径里 import 一个文件，这时 module 的名字就是文件名，不包含 package 信息，所以相对导入也会失败。
 
