@@ -1,0 +1,15 @@
+<p><a href="https://github.com/laike9m/zhihu-card">zhihu-card</a> 是我最近写的一个东西。受 <a href="https://github.com/lepture/github-cards">github-cards</a> 启发，既然知乎的影响越来越大，张兆杰们都把知乎的赞数粉丝数作为体现自身价值的筹码，为什么程序员们不能在自己的网站上展现知乎账户呢？于是就有了这么一个东西。</p>
+
+<p>现在只要在页面中插入两行代码，填入你的 <code>user_hash</code> ，就能显示类似本站右侧的卡片。</p>
+
+<div class="highlight highlight-source-js"><pre><span class="pl-k">&lt;</span>div <span class="pl-k">class</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>zhihu-card<span class="pl-pds">"</span></span> data<span class="pl-k">-</span>userhash<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>your hash<span class="pl-pds">"</span></span><span class="pl-k">&gt;&lt;</span><span class="pl-k">/</span>div<span class="pl-k">&gt;</span>
+<span class="pl-k">&lt;</span>script src<span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">"</span>//cdn.jsdelivr.net/zhihu-card/latest/widget.js<span class="pl-pds">"</span></span><span class="pl-k">&gt;&lt;</span><span class="pl-k">/</span>script<span class="pl-k">&gt;</span></pre></div>
+
+<p>如果你有兴趣一起来改进，欢迎给项目提 issue 和 pr。</p>
+
+<h2>
+<a id="user-content-实现" class="anchor" href="#%E5%AE%9E%E7%8E%B0" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>实现</h2>
+
+<p>鉴于之前有人问过实现原理，这里简单说一下。显然，如果直接去拿知乎的信息会遇到跨域问题，知乎不允许我们这么干。唯一的解决方法就是用一个 server 去获取用户信息，然后 zhihu-card 去访问 server。server 是拿 Go 写的，目前不开源，因为之后打算大改。</p>
+
+<p>Enjoy.</p>
