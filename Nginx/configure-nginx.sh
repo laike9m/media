@@ -22,4 +22,5 @@
 --with-mail_ssl_module \
 --with-pcre \
 --with-debug \
---with-http_v2_module
+--with-http_v2_module \
+--with-openssl=/home/laike9m/downloads/openssl-1.0.2h
