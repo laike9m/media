@@ -18,9 +18,9 @@
         <span class="pl-k">from</span> random <span class="pl-k">import</span> choice
 
         <span class="pl-k">if</span> https:
-            <span class="pl-v">self</span>.proxies <span class="pl-k">=</span> [{<span class="pl-s"><span class="pl-pds">'</span>http<span class="pl-pds">'</span></span>: p, <span class="pl-s"><span class="pl-pds">'</span>https<span class="pl-pds">'</span></span>: p} <span class="pl-k">for</span> p <span class="pl-k">in</span> proxies]
+            <span class="pl-v">self</span>.proxies <span class="pl-k">=</span> [{<span class="pl-s"><span class="pl-pds">'</span>http<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>http://<span class="pl-pds">'</span></span> <span class="pl-k">+</span> p, <span class="pl-s"><span class="pl-pds">'</span>https<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>https://<span class="pl-pds">'</span></span> <span class="pl-k">+</span> p} <span class="pl-k">for</span> p <span class="pl-k">in</span> proxies]
         <span class="pl-k">else</span>:
-            <span class="pl-v">self</span>.proxies <span class="pl-k">=</span> [{<span class="pl-s"><span class="pl-pds">'</span>http<span class="pl-pds">'</span></span>: p} <span class="pl-k">for</span> p <span class="pl-k">in</span> proxies]
+            <span class="pl-v">self</span>.proxies <span class="pl-k">=</span> [{<span class="pl-s"><span class="pl-pds">'</span>http<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>http://<span class="pl-pds">'</span></span> <span class="pl-k">+</span> p} <span class="pl-k">for</span> p <span class="pl-k">in</span> proxies]
 
         <span class="pl-k">def</span> <span class="pl-en">get_with_random_proxy</span>(<span class="pl-smi">url</span>, <span class="pl-k">**</span><span class="pl-smi">kwargs</span>):
             proxy <span class="pl-k">=</span> choice(<span class="pl-v">self</span>.proxies)

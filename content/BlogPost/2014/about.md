@@ -3,7 +3,6 @@ Hi, I'm laike9m. I do a lot of different things.
 If you want to get in touch with me you can [email
 me](mailto:laike9m@gmail.com) or find me on [GitHub][], [Twitter][], [Stackoverflow][SO], [G+][] and [zhihu][].
 
-[laike9m]: https://www.google.com/#newwindow=1&q=laike9m
 [GitHub]: http://github.com/laike9m
 [Twitter]: https://twitter.com/laike9m
 [SO]: http://stackoverflow.com/users/2142577/laike9m
@@ -13,15 +12,9 @@ me](mailto:laike9m@gmail.com) or find me on [GitHub][], [Twitter][], [Stackoverf
 Programming
 -----------
 
-I'm a graduate student of [Institute of Computing Technology][ICT].
-
-I didn't really start programming before I became a Junior student. Since then, I've done a lot of different things, most of which are tools for my personal use, but you may find some useful too.  Right now the things
-that I'm working on is [FBT][].
+I didn't really start programming before I became a Junior student. Since then, I've done a lot of different things, most of which are tools for my personal use, but you may find some useful too.  You can take a look at my [projects][PRO] to see some of the major stuff I've worked on, or look at my [Github account][Github].
 
 Python is my favourite language, whose simplicity and powerfulness fascinates me. C++ is great, but writing C++ code is of less fun.
-
-You can take a look at my [projects][PRO] to see some of the major stuff I've
-worked on, or cut to the chase and look at my [Github account][Github].
 
 [projects]: /projects/
 [ICT]: http://www.ict.ac.cn/

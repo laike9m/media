@@ -19,9 +19,9 @@ class Client:
         from random import choice
 
         if https:
-            self.proxies = [{'http': p, 'https': p} for p in proxies]
+            self.proxies = [{'http': 'http://' + p, 'https': 'https://' + p} for p in proxies]
         else:
-            self.proxies = [{'http': p} for p in proxies]
+            self.proxies = [{'http': 'http://' + p} for p in proxies]
 
         def get_with_random_proxy(url, **kwargs):
             proxy = choice(self.proxies)
