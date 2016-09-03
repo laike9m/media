@@ -19,12 +19,14 @@
 <ol>
 <li>重启电脑</li>
 <li>在启动过程中按住 <code>cmd + r</code>，进入 Recover Mode</li>
-<li>选择 utilities &gt; terminal，输入命令
-<code>
-csrutil disable   
+<li>选择 utilities &gt; terminal，输入命令</li>
+</ol>
+
+<pre><code>csrutil disable   
 reboot
-</code>
-</li>
+</code></pre>
+
+<ol>
 <li>再次执行 <code>ln</code>，成功。</li>
 </ol>
 
@@ -55,7 +57,7 @@ Command "/usr/local/opt/python3/bin/python3.5 -c "import setuptools, tokenize;__
 <p>我不相信 greenlet 的代码有问题，遂怀疑是 clang 的问题。于是想用 gcc 来编译。尝试 <code>export CC=gcc</code> 未果，发现仍然在使用 clang，报同样的错。还是在 SO 上找到了<a href="http://stackoverflow.com/questions/19535422/os-x-10-9-gcc-links-to-clang">解释</a></p>
 
 <blockquote>
-<p>It has been this way for a long time already. The "GCC" that came with 10.8 was really GCC front-end with LLVM back-end.</p>
+  <p>It has been this way for a long time already. The "GCC" that came with 10.8 was really GCC front-end with LLVM back-end.</p>
 </blockquote>
 
 <p>解决方法是用 homebrew 安装 gcc，这样不会和系统的 gcc 冲突。</p>

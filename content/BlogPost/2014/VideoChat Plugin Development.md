@@ -59,7 +59,7 @@ if ( window.location.search != "" )  // has query string.
 else
     rand_num = Math.floor(Math.random()*900000+100000);
 $('#video').prop('src', "https://apprtc.appspot.com/?r=" + rand_num); 
-````	
+```
 
 ## some other things you should pay attention to
 
@@ -70,10 +70,10 @@ $('#video').prop('src', "https://apprtc.appspot.com/?r=" + rand_num);
 <img src="/media/content/BlogPost/images/alert.jpg" />  
 This is done by detecting the existense of that random number since it only exists in the videochat page.
 
-````javascript		
+```javascript		
 if (typeof rand_num != "undefined"){
     //add invite button click EventListener, see above code
 }
 else
     alert('do this on VideoChat page!');
-````
+```

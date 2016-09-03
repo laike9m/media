@@ -1,5 +1,5 @@
-<p><strong>4.18 更新</strong><br>
-目前 star 数已经达到 55 了，可喜可贺。<br>
+<p><strong>4.18 更新</strong> <br />
+目前 star 数已经达到 55 了，可喜可贺。 <br />
 主要是因为去 reddit 发了一个<a href="http://www.reddit.com/r/Python/comments/32tpl4/putting_all_configurations_in_settingspy_is_good/">帖子</a>。发之前是25个star。之前没有去 reddit 宣传主要是感觉 reddit 门槛太高，geek 比较多，怕被喷。发觉 newsletter 这条路行不通之后，也没别的办法了，reddit 算是不得已的选择。从回复来看，reddit 比我想象的还是要友善不少，是个不错的地方。</p>
 
 <p>这几个月断断续续地完成了一个名叫 ezcf 的库。可以直接 import <code>.py</code> 之外的文件格式，在我看来，还算有趣。所以原本的期望，是在 GitHub 超过 30 个 star，但现在看来，还是预期过高了。国内能宣传的地方差不多宣传了一遍，在 V2EX 发了帖之后，多少吸引了一些人，但是其他社区基本无效。然而真正让我没想到的是去 HackerNews 发帖居然连一个 star 都没增加。说实话，一个开源项目的好坏不取决于代码怎么样，知道的人多，用得人多就是好，这代表有人认同这个东西是有用的，而代码质量啊功能完善度啊都是可以逐渐改善的。没有人用的开源项目没有存在的价值。好在真正去看了项目的人，有几个对我说，“项目非常有趣”，这多少令人欣慰。</p>
@@ -8,17 +8,15 @@
 
 <p>我感觉 ezcf 没有达到预期认可度的最大问题是，大多人第一眼都不知道它到底在干嘛。如果是列出几个函数的用法，写上输入输出，大家都很明白，问题是 ezcf 并不是这样起作用的，或者说，没法让人第一眼就知道 <code>import ezcf</code> 这句话起了什么作用，以及和之后的 import 语句有什么关系。说实话，一两句话根本说不清楚这个问题。其次是有直接 import 配置文件需求的人并不多。总而言之，没有办法快速展现出项目的有趣之处，这就是问题。</p>
 
-<p>总之先放上地址<br>
-<a href="https://github.com/laike9m/ezcf">https://github.com/laike9m/ezcf</a><br>
+<p>总之先放上地址 <br />
+<a href="https://github.com/laike9m/ezcf">https://github.com/laike9m/ezcf</a> <br />
 如果不写这篇博客，感觉无法释怀啊。顺便把 README 也放上来好了。</p>
 
-<h1>
-<a id="user-content-ezcf" class="anchor" href="#ezcf" aria-hidden="true"><span class="octicon octicon-link"></span></a>ezcf</h1>
+<h1>ezcf</h1>
 
-<p><a href="https://travis-ci.org/laike9m/ezcf"><img src="https://camo.githubusercontent.com/70015f23bc056ba9654930eace123ad160487601/68747470733a2f2f7472617669732d63692e6f72672f6c61696b65396d2f657a63662e737667" alt="Build Status" data-canonical-src="https://travis-ci.org/laike9m/ezcf.svg" style="max-width:100%;"></a>
-<a href="https://pypi.python.org/pypi/ezcf/"><img src="https://camo.githubusercontent.com/44eba6656f73ee829d1456a39014c2a7d5c82c84/68747470733a2f2f70797069702e696e2f70795f76657273696f6e732f657a63662f62616467652e737667" alt="Supported Python versions" data-canonical-src="https://pypip.in/py_versions/ezcf/badge.svg" style="max-width:100%;"></a>
-<a href="http://badge.fury.io/py/ezcf"><img src="https://camo.githubusercontent.com/275a59fb9f27e9ddc72e334d6281a750a84a5622/68747470733a2f2f62616467652e667572792e696f2f70792f657a63662e737667" alt="PyPI version" data-canonical-src="https://badge.fury.io/py/ezcf.svg" style="max-width:100%;"></a>
-<a href="https://coveralls.io/r/laike9m/ezcf"><img src="https://camo.githubusercontent.com/8cfe8791b2b863a3274b83784b42f825d2cb9e2e/68747470733a2f2f636f766572616c6c732e696f2f7265706f732f6c61696b65396d2f657a63662f62616467652e737667" alt="Coverage Status" data-canonical-src="https://coveralls.io/repos/laike9m/ezcf/badge.svg" style="max-width:100%;"></a></p>
+<p><a href="https://travis-ci.org/laike9m/ezcf"><img src="https://travis-ci.org/laike9m/ezcf.svg" alt="Build Status" /></a>
+<a href="http://badge.fury.io/py/ezcf"><img src="https://badge.fury.io/py/ezcf.svg" alt="PyPI version" /></a>
+<a href="https://coveralls.io/r/laike9m/ezcf"><img src="https://coveralls.io/repos/laike9m/ezcf/badge.svg" alt="Coverage Status" /></a></p>
 
 <p>ezcf stands for <strong>easy configuration</strong>, it allows you to import JSON/YAML/INI/XML
 like .py files. It is useful whenever you need to read from these formats,
@@ -28,10 +26,9 @@ especially for reading configuration files.</p>
 
 <p>On the left is what you'll normally do, on the right is the ezcf way. Much more elegant isn't it?</p>
 
-<p><a href="https://github.com/laike9m/ezcf/raw/master/code_compare.png" target="_blank"><img src="https://github.com/laike9m/ezcf/raw/master/code_compare.png" alt="" style="max-width:100%;"></a></p>
+<p><img src="https://github.com/laike9m/ezcf/raw/master/code_compare.png" alt="" /></p>
 
-<h2>
-<a id="user-content-install" class="anchor" href="#install" aria-hidden="true"><span class="octicon octicon-link"></span></a>Install</h2>
+<h2>Install</h2>
 
 <pre><code>pip install ezcf
 </code></pre>
@@ -39,40 +36,39 @@ especially for reading configuration files.</p>
 <p>If you run into <code>error: yaml.h: No such file or directory</code>, don't worry,
 you can still use ezcf without any problem.</p>
 
-<h2>
-<a id="user-content-supported-file-types" class="anchor" href="#supported-file-types" aria-hidden="true"><span class="octicon octicon-link"></span></a>Supported File Types</h2>
+<h2>Supported File Types</h2>
 
 <p>ezcf supports <code>JSON</code>, <code>YAML</code>, <code>INI</code> and <code>XML</code> with extension <code>json</code>, <code>yaml</code>, <code>yml</code>, <code>ini</code>, <code>xml</code>.</p>
 
-<h2>
-<a id="user-content-sample-usage" class="anchor" href="#sample-usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Sample Usage</h2>
+<h2>Sample Usage</h2>
 
 <p>ezcf supports all kinds of valid import statements, here's an example:</p>
 
-<pre><code>├── subdir
+<div class="codehilite"><pre><span></span><code>├── subdir
 │   ├── __init__.py
 │   └── sample_yaml.yaml
 ├── test_normal.py
 └── sample_json.json
-</code></pre>
+</code></pre></div>
 
 <p>Various ways to use configurations in <code>sample_yaml.yaml</code> and <code>sample_json.json</code>:</p>
 
-<div class="highlight highlight-python"><pre><span class="pl-k">import</span> ezcf
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">ezcf</span>
 
-<span class="pl-k">from</span> subdir.sample_yaml <span class="pl-k">import</span> <span class="pl-k">*</span>
-<span class="pl-c"># or</span>
-<span class="pl-k">from</span> subdir.sample_yaml <span class="pl-k">import</span> something
-<span class="pl-c"># or</span>
-<span class="pl-k">import</span> subdir.sample_yaml <span class="pl-k">as</span> sy
-<span class="pl-k">print</span>(sy.something)
+<span class="kn">from</span> <span class="nn">subdir.sample_yaml</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="c1"># or</span>
+<span class="kn">from</span> <span class="nn">subdir.sample_yaml</span> <span class="kn">import</span> <span class="n">something</span>
+<span class="c1"># or</span>
+<span class="kn">import</span> <span class="nn">subdir.sample_yaml</span> <span class="kn">as</span> <span class="nn">sy</span>
+<span class="k">print</span><span class="p">(</span><span class="n">sy</span><span class="o">.</span><span class="n">something</span><span class="p">)</span>
 
-<span class="pl-k">from</span> sample_json <span class="pl-k">import</span> <span class="pl-k">*</span>
-<span class="pl-c"># or</span>
-<span class="pl-k">from</span> sample_json <span class="pl-k">import</span> something
-<span class="pl-c"># or</span>
-<span class="pl-k">import</span> sample_json <span class="pl-k">as</span> sj
-<span class="pl-k">print</span>(sj.something)</pre></div>
+<span class="kn">from</span> <span class="nn">sample_json</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="c1"># or</span>
+<span class="kn">from</span> <span class="nn">sample_json</span> <span class="kn">import</span> <span class="n">something</span>
+<span class="c1"># or</span>
+<span class="kn">import</span> <span class="nn">sample_json</span> <span class="kn">as</span> <span class="nn">sj</span>
+<span class="k">print</span><span class="p">(</span><span class="n">sj</span><span class="o">.</span><span class="n">something</span><span class="p">)</span>
+</code></pre></div>
 
 <p>You can assume they're just regular python files.(Currently ezcf only supports files with utf-8 encoding)</p>
 

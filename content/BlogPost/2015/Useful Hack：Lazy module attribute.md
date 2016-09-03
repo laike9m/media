@@ -89,7 +89,7 @@ sys.modules[__name__] = Wrapper(sys.modules[__name__])
 sys.modules[__name__] = Wrapper(sys.modules[__name__])
 ```
 
-**为什么 `sys.modules` 的 key 一定就是 __name__ 呢？**下面将追根溯源，证明这一点。
+**为什么 `sys.modules` 的 key 一定就是 `__name__` 呢？**下面将追根溯源，证明这一点。
 
 据 Brett Cannon 在《How Import Works》演讲的 [slide](https://speakerdeck.com/pyconslides/how-import-works-by-brett-cannon) 第 27 页对 `load_module` 函数的描述，`sys.modules` 所用的 key 是 `fullname`：
 
@@ -101,6 +101,7 @@ module.__name__ = spec.name
 ```
 
 那么这个 Spec 又是什么呢？它实际上是 [Python3.4 里才引入的一个类](https://docs.python.org/3/library/importlib.html#importlib.machinery.ModuleSpec)，官方的描述是 "A specification for a module's import-system-related state"。好，就差最后一步了！我又找到了[一句代码](https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap.py#L262)：
+
 ```python
 spec = spec_from_loader(fullname, self)
 ```

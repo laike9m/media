@@ -1,39 +1,36 @@
 <p>"daemon thread" 是一个困扰了我很久的概念。<a href="https://docs.python.org/3/library/threading.html#thread-objects">官方文档</a>是这么说的:</p>
 
 <blockquote>
-<p>A thread can be flagged as a “daemon thread”. The significance of this flag is that the entire Python program exits when only daemon threads are left. </p>
+  <p>A thread can be flagged as a “daemon thread”. The significance of this flag is that the entire Python program exits when only daemon threads are left. </p>
 </blockquote>
 
 <p>然而文档并没有解释这个概念是怎么来的。比如，为什么我在操作系统课上没听过呢？下面是一番搜索之后的结果。</p>
 
-<h1>
-<a id="user-content-历史" class="anchor" href="#%E5%8E%86%E5%8F%B2" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>历史</h1>
+<h1>历史</h1>
 
-<h2>
-<a id="user-content-daemon守护进程" class="anchor" href="#daemon%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Daemon(守护进程)</h2>
+<h2>Daemon(守护进程)</h2>
 
 <p>daemon，或者 daemon process，在计算机领域里一般指一种在后台执行的程序。<a href="https://community.oracle.com/thread/1547102">这里</a>有一个简单明了的解释：</p>
 
 <blockquote>
-<p>"Daemon (Daemon Process)" is a notion in UNIX denoting a process detached from any controlling terminal, typically waiting for some event to occur and to respond to in some way. Windows services are similar but I assume Bil et alia chose deliberately a different word for them. </p>
+  <p>"Daemon (Daemon Process)" is a notion in UNIX denoting a process detached from any controlling terminal, typically waiting for some event to occur and to respond to in some way. Windows services are similar but I assume Bil et alia chose deliberately a different word for them. </p>
 </blockquote>
 
 <p>常见的守护进程就是 Linux 里的那一堆 “xxxd” 程序。下文中为避免歧义，称这里的 daemon 为守护进程。</p>
 
 <p>顺便说一句，Python 有专门的 <a href="http://www.python.org/dev/peps/pep-3143">PEP</a> 和库(<a href="https://pypi.python.org/pypi/python-daemon/">python-daemon</a>）来实现守护进程。但这并非本文重点，而且我也不懂╮(╯_╰)╭</p>
 
-<h2>
-<a id="user-content-daemon-thread-和守护进程没什么卵关系" class="anchor" href="#daemon-thread-%E5%92%8C%E5%AE%88%E6%8A%A4%E8%BF%9B%E7%A8%8B%E6%B2%A1%E4%BB%80%E4%B9%88%E5%8D%B5%E5%85%B3%E7%B3%BB" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>daemon thread 和守护进程没什么卵关系</h2>
+<h2>daemon thread 和守护进程没什么卵关系</h2>
 
 <p>是的，他们主要的共同点就是都包含单词“daemon”。但非要说一点联系没有也是不对的。一般而言，被 flag 为 daemon 的线程需要长期在后台执行（比如发送心跳包、检查未读消息等），并且不需和用户直接交互，和守护进程类似。</p>
 
-<h2>
-<a id="user-content-python-中的-daemon-thread-来自-java" class="anchor" href="#python-%E4%B8%AD%E7%9A%84-daemon-thread-%E6%9D%A5%E8%87%AA-java" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Python 中的 daemon thread 来自 Java</h2>
+<h2>Python 中的 daemon thread 来自 Java</h2>
 
 <p>Google “daemon thread”，第一页全是 Java。我觉得很奇怪，于是找到了 <code>threading.py</code> 的<a href="https://github.com/python-git/python/commit/9ab4b7ee2daef59044647d43a6f43c19721de8cf">第一次 commit</a>，前两行赫然写着：</p>
 
-<div class="highlight highlight-source-python"><pre><span class="pl-c"># threading.py:</span>
-<span class="pl-c"># Proposed new threading module, emulating a subset of Java's threading model</span></pre></div>
+<pre><code># threading.py:
+# Proposed new threading module, emulating a subset of Java's threading model
+</code></pre>
 
 <p>当初看 <code>concurrent.futures</code> 源码的时候我还在想“直接照搬 Java 的 API 真的好么”，没想到 Guido 居然在 98 年就叛变革命了……</p>
 
@@ -42,41 +39,38 @@
 <p><a href="http://docs.oracle.com/javase/6/docs/api/java/lang/Thread.html">Java 文档</a>如是说：</p>
 
 <blockquote>
-<p>Every thread has a priority. Threads with higher priority are executed in preference to threads with lower priority. Each thread may or may not also be marked as a <strong>daemon</strong>. When code running in some thread creates a new Thread object, the new thread has its priority initially set equal to the priority of the creating thread, and is a <strong>daemon</strong> thread if and only if the creating thread is a <strong>daemon</strong>.  </p>
-
-<p>When a Java Virtual Machine starts up, there is usually a single non-daemon thread (which typically calls the method named main of some designated class). The Java Virtual Machine continues to execute threads until either of the following occurs:  </p>
-
-<ul>
-<li>The exit method of class Runtime has been called and the security manager has permitted the exit operation to take place.</li>
-<li>All threads that are not <strong>daemon</strong> threads have died, either by returning from the call to the run method or by throwing an exception that propagates beyond the run method.</li>
-</ul>
+  <p>Every thread has a priority. Threads with higher priority are executed in preference to threads with lower priority. Each thread may or may not also be marked as a <strong>daemon</strong>. When code running in some thread creates a new Thread object, the new thread has its priority initially set equal to the priority of the creating thread, and is a <strong>daemon</strong> thread if and only if the creating thread is a <strong>daemon</strong>.  </p>
+  
+  <p>When a Java Virtual Machine starts up, there is usually a single non-daemon thread (which typically calls the method named main of some designated class). The Java Virtual Machine continues to execute threads until either of the following occurs: <br />
+  * The exit method of class Runtime has been called and the security manager has permitted the exit operation to take place.
+  * All threads that are not <strong>daemon</strong> threads have died, either by returning from the call to the run method or by throwing an exception that propagates beyond the run method.</p>
 </blockquote>
 
 <p>嗯，基本一个意思。</p>
 
-<h1>
-<a id="user-content-应用" class="anchor" href="#%E5%BA%94%E7%94%A8" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>应用</h1>
+<h1>应用</h1>
 
 <p>Daemon thread 的特性很容易验证，不细说。</p>
 
-<div class="highlight highlight-source-python"><pre><span class="pl-k">import</span> threading
-<span class="pl-k">import</span> os
-<span class="pl-k">import</span> time
+<pre><code>import threading
+import os
+import time
 
-<span class="pl-k">def</span> <span class="pl-en">func</span>():
-    time.sleep(<span class="pl-c1">5</span>)
-    <span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>finish<span class="pl-pds">"</span></span>)
+def func():
+    time.sleep(5)
+    print("finish")
 
-threading.Thread(<span class="pl-v">target</span><span class="pl-k">=</span>func).start()
-threading.Thread(<span class="pl-v">target</span><span class="pl-k">=</span>func, <span class="pl-v">daemon</span><span class="pl-k">=</span><span class="pl-c1">True</span>).start()
-<span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>aaa<span class="pl-pds">"</span></span>)</pre></div>
+threading.Thread(target=func).start()
+threading.Thread(target=func, daemon=True).start()
+print("aaa")
+</code></pre>
 
 <p>更有意义的问题是，为什么 Java/Python 要引入 daemon thread，有什么用处？好在已经<a href="http://stackoverflow.com/a/190017/2142577">有人解释过了</a>：</p>
 
 <blockquote>
-<p>Some threads do background tasks, like sending keepalive packets, or performing periodic garbage collection, or whatever. These are only useful when the main program is running, and it's okay to kill them off once the other, non-daemon, threads have exited.  </p>
-
-<p>Without daemon threads, you'd have to keep track of them, and tell them to exit, before your program can completely quit. By setting them as daemon threads, you can let them run and forget about them, and when your program quits, any daemon threads are killed automatically.</p>
+  <p>Some threads do background tasks, like sending keepalive packets, or performing periodic garbage collection, or whatever. These are only useful when the main program is running, and it's okay to kill them off once the other, non-daemon, threads have exited.  </p>
+  
+  <p>Without daemon threads, you'd have to keep track of them, and tell them to exit, before your program can completely quit. By setting them as daemon threads, you can let them run and forget about them, and when your program quits, any daemon threads are killed automatically.</p>
 </blockquote>
 
 <p>简单来说就是，本来并没有 daemon thread，为了简化程序员的工作，让他们不用去记录和管理那些后台线程，创造了一个 daemon thread 的概念。这个概念唯一的作用就是，当你把一个线程设置为 daemon，它会随主线程的退出而退出。关键点有三个：</p>
@@ -89,56 +83,54 @@ threading.Thread(<span class="pl-v">target</span><span class="pl-k">=</span>func
 
 <p>被设置为 daemon 的线程应当满足这三条。第一点需要说一下，比如一个线程需要用 <code>join</code> 执行，那么 daemon 就没有意义了，因为程序总是需要等待它完成才能继续执行。</p>
 
-<h2>
-<a id="user-content-daemon-process" class="anchor" href="#daemon-process" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Daemon process</h2>
+<h2>Daemon process</h2>
 
 <p>前面说到 Python 里的 daemon 概念抄自 Java，但 Guido 并未止步于此，他把 daemon 的概念<a href="https://docs.python.org/3/library/multiprocessing.html#multiprocessing.Process.daemon">推广到了多进程</a>。当用 <code>multiprocessing</code> 创建新的进程时，也可以设置 daemon 属性。</p>
 
 <p>Python 中有很多创建新进程的方法，并非都可以设置为 daemon process。下面列举一些：</p>
 
-<p><code>multiprocessing.Process</code>：可以设置 daemon<br>
-<code>os.system</code>：不可设置 daemon，因为该命令会阻塞当前程序的执行，不满足“background task”<br>
-<code>subprocess.Popen</code>：不可设置 daemon，因为 <code>Popen</code> 打开的是外部程序，不满足“only useful when the main program is running”<br>
+<p><code>multiprocessing.Process</code>：可以设置 daemon <br />
+<code>os.system</code>：不可设置 daemon，因为该命令会阻塞当前程序的执行，不满足“background task” <br />
+<code>subprocess.Popen</code>：不可设置 daemon，因为 <code>Popen</code> 打开的是外部程序，不满足“only useful when the main program is running” <br />
 <code>concurrent.futures.ProcessPoolExecutor</code>：<a href="https://hg.python.org/cpython/file/3.5/Lib/concurrent/futures/process.py#l62">worker process 默认是 daemon</a></p>
 
-<h1>
-<a id="user-content-daemon-thread-的实现" class="anchor" href="#daemon-thread-%E7%9A%84%E5%AE%9E%E7%8E%B0" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Daemon thread 的实现</h1>
+<h1>Daemon thread 的实现</h1>
 
 <p>最后来看一下 daemon thread 的实现，其实很简单。使用最初始（第一次commit）的 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py"><code>threading.py</code></a> 来分析。</p>
 
-<p>首先看 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L457"><code>_MainThread</code></a> 这个类，它表示主线程，在 <code>import threading</code> 的时候会<a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L545">初始化一个实例</a>。<code>__init__</code> 函数里有<a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L469">这么一句</a>：</p>
+<p>首先看 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L457"><code>_MainThread</code></a> 这个类，它表示主线程，在 <code>import threading</code> 的时候会<a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L545">初始化一个实例</a>。<code>__init__</code> 函数里有<a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L469">这么一句</a>：
+<code>python
+_sys.exitfunc = self.__exitfunc
+</code>
+<code>_sys</code> 就是 <code>sys</code>，<code>sys.exitfunc</code> 已经被 <code>atexit</code> 替代，作用都是在程序退出的时候执行清理操作。那么 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L474-L489"><code>__exitfunc</code></a> 是什么呢？</p>
 
-<div class="highlight highlight-source-python"><pre>_sys.exitfunc <span class="pl-k">=</span> <span class="pl-v">self</span>.__exitfunc</pre></div>
-
-<p><code>_sys</code> 就是 <code>sys</code>，<code>sys.exitfunc</code> 已经被 <code>atexit</code> 替代，作用都是在程序退出的时候执行清理操作。那么 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L474-L489"><code>__exitfunc</code></a> 是什么呢？</p>
-
-<div class="highlight highlight-source-python"><pre><span class="pl-k">def</span> <span class="pl-en">__exitfunc</span>(<span class="pl-smi"><span class="pl-smi">self</span></span>):
-    <span class="pl-v">self</span>._Thread__stop()
-    t <span class="pl-k">=</span> _pickSomeNonDaemonThread()
-    <span class="pl-k">if</span> t:
-        <span class="pl-k">if</span> <span class="pl-c1">__debug__</span>:
-            <span class="pl-v">self</span>._note(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-c1">%s</span>: waiting for other threads<span class="pl-pds">"</span></span>, <span class="pl-v">self</span>)
-    <span class="pl-k">while</span> t:
+<pre><code>def __exitfunc(self):
+    self._Thread__stop()
+    t = _pickSomeNonDaemonThread()
+    if t:
+        if __debug__:
+            self._note("%s: waiting for other threads", self)
+    while t:
         t.join()
-        t <span class="pl-k">=</span> _pickSomeNonDaemonThread()
-    <span class="pl-k">if</span> <span class="pl-v">self</span>.__oldexitfunc:
-        <span class="pl-k">if</span> <span class="pl-c1">__debug__</span>:
-            <span class="pl-v">self</span>._note(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-c1">%s</span>: calling exit handler<span class="pl-pds">"</span></span>, <span class="pl-v">self</span>)
-        <span class="pl-v">self</span>.__oldexitfunc()
-    <span class="pl-k">if</span> <span class="pl-c1">__debug__</span>:
-        <span class="pl-v">self</span>._note(<span class="pl-s"><span class="pl-pds">"</span><span class="pl-c1">%s</span>: exiting<span class="pl-pds">"</span></span>, <span class="pl-v">self</span>)
-    <span class="pl-v">self</span>._Thread__delete()</pre></div>
+        t = _pickSomeNonDaemonThread()
+    if self.__oldexitfunc:
+        if __debug__:
+            self._note("%s: calling exit handler", self)
+        self.__oldexitfunc()
+    if __debug__:
+        self._note("%s: exiting", self)
+    self._Thread__delete()
+</code></pre>
 
 <p>首先调用基类 <code>Thread</code> 中的 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L394"><code>__stop</code> 函数</a>。下面是关键：</p>
 
 <ol>
 <li>首先，<code>t = _pickSomeNonDaemonThread()</code> 顾名思义返回一个 non-daemon 线程。<code>_pickSomeNonDaemonThread</code> 其实就是遍历两个保存了已创建和创建中线程的字典，并检查其 daemon 属性，如果是 non-daemon 则返回。</li>
-<li>这三句是个人都知道在干嘛吧
-<code>python
-while t:
+<li><p>这三句是个人都知道在干嘛吧</p>
+
+<pre><code>while t:
   t.join()
   t = _pickSomeNonDaemonThread()
-</code>
-</li>
+</code></pre></li>
 <li>于是所有 non-daemon threads 都执行完了，主线程退出。</li>
 </ol>

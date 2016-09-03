@@ -22,6 +22,7 @@ class Child(Parent):
 这是 Raymond Hettinger 写的一篇文章，也是全世界公认的对 `super` 讲解最透彻的一篇文章，凡是讨论 super 都一定会提到它（当然还有一篇 Python's Super Considered Harmful）。
 
 如果不想看长篇大论就去看[这个答案][an]，`super` 其实干的是这件事：
+
 ```python
 def super(cls, inst):
     mro = inst.__class__.mro()
@@ -34,6 +35,7 @@ def super(cls, inst):
 MRO 全称 Method Resolution Order，它代表了类继承的顺序。后面详细说。
 
 举个例子
+
 ```python
 class Root(object):
     def __init__(self):
@@ -60,7 +62,8 @@ print(d.__class__.__mro__)
 ```
 
 输出
-```
+
+```bash
 enter B
 enter C
 this is Root
@@ -69,11 +72,13 @@ leave B
 (<class '__main__.D'>, <class '__main__.B'>, <class '__main__.C'>, <class '__main__.Root'>, <type 'object'>)
 ```
 知道了 `super` 和父类其实没有实质关联之后，我们就不难理解为什么 enter B 下一句是 enter C 而不是 this is Root（如果认为 super 代表“调用父类的方法”，会想当然的认为下一句应该是this is Root）。流程如下，在 B 的 `__init__` 函数中：
-```
+
+```python
 super(B, self).__init__()
 ```
 首先，我们获取 `self.__class__.__mro__`，注意这里的 self 是 D 的 instance 而不是 B 的
-```
+
+```python
 (<class '__main__.D'>, <class '__main__.B'>, <class '__main__.C'>, <class '__main__.Root'>, <type 'object'>)
 ```
 然后，通过 B 来定位 MRO 中的 index，并找到下一个。显然 B 的下一个是 C。于是，我们调用 C 的 `__init__`，打出 enter C。

@@ -7,12 +7,13 @@
 >and, for highly optimized code, local rebinding of global names:   
 >import math  
 
->def this_one_must_be_fast(x, sin=math.sin, cos=math.cos):  
+>def this\_one\_must\_be\_fast(x, sin=math.sin, cos=math.cos):  
 >    ...  
 
 意思是说，如果需要严格地优化（运行时间），可以把gloabl的函数/变量传入某个函数，这样对于这个函数来讲，它们就变成本地的了。Python在搜索变量时按照**Local->Enclosing->Global->Builtin**的路线进行，因为local最先搜索的，所以用局部变量显然是最快的。如果要弄清这个问题，可以搜索"LEGB"，在这里只要知道使用局部变量最快就可以了。
 
 测试了一下，还是差别不小的
+
 ```python
 import timeit
 

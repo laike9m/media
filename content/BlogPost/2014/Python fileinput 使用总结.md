@@ -6,6 +6,8 @@
 #### 用途1
 
 如果我们有如下的文件夹结构：  
+
+```bash
 test/  
 |_____ 1.txt   content: 
 |                 1_line1  
@@ -14,6 +16,7 @@ test/
 |                 2_line1
 |                 2_line2  
 |_____ test_fileinput.py  
+```
 
 ```python
 import fileinput  
@@ -24,10 +27,12 @@ for line in fileinput.input(sys.argv[1:]):
 ```
 
 在 Linux 下执行
+
 ```bash
 $ python test_fileinput.py *.txt
 ```
 输出
+
 ```bash
 1_line1
 
@@ -41,6 +46,7 @@ $ python test_fileinput.py *.txt
 ![Windows Fail](/media/content/BlogPost/images/windows_fileinput_fail.jpg)
 
 所以修改成
+
 ```python
 import glob
 all_files = [f for files in sys.argv[1:] for f in glob(files)]
@@ -50,10 +56,12 @@ for line in fileinput.input(all_files):
 
 这样兼容Linux/Windows, 两种形式 `*.txt` 和 `1.txt 2.txt` 都可以作为输入。  
 总之最后提供一个 filelist 给 input 就行。也可以这样:  
+
 ```bash
 $ ls | ./filein.py
 ```
 甚至并不一定是多个文件, 也可以是多个文件的内容, 例如  
+
 ```bash
 $ cat *.py | python fileinput_grep.py fileinput
 ```
@@ -73,6 +81,7 @@ for line in fileinput.input('file.txt', inplace=True):
 
 2. fileinput 支持 context manager
 例如在原处修改文件最好写成
+
     ```python
     with fileinput.input('file.txt', inplace=True) as f:
         for line in f:
@@ -85,12 +94,14 @@ for line in fileinput.input('file.txt', inplace=True):
 4. 如果单纯地`print`会多出一些空白行，这是因为`print`的时候末尾自带一个换行符。解决方法有两种  
 (1) Python2.X  
 去掉末尾的换行，`strip`默认删除空白符（包括'\n', '\r',  '\t',  ' ')
+
     ```python
     line.rstrip()
     print line
     ```
 (2) Python3.X  
 `print()`函数有个参数是`end`，代表以什么结尾，默认是`\n`，我们用空字符做结尾
+
     ```python
     print(line, end='')
     ```

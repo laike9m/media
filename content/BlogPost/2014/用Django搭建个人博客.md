@@ -3,6 +3,7 @@
 博客从2013.8开始搭建，暑假主要处于学习阶段，学期途中插空写了一点，2014寒假把基本框架完成了。  
 对于想基于代码学习/搭建博客的行为，本人不能够更欢迎，但是请至少做到：  
 **在运行之前修改`settings.py`**，再不济，请至少把这里的**email替换成你自己的email**
+
 ```python
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -21,6 +22,7 @@ ADMINS = (
 ----------
 用Django建网站，`static` 和 `media` 到底怎么放置？这个问题没有标准答案，反正我没有用 `STATICFILES_DIRS`，也就是把所有static files都放在了`appname/static/appname` 里面。这样的好处是文件结构比较清晰，坏处是如果app多了同样的文件可能要存很多份，会减慢网站加载速度。下面是我的文件夹结构，供参考，文件均未列出：
 
+```bash
 	my_blog
 	├─media
 	│  ├─content
@@ -58,9 +60,11 @@ ADMINS = (
 	        ├─fonts
 	        ├─images
 	        └─js
+```
 
 画这个东西的时候才知道Windows/Linux下有个命令叫 [`tree`][tree]，大好评！  
 注意在开发的时候，`my_blog/static` 里面可以不放东西，只要 `DEBUG=True` 就行。如果要接受文件上传，那么在 `urlpatterns` 后面添加：   
+
 ```python
 + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 ```  
@@ -81,6 +85,7 @@ ADMINS = (
 显然是Git+Github，没什么好说的。印象深刻的是有一次在主机上玩火敲了这个命令 `find . -not -name 'xxx' | xargs rm`，结果大家都懂。还好WebFaction重建一个Django app就是点击几下的事情，代码又在Github上，所以很容易就恢复了。  
 还有，`settings.py` 这个文件最好ignore掉，因为部署和开发在设置上差异很大，所以这个文件在本地和服务器上需要保存不同的版本。顺便分享一下 `.gitignore` 吧：
 
+```
     .pydevproject
     .project
     .settings/*
@@ -88,6 +93,7 @@ ADMINS = (
     css3two_blog/migrations/*
     css3two_blog/static/css3two_blog/css/unused/*
     *.pyc
+```
 
 为什么`settings.py`没有包含在内呢？这个问题比较复杂，在我的另一篇文章 [Django Best Practice: How to deal with settings.py in Git][settings] 里面有详细讲述。
 [settings]:http://www.laike9m.com/blog/django-best-practice-how-to-deal-with-settingspy-in-git,27/

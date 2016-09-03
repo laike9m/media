@@ -3,8 +3,7 @@
 <p>When I started wirting my blog, one thing that confused me is different versions of <code>settings.py</code>. As we know, different <code>settings.py</code> should be kept for developement and deployment, however when it comes to using Git, things get messy. The main difficulties lies on two things:</p>
 
 <ol>
-<li>Should I upload <code>settings.py</code> from developement environment to Git server? If I did, does that mean I have to change the file every time after doing <code>Git pull</code> on deployment server?<br>
-</li>
+<li>Should I upload <code>settings.py</code> from developement environment to Git server? If I did, does that mean I have to change the file every time after doing <code>Git pull</code> on deployment server?  </li>
 <li>If I choose not to upload <code>settings.py</code>, there is a risk of losing data.</li>
 </ol>
 
@@ -14,26 +13,23 @@
 <li>First, on the computer I do developing, <code>commit</code> and <code>push</code> everything as you normally do, including <code>settings.py</code>.</li>
 <li>Create a new branch called <code>deploy</code> on Github.</li>
 <li>Then, on deployment server, <code>git pull</code> from branch <code>master</code>.</li>
-<li>checkout <code>deploy</code> branch, <strong>Modify <code>settings.py</code> for deployment</strong>, e.g. set <code>DEBUG=False</code>, change <code>MEDIA_ROOT</code>, <code>STATIC_ROOT</code>, etc. The ONLY file you should change is <code>settings.py</code>, <strong>DO NOT TOUCH OTHER FILES !</strong><br>
-</li>
-<li>
-<code>commit</code> and <code>push</code> to branch <code>deploy</code>.</li>
-<li>Back to developing environment, type this command:<br>
-</li>
+<li>checkout <code>deploy</code> branch, <strong>Modify <code>settings.py</code> for deployment</strong>, e.g. set <code>DEBUG=False</code>, change <code>MEDIA_ROOT</code>, <code>STATIC_ROOT</code>, etc. The ONLY file you should change is <code>settings.py</code>, <strong>DO NOT TOUCH OTHER FILES !</strong>  </li>
+<li><code>commit</code> and <code>push</code> to branch <code>deploy</code>.</li>
+<li>Back to developing environment, type this command: <br />
+<code>bash
+git update-index --assume-unchanged my_blog/settings.py
+</code>
+Done :)</li>
 </ol>
-
-<div class="highlight highlight-source-shell"><pre>git update-index --assume-unchanged my_blog/settings.py</pre></div>
-
-<p>Done :)</p>
 
 <p><br>
 The key part is step 5. First you should understand what <code>git update-index --assume-unchanged</code> is doing, basically it assumes that the file does not change. From <a href="http://git-scm.com/docs/git-update-index">git-scm</a>: </p>
 
 <blockquote>
-<p>--[no-]assume-unchanged<br>
-When these flags are specified, the object names recorded for the paths are not updated. Instead, these options set and unset the "assume unchanged" bit for the paths. When the "assume unchanged" bit is on, Git stops checking the working tree files for possible modifications, so you need to manually unset the bit to tell Git when you change the working tree file. This is sometimes helpful when working with a big project on a filesystem that has very slow lstat(2) system call (e.g. cifs).</p>
-
-<p>This option can be also used as a coarse file-level mechanism to ignore uncommitted changes in tracked files (akin to what .gitignore does for untracked files). Git will fail (gracefully) in case it needs to modify this file in the index e.g. when merging in a commit; thus, in case the assumed-untracked file is changed upstream, you will need to handle the situation manually.</p>
+  <p>--[no-]assume-unchanged <br />
+  When these flags are specified, the object names recorded for the paths are not updated. Instead, these options set and unset the "assume unchanged" bit for the paths. When the "assume unchanged" bit is on, Git stops checking the working tree files for possible modifications, so you need to manually unset the bit to tell Git when you change the working tree file. This is sometimes helpful when working with a big project on a filesystem that has very slow lstat(2) system call (e.g. cifs).</p>
+  
+  <p>This option can be also used as a coarse file-level mechanism to ignore uncommitted changes in tracked files (akin to what .gitignore does for untracked files). Git will fail (gracefully) in case it needs to modify this file in the index e.g. when merging in a commit; thus, in case the assumed-untracked file is changed upstream, you will need to handle the situation manually.</p>
 </blockquote>
 
 <p>So next time you <code>commit</code> your work, though <code>settings.py</code> may has been changed, those changes won't get uploaded to Git server, which means there is no confict when you <code>pull</code> from master branch on deployment server no matter how many times your <code>settings.py</code> has been edited there. You could also achieve this by adding <code>my_blog/settings.py</code> to <code>.git/info/exclude</code>.</p>
@@ -48,19 +44,20 @@ When these flags are specified, the object names recorded for the paths are not 
 
 <p>Now you've pushed some new commits to Github and want to apply it on your server. Here are the steps:</p>
 
-<div class="highlight highlight-source-shell"><pre><span class="pl-c"># step 1</span>
-make sure you<span class="pl-s"><span class="pl-pds">'</span>re on master branch, if not, git checkout master</span>
-<span class="pl-s"></span>
-<span class="pl-s"># step 2</span>
-<span class="pl-s">$ git pull</span>
-<span class="pl-s"></span>
-<span class="pl-s"># step 3</span>
-<span class="pl-s">$ git checkout deploy</span>
-<span class="pl-s"></span>
-<span class="pl-s"># step 4</span>
-<span class="pl-s">$ git rebase master</span>
-<span class="pl-s"></span>
-<span class="pl-s"># step 5</span>
-<span class="pl-s">$ git push origin deploy</span></pre></div>
+<pre><code># step 1
+make sure you're on master branch, if not, git checkout master
+
+# step 2
+$ git pull
+
+# step 3
+$ git checkout deploy
+
+# step 4
+$ git rebase master
+
+# step 5
+$ git push origin deploy
+</code></pre>
 
 <p>I'm open to changes and suggestions, if you have better ideas, feel free to comment.</p>

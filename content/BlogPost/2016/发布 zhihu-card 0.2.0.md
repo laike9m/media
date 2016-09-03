@@ -1,6 +1,7 @@
 [zhihu-card][1] 是我最近写的一个东西。受 [github-cards][2] 启发，既然知乎的影响越来越大，张兆杰们都把知乎的赞数粉丝数作为体现自身价值的筹码，为什么程序员们不能在自己的网站上展现知乎账户呢？于是就有了这么一个东西。
 
 现在只要在页面中插入两行代码，填入你的 `user_hash` ，就能显示类似本站右侧的卡片。
+
 ```javascript
 <div class="zhihu-card" data-userhash="your hash"></div>
 <script src="//cdn.jsdelivr.net/zhihu-card/latest/widget.js"></script>

@@ -15,7 +15,6 @@
 # ezcf
 
 [![Build Status](https://travis-ci.org/laike9m/ezcf.svg)](https://travis-ci.org/laike9m/ezcf)
-[![Supported Python versions](https://pypip.in/py_versions/ezcf/badge.svg)](https://pypi.python.org/pypi/ezcf/)
 [![PyPI version](https://badge.fury.io/py/ezcf.svg)](http://badge.fury.io/py/ezcf)
 [![Coverage Status](https://coveralls.io/repos/laike9m/ezcf/badge.svg)](https://coveralls.io/r/laike9m/ezcf)
 
@@ -41,7 +40,8 @@ ezcf supports `JSON`, `YAML`, `INI` and `XML` with extension `json`, `yaml`, `ym
 
 ## Sample Usage
 ezcf supports all kinds of valid import statements, here's an example:
-```
+
+```bash
 ├── subdir
 │   ├── __init__.py
 │   └── sample_yaml.yaml
@@ -50,6 +50,7 @@ ezcf supports all kinds of valid import statements, here's an example:
 ```
 
 Various ways to use configurations in `sample_yaml.yaml` and `sample_json.json`:
+
 ```python
 import ezcf
 

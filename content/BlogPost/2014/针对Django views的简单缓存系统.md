@@ -16,6 +16,7 @@ CACHES = {
 具体的参数请直接参考代码的注释
 
 ### 使用举例
+
 ```python
 @api_view(['GET'])
 def cost_month_detail(request):
@@ -46,6 +47,7 @@ def cost_month_detail(request):
 ### 说明
 Django的缓存在手动操作的情况下就是key-value的结构，添加、读取、删除，这几个操作Django已经封装得很好，无非就是 `cache.add(key,value)`，`cache.get(key)`，`cache.delete(key)`。关键之处在于，缓存的key要如何设计。我们当然可以对每一项需要缓存的东西事先定好key，比如有个Model叫做 `Car`，那么缓存数据库中全部车辆信息的key就叫做 `car_info`。这么做的问题在于，缓存项多了之后，容易搞混，比如我们希望缓存车辆价格信息，是不是又要弄一个 `car_price_info` 呢。而且在添加/获取缓存项的时候，如果每一个地方都要手动填写key，实在是非常麻烦又易出错。  
 要避免这种麻烦，只剩下一个选择，那就是自动生成所需要的 key，并且在读取缓存时，程序也能自己知道该用什么key去找缓存。自动生成key的代码，在 `generate_key` 这个函数里
+
 ```python
 import inspect
 
@@ -75,7 +77,8 @@ def generate_key(seperator, *args):
 ```
 这段代码起作用的部分一共就9行，不过我自己都觉得看懂好难啊_(:3」∠)_。其实现在记下来的一个目的就是怕之后看不懂（雾。不如我们先看看效果吧：  
 假设有一个 function based view 函数 `fbv`：
-```
+
+```python
 def fbv(request):
 	...
 	key = generate_key('-', 'args1', 'args2')
@@ -84,6 +87,7 @@ def fbv(request):
 先不考虑上下文，只关注生成key这件事。这里，生成的key是 `fbv-args1-args2`
 
 再看一个 class based view：  
+
 ```python
 class cbv(View):
 	def get(self, request):
@@ -91,8 +95,7 @@ class cbv(View):
 		key = generate_key('-', 'args1', 'args2')
 		...
 ```
-这里生成的 key 是
-`cbv-get-args1-args2`  
+这里生成的 key 是 `cbv-get-args1-args2`  
 
 现在，`generate_key`这个函数的效果就很清楚了，说白了就是把所有对生成一个有意义且唯一的 key 有帮助的信息用用户自定的分隔符连接起来，就得到了这个 key。这些信息包括：
 

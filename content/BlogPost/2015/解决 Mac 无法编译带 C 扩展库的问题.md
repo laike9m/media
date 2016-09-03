@@ -6,11 +6,12 @@
 
 终于找到一个地方提示说可以手动把 Xcode 里面的文件夹链接过去。尝试执行
 
-```
+```bash
 sudo ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include /usr/include
 ```
 提示
-```
+
+```bash
 ln: /usr/include: Operation not permitted
 ```
 搜索发现原因是 Mac 默认开启了 [Configuring System Integrity Protection][1]，简单来说就是一些系统相关的文件夹被设为只读。解决方法参考[这里][2]：
@@ -18,14 +19,16 @@ ln: /usr/include: Operation not permitted
 1. 重启电脑
 2. 在启动过程中按住 `cmd + r`，进入 Recover Mode
 3. 选择 utilities > terminal，输入命令
-    ```
-    csrutil disable   
-    reboot
-    ```
+
+```bash
+csrutil disable   
+reboot
+```
 4. 再次执行 `ln`，成功。
 
 再次尝试安装，这里以 `greenlet` 为例
-```
+
+```bash
 $ pip install greenlet
 ...
 Building wheels for collected packages: greenlet
@@ -51,11 +54,13 @@ Command "/usr/local/opt/python3/bin/python3.5 -c "import setuptools, tokenize;__
 > It has been this way for a long time already. The "GCC" that came with 10.8 was really GCC front-end with LLVM back-end.
   
 解决方法是用 homebrew 安装 gcc，这样不会和系统的 gcc 冲突。
-```
+
+```bash
 $ brew install gcc49
 ```
 然后
-```
+
+```bash
 export CC=/usr/local/Cellar/gcc49/4.9.3/bin/gcc-4.9
 ```
 这下终于安装成功。

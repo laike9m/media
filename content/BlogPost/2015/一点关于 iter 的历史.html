@@ -5,63 +5,63 @@
 Iterator 是用来干嘛的，维基百科已经写得很清楚：</p>
 
 <blockquote>
-<p>In computer programming, an iterator is an object that enables a programmer to traverse a container, particularly lists.</p>
+  <p>In computer programming, an iterator is an object that enables a programmer to traverse a container, particularly lists.</p>
 </blockquote>
 
 <p>那么问题来了，在引入 iterator 之前，Python 是怎么遍历，比如说，list 或者 dict 的呢？</p>
 
 <p>先来看 list。实际上是依赖于 <code>__getitem__</code> 方法。估计大部分人对这个方法并不熟悉，其实很简单：</p>
 
-<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;&gt;</span> [<span class="pl-c1">1</span>,<span class="pl-c1">2</span>,<span class="pl-c1">3</span>].__getitem__(<span class="pl-c1">1</span>)
-<span class="pl-c1">2</span></pre></div>
+<pre><code>&gt;&gt;&gt; [1,2,3].__getitem__(1)
+2
+</code></pre>
 
-<p>给一个 index，返回相应的元素，相当于调用 <code>[1,2,3][1]</code>。<br>
+<p>给一个 index，返回相应的元素，相当于调用 <code>[1,2,3][1]</code>。 <br />
 于是，只要定义了这一个方法，我们就可以遍历自定义的类了：</p>
 
-<div class="highlight highlight-source-python"><pre><span class="pl-k">class</span> <span class="pl-en">MyClass</span>:
-    <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__getitem__</span></span>(<span class="pl-smi">self</span>, <span class="pl-smi">index</span>):
-        <span class="pl-k">if</span> index <span class="pl-k">&gt;</span> <span class="pl-c1">3</span>:
-            <span class="pl-k">raise</span> <span class="pl-c1">IndexError</span>(<span class="pl-s"><span class="pl-pds">"</span>that's enough!<span class="pl-pds">"</span></span>)
+<pre><code>class MyClass:
+    def __getitem__(self, index):
+        if index &gt; 3:
+            raise IndexError("that's enough!")
 
-        <span class="pl-k">return</span> index
+        return index
 
-<span class="pl-k">for</span> name <span class="pl-k">in</span> MyClass():
-    <span class="pl-k">print</span>(name)</pre></div>
+for name in MyClass():
+    print(name)
+</code></pre>
 
-<p>输出</p>
-
-<div class="highlight highlight-source-shell"><pre>0
+<p>输出
+<code>shell
+0
 1
 2
-3</pre></div>
-
-<p>看见 <code>IndexError</code>，<code>for in</code> 就知道遍历到头了，所以并不会报错。实际上 2.2 之前的 <code>for in</code> 都是调用
+3
+</code>
+看见 <code>IndexError</code>，<code>for in</code> 就知道遍历到头了，所以并不会报错。实际上 2.2 之前的 <code>for in</code> 都是调用
 <code>__getitem__</code>。</p>
 
 <p>再看 dict。在 2.2 之前，我们<strong>并不能</strong> <code>for x in some_dict</code> 因为 dict 并没有定义 <code>__getitem__</code>。
-想遍历 dict 的话只能这样：</p>
-
-<div class="highlight highlight-source-python"><pre><span class="pl-k">for</span> key <span class="pl-k">in</span> some_dict.keys():
-    <span class="pl-k">print</span>(some_dict[key])</pre></div>
-
-<p>显然这样性能不会好，因为要先生成一个包含所有 key 的 list。</p>
+想遍历 dict 的话只能这样：
+<code>python
+for key in some_dict.keys():
+    print(some_dict[key])
+</code>
+显然这样性能不会好，因为要先生成一个包含所有 key 的 list。</p>
 
 <p>Python2.2 引入了 iterator，相关文档参见 <a href="https://docs.python.org/3/whatsnew/2.2.html#pep-234-iterators">What’s New in Python 2.2 - PEP 234: Iterators</a>。总结起来有以下改进：</p>
 
 <ol>
-<li>
-<code>for x in C</code> 会默认调用 <code>iter(C)</code>，如果 <code>C</code> 没有定义 <code>__iter__</code> 方法，会使用 <code>__getitem__</code>；</li>
+<li><code>for x in C</code> 会默认调用 <code>iter(C)</code>，如果 <code>C</code> 没有定义 <code>__iter__</code> 方法，会使用 <code>__getitem__</code>；</li>
 <li>dict（以及其它一些内置类型）现在实现了 <code>__iter__</code> 方法，所以可以 <code>for x in some_dict</code> 了。这样遍历
 dict 比原来快很多，因为不需要生成一个 key list；</li>
-<li>
-<code>for in</code> 默认调用 <code>iter()</code> 的好处在于，用户可以对遍历过程应该返回什么，如何返回有更强的控制。另一方面就是拓宽了 <code>for in</code> 的使用范围，因为并不是所有我们希望遍历的 object 都拥有有意义的 index。比如之前 <code>MyClass</code>
+<li><code>for in</code> 默认调用 <code>iter()</code> 的好处在于，用户可以对遍历过程应该返回什么，如何返回有更强的控制。另一方面就是拓宽了 <code>for in</code> 的使用范围，因为并不是所有我们希望遍历的 object 都拥有有意义的 index。比如之前 <code>MyClass</code>
 的例子，<code>index</code> 就没有含义，所以用 <code>__getitem__</code> 实现并不合适。</li>
 </ol>
 
-<p><br>
+<p><br/>
 这篇文章主要是讲历史。下一篇文章详细讲 <code>iterator</code> 要怎么用，最后一篇对三种实现遍历的方式进行比较。</p>
 
-<p>参考资料：<br>
-<a href="https://en.wikipedia.org/wiki/Iterator">https://en.wikipedia.org/wiki/Iterator</a><br>
-<a href="http://effbot.org/zone/python-for-statement.htm">http://effbot.org/zone/python-for-statement.htm</a><br>
-<a href="https://docs.python.org/3/whatsnew/2.2.html#pep-234-iterators">https://docs.python.org/3/whatsnew/2.2.html#pep-234-iterators</a>  </p>
+<p>参考资料： <br />
+https://en.wikipedia.org/wiki/Iterator <br />
+http://effbot.org/zone/python-for-statement.htm <br />
+https://docs.python.org/3/whatsnew/2.2.html#pep-234-iterators  </p>

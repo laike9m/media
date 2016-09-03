@@ -18,6 +18,7 @@ daemon，或者 daemon process，在计算机领域里一般指一种在后台�
 
 ## Python 中的 daemon thread 来自 Java
 Google “daemon thread”，第一页全是 Java。我觉得很奇怪，于是找到了 `threading.py` 的[第一次 commit][4]，前两行赫然写着：
+
 ```python
 # threading.py:
 # Proposed new threading module, emulating a subset of Java's threading model
@@ -37,6 +38,7 @@ Google “daemon thread”，第一页全是 Java。我觉得很奇怪，于是�
 
 # 应用
 Daemon thread 的特性很容易验证，不细说。
+
 ```python
 import threading
 import os
@@ -82,6 +84,7 @@ Python 中有很多创建新进程的方法，并非都可以设置为 daemon pr
 _sys.exitfunc = self.__exitfunc
 ```
 `_sys` 就是 `sys`，`sys.exitfunc` 已经被 `atexit` 替代，作用都是在程序退出的时候执行清理操作。那么 [`__exitfunc`][15] 是什么呢？
+
 ```python
 def __exitfunc(self):
     self._Thread__stop()
@@ -104,6 +107,7 @@ def __exitfunc(self):
 
 1. 首先，`t = _pickSomeNonDaemonThread()` 顾名思义返回一个 non-daemon 线程。`_pickSomeNonDaemonThread` 其实就是遍历两个保存了已创建和创建中线程的字典，并检查其 daemon 属性，如果是 non-daemon 则返回。
 2. 这三句是个人都知道在干嘛吧
+
    ```python
    while t:
       t.join()

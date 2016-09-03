@@ -1,135 +1,158 @@
 <p>这是本学期大规模Web性能优化课的作业。虽然是课程作业，但说实话没有怎么好好听，到后来也基本不去上课了。。不过这个作业还是很认真在写，嗯。下面是原文，基本没有改。</p>
 
-<h2>
-<a name="user-content-%E7%9B%AE%E7%9A%84" class="anchor" href="#%E7%9B%AE%E7%9A%84"><span class="octicon octicon-link"></span></a>目的</h2>
+<h2>目的</h2>
 
 <p>运用报告和课堂中学习到的优化方法，按照前端（14 条）、后端（50 条）优化原则，自行设计或选取网站进行优化，并使用分析工具进行性能提升分析。  </p>
 
-<h2>
-<a name="user-content-%E8%A6%81%E6%B1%82" class="anchor" href="#%E8%A6%81%E6%B1%82"><span class="octicon octicon-link"></span></a>要求</h2>
+<h2>要求</h2>
 
 <p>结果必须使目标网站总体性能得到优化，有能力的学生可以按照不同方面详细阐述自己的网站有了哪些提升。选取网站可以是已有的网站，也可以是开源的网站，也可以是自行搭建的网站，但是不允许使用其他同学已经优化完成的网站进行雷同操作。运用不同的性能分析工具进行分析同样可以获得加分  。</p>
 
-<h2>
-<a name="user-content-%E6%A6%82%E8%BF%B0--" class="anchor" href="#%E6%A6%82%E8%BF%B0--"><span class="octicon octicon-link"></span></a>概述  </h2>
+<h2>概述  </h2>
 
-<p>因为有自己的网站（就是这个），所以当然就选择去优化它了。我的网站使用Django框架搭建，部署在Webfaction云平台上。<br>
-首先还是用YSlow和GTmetric这两个工具先测一下优化之前的网站的速度。<br>
-优化之前的状况，YSlow：<br><a href="/media/content/BlogPost/images/blog_opt/1.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/1.png" alt="1" style="max-width:100%;"></a></p>
+<p>因为有自己的网站（就是这个），所以当然就选择去优化它了。我的网站使用Django框架搭建，部署在Webfaction云平台上。 <br />
+首先还是用YSlow和GTmetric这两个工具先测一下优化之前的网站的速度。 <br />
+优化之前的状况，YSlow： <br />
+<img src="/media/content/BlogPost/images/blog_opt/1.png" alt="1" /></p>
 
-<p>GTmetric：<br><a href="/media/content/BlogPost/images/blog_opt/2.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/2.png" alt="2" style="max-width:100%;"></a></p>
+<p>GTmetric： <br />
+<img src="/media/content/BlogPost/images/blog_opt/2.png" alt="2" /></p>
 
-<p>Gtmetric能够生成完整的报告，网站优化前的速度报告参见《GTmetrix-report-laike9m.com_old.pdf》。<br>
+<p>Gtmetric能够生成完整的报告，网站优化前的速度报告参见《GTmetrix-report-laike9m.com_old.pdf》。 <br />
 下面开始优化，优化目前只针对网站首页，即<code>http://laike9m.com</code>这个页面。  </p>
 
-<h2>
-<a name="user-content-%E4%BC%98%E5%8C%96" class="anchor" href="#%E4%BC%98%E5%8C%96"><span class="octicon octicon-link"></span></a>优化</h2>
+<h2>优化</h2>
 
 <p>我的网站是个人博客，后端数据库操作可以说是微乎其微，所以并没有太多可以优化的地方。唯一可以想到的后端优化就是生成静态页面，不过涉及到修改网站的逻辑，现在就先没有做。主要还是集中于前端的优化。</p>
 
-<h3>
-<a name="user-content-add-expires-headers" class="anchor" href="#add-expires-headers"><span class="octicon octicon-link"></span></a>Add Expires headers</h3>
+<h3>Add Expires headers</h3>
 
-<p><a href="/media/content/BlogPost/images/blog_opt/3.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/3.png" alt="3" style="max-width:100%;"></a><br>
-可以看到我的所有静态文件原来都没有加Expires头。<br>
+<p><img src="/media/content/BlogPost/images/blog_opt/3.png" alt="3" /> <br />
+可以看到我的所有静态文件原来都没有加Expires头。 <br />
 Webfaction提供了一个给静态文件添加Expires头的方法。我的static files是单独用一个application来管理，只要在其中设置”expires max”选项就可以了。根据文档可知</p>
 
 <blockquote>
-<p>Specifically, the expires max configuration value sets:
-the Expires header to 31 December 2037 23:59:59 GMT, and
-the Cache-Control header’s max-age directive to 10 years.  </p>
+  <p>Specifically, the expires max configuration value sets:
+  the Expires header to 31 December 2037 23:59:59 GMT, and
+  the Cache-Control header’s max-age directive to 10 years.  </p>
 </blockquote>
 
 <p>然后加载页面，观察Network。选择一张png图片，response如下：
-<a href="/media/content/BlogPost/images/blog_opt/response.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/response.png" alt="res" style="max-width:100%;"></a></p>
+<img src="/media/content/BlogPost/images/blog_opt/response.png" alt="res" /> </p>
 
-<p>可以看到，正如文档中所说，Cache-Control是十年，Expires到2037年12.31<br>
-用YSlow重新评测，现在这一项的评价由F提升到了E。<br><a href="/media/content/BlogPost/images/blog_opt/4.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/4.png" alt="4" style="max-width:100%;"></a><br>
+<p>可以看到，正如文档中所说，Cache-Control是十年，Expires到2037年12.31 <br />
+用YSlow重新评测，现在这一项的评价由F提升到了E。 <br />
+<img src="/media/content/BlogPost/images/blog_opt/4.png" alt="4" /> <br />
 可以看到，剩下的四个没有加Expires头的静态文件都不是由我的网站加载的，而是从外部，所以对它们没办法进行优化。   </p>
 
-<h3>
-<a name="user-content-%E5%87%8F%E5%B0%91http%E8%AF%B7%E6%B1%82" class="anchor" href="#%E5%87%8F%E5%B0%91http%E8%AF%B7%E6%B1%82"><span class="octicon octicon-link"></span></a>减少HTTP请求</h3>
+<h3>减少HTTP请求</h3>
 
 <p>这项得分是C。Js确实可以减少，有两个目前是多余的。因为之后可能会用到，所以先采用注释掉的解决方法。
-<a href="/media/content/BlogPost/images/blog_opt/5.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/5.png" alt="5" style="max-width:100%;"></a><br>
-关于CSS，我自己定义的css由于是按功能划分便于开发所以不太好合并了，但是发现一个外部css比较短，所以考虑直接给变成Inline的。<br><a href="/media/content/BlogPost/images/blog_opt/6.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/6.png" alt="6" style="max-width:100%;"></a></p>
+<img src="/media/content/BlogPost/images/blog_opt/5.png" alt="5" /> <br />
+关于CSS，我自己定义的css由于是按功能划分便于开发所以不太好合并了，但是发现一个外部css比较短，所以考虑直接给变成Inline的。 <br />
+<img src="/media/content/BlogPost/images/blog_opt/6.png" alt="6" /> <br />
+```css <br />
+/* MailChimp Form Embed Code - Slim - 08/17/2011 */</p>
 
-<div class="highlight highlight-css"><pre><span class="c">/* MailChimp Form Embed Code - Slim - 08/17/2011 */</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">form</span> <span class="p">{</span><span class="k">display</span><span class="o">:</span><span class="k">block</span><span class="p">;</span> <span class="k">position</span><span class="o">:</span><span class="k">relative</span><span class="p">;</span> <span class="k">text-align</span><span class="o">:</span><span class="k">left</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">10px</span> <span class="m">0</span> <span class="m">10px</span> <span class="m">3</span><span class="o">%</span><span class="p">}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">h2</span> <span class="p">{</span><span class="k">font-weight</span><span class="o">:</span><span class="k">bold</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">15px</span> <span class="m">0</span><span class="p">;</span> <span class="k">font-size</span><span class="o">:</span><span class="m">1.4em</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">input</span> <span class="p">{</span><span class="k">border</span><span class="o">:</span><span class="m">1px</span> <span class="k">solid</span> <span class="m">#999</span><span class="p">;</span> <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">appearance</span><span class="o">:</span><span class="k">none</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">input</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="nt">checkbox</span><span class="o">]</span><span class="p">{</span><span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">appearance</span><span class="o">:</span><span class="n">checkbox</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">input</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="nt">radio</span><span class="o">]</span><span class="p">{</span><span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">appearance</span><span class="o">:</span><span class="n">radio</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">input</span><span class="nd">:focus</span> <span class="p">{</span><span class="k">border-color</span><span class="o">:</span><span class="m">#333</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nc">.button</span> <span class="p">{</span><span class="k">clear</span><span class="o">:</span><span class="k">both</span><span class="p">;</span> <span class="k">background-color</span><span class="o">:</span> <span class="m">#aaa</span><span class="p">;</span> <span class="k">border</span><span class="o">:</span> <span class="m">0</span> <span class="k">none</span><span class="p">;</span> <span class="k">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span><span class="m">4px</span><span class="p">;</span> <span class="k">color</span><span class="o">:</span> <span class="m">#FFFFFF</span><span class="p">;</span> <span class="k">cursor</span><span class="o">:</span> <span class="k">pointer</span><span class="p">;</span> <span class="k">display</span><span class="o">:</span> <span class="k">inline</span><span class="o">-</span><span class="k">block</span><span class="p">;</span> <span class="k">font-size</span><span class="o">:</span><span class="m">15px</span><span class="p">;</span> <span class="k">font-weight</span><span class="o">:</span> <span class="k">bold</span><span class="p">;</span> <span class="k">height</span><span class="o">:</span> <span class="m">32px</span><span class="p">;</span> <span class="k">line-height</span><span class="o">:</span> <span class="m">32px</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="m">5px</span> <span class="m">10px</span> <span class="m">0</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0</span><span class="p">;</span> <span class="k">text-align</span><span class="o">:</span> <span class="k">center</span><span class="p">;</span> <span class="k">text-decoration</span><span class="o">:</span> <span class="k">none</span><span class="p">;</span> <span class="k">vertical-align</span><span class="o">:</span> <span class="k">top</span><span class="p">;</span> <span class="k">white-space</span><span class="o">:</span> <span class="k">nowrap</span><span class="p">;</span> <span class="k">width</span><span class="o">:</span> <span class="k">auto</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nc">.button</span><span class="nd">:hover</span> <span class="p">{</span><span class="k">background-color</span><span class="o">:</span><span class="m">#777</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nc">.small-meta</span> <span class="p">{</span><span class="k">font-size</span><span class="o">:</span> <span class="m">11px</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nc">.nowrap</span> <span class="p">{</span><span class="k">white-space</span><span class="o">:</span><span class="k">nowrap</span><span class="p">;}</span> 
-<span class="nf">#mc_embed_signup</span> <span class="nc">.clear</span> <span class="p">{</span><span class="k">clear</span><span class="o">:</span><span class="k">none</span><span class="p">;</span> <span class="k">display</span><span class="o">:</span><span class="k">inline</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">label</span> <span class="p">{</span><span class="k">display</span><span class="o">:</span><span class="k">block</span><span class="p">;</span> <span class="k">font-size</span><span class="o">:</span><span class="m">16px</span><span class="p">;</span> <span class="k">padding-bottom</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span> <span class="k">font-weight</span><span class="o">:</span><span class="k">bold</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">input</span><span class="nc">.email</span> <span class="p">{</span><span class="k">display</span><span class="o">:</span><span class="k">block</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">8px</span> <span class="m">0</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0</span> <span class="m">4</span><span class="o">%</span> <span class="m">10px</span> <span class="m">0</span><span class="p">;</span> <span class="k">text-indent</span><span class="o">:</span><span class="m">5px</span><span class="p">;</span> <span class="k">width</span><span class="o">:</span><span class="m">58</span><span class="o">%</span><span class="p">;</span> <span class="k">min-width</span><span class="o">:</span><span class="m">130px</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">input</span><span class="nc">.button</span> <span class="p">{</span><span class="k">display</span><span class="o">:</span><span class="k">block</span><span class="p">;</span> <span class="k">width</span><span class="o">:</span><span class="m">35</span><span class="o">%</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span><span class="m">0</span> <span class="m">0</span> <span class="m">10px</span> <span class="m">0</span><span class="p">;</span> <span class="k">min-width</span><span class="o">:</span><span class="m">90px</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">div</span><span class="nf">#mce-responses</span> <span class="p">{</span><span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span> <span class="k">top</span><span class="o">:-</span><span class="m">1.4em</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">0em</span> <span class="m">.5em</span> <span class="m">0em</span> <span class="m">.5em</span><span class="p">;</span> <span class="k">overflow</span><span class="o">:</span><span class="k">hidden</span><span class="p">;</span> <span class="k">width</span><span class="o">:</span><span class="m">90</span><span class="o">%</span><span class="p">;</span><span class="k">margin</span><span class="o">:</span> <span class="m">0</span> <span class="m">5</span><span class="o">%</span><span class="p">;</span> <span class="k">clear</span><span class="o">:</span> <span class="k">both</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">div</span><span class="nc">.response</span> <span class="p">{</span><span class="k">margin</span><span class="o">:</span><span class="m">1em</span> <span class="m">0</span><span class="p">;</span> <span class="k">padding</span><span class="o">:</span><span class="m">1em</span> <span class="m">.5em</span> <span class="m">.5em</span> <span class="m">0</span><span class="p">;</span> <span class="k">font-weight</span><span class="o">:</span><span class="k">bold</span><span class="p">;</span> <span class="k">float</span><span class="o">:</span><span class="k">left</span><span class="p">;</span> <span class="k">top</span><span class="o">:-</span><span class="m">1.5em</span><span class="p">;</span> <span class="k">z-index</span><span class="o">:</span><span class="m">1</span><span class="p">;</span> <span class="k">width</span><span class="o">:</span><span class="m">80</span><span class="o">%</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nf">#mce-error-response</span> <span class="p">{</span><span class="k">display</span><span class="o">:</span><span class="k">none</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nf">#mce-success-response</span> <span class="p">{</span><span class="k">color</span><span class="o">:</span><span class="m">#529214</span><span class="p">;</span> <span class="k">display</span><span class="o">:</span><span class="k">none</span><span class="p">;}</span>
-<span class="nf">#mc_embed_signup</span> <span class="nt">label</span><span class="nc">.error</span> <span class="p">{</span><span class="k">display</span><span class="o">:</span><span class="k">block</span><span class="p">;</span> <span class="k">float</span><span class="o">:</span><span class="k">none</span><span class="p">;</span> <span class="k">width</span><span class="o">:</span><span class="k">auto</span><span class="p">;</span> <span class="k">margin-left</span><span class="o">:</span><span class="m">1.05em</span><span class="p">;</span> <span class="k">text-align</span><span class="o">:</span><span class="k">left</span><span class="p">;</span> <span class="k">padding</span><span class="o">:.</span><span class="m">5em</span> <span class="m">0</span><span class="p">;}</span>
-</pre></div>
+<h1>mc<em>embed</em>signup form {display:block; position:relative; text-align:left; padding:10px 0 10px 3%}</h1>
 
-<p>把上面这部分代码直接贴进html并且取消掉原来的css external link。重新测试：<br><a href="/media/content/BlogPost/images/blog_opt/7.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/7.png" alt="7" style="max-width:100%;"></a><br>
+<h1>mc<em>embed</em>signup h2 {font-weight:bold; padding:0; margin:15px 0; font-size:1.4em;}</h1>
+
+<h1>mc<em>embed</em>signup input {border:1px solid #999; -webkit-appearance:none;}</h1>
+
+<h1>mc<em>embed</em>signup input[type=checkbox]{-webkit-appearance:checkbox;}</h1>
+
+<h1>mc<em>embed</em>signup input[type=radio]{-webkit-appearance:radio;}</h1>
+
+<h1>mc<em>embed</em>signup input:focus {border-color:#333;}</h1>
+
+<h1>mc<em>embed</em>signup .button {clear:both; background-color: #aaa; border: 0 none; border-radius:4px; color: #FFFFFF; cursor: pointer; display: inline-block; font-size:15px; font-weight: bold; height: 32px; line-height: 32px; margin: 0 5px 10px 0; padding:0; text-align: center; text-decoration: none; vertical-align: top; white-space: nowrap; width: auto;}</h1>
+
+<h1>mc<em>embed</em>signup .button:hover {background-color:#777;}</h1>
+
+<h1>mc<em>embed</em>signup .small-meta {font-size: 11px;}</h1>
+
+<h1>mc<em>embed</em>signup .nowrap {white-space:nowrap;}</h1>
+
+<h1>mc<em>embed</em>signup .clear {clear:none; display:inline;}</h1>
+
+<h1>mc<em>embed</em>signup label {display:block; font-size:16px; padding-bottom:10px; font-weight:bold;}</h1>
+
+<h1>mc<em>embed</em>signup input.email {display:block; padding:8px 0; margin:0 4% 10px 0; text-indent:5px; width:58%; min-width:130px;}</h1>
+
+<h1>mc<em>embed</em>signup input.button {display:block; width:35%; margin:0 0 10px 0; min-width:90px;}</h1>
+
+<h1>mc<em>embed</em>signup div#mce-responses {float:left; top:-1.4em; padding:0em .5em 0em .5em; overflow:hidden; width:90%;margin: 0 5%; clear: both;}</h1>
+
+<h1>mc<em>embed</em>signup div.response {margin:1em 0; padding:1em .5em .5em 0; font-weight:bold; float:left; top:-1.5em; z-index:1; width:80%;}</h1>
+
+<h1>mc<em>embed</em>signup #mce-error-response {display:none;}</h1>
+
+<h1>mc<em>embed</em>signup #mce-success-response {color:#529214; display:none;}</h1>
+
+<h1>mc<em>embed</em>signup label.error {display:block; float:none; width:auto; margin-left:1.05em; text-align:left; padding:.5em 0;}</h1>
+
+<p>``` <br />
+把上面这部分代码直接贴进html并且取消掉原来的css external link。重新测试： <br />
+<img src="/media/content/BlogPost/images/blog_opt/7.png" alt="7" /> <br />
 成效显著，由C提升到B  </p>
 
-<h3>
-<a name="user-content-%E4%BD%BF%E7%94%A8cdn" class="anchor" href="#%E4%BD%BF%E7%94%A8cdn"><span class="octicon octicon-link"></span></a>使用CDN</h3>
+<h3>使用CDN</h3>
 
 <p>这项得分也是F。这个感觉意义不大，而且不好做。免费CDN本来就不多，有的还要求网站必须备案。这项就不优化了。</p>
 
-<h3>
-<a name="user-content-%E6%8A%8Acss%E6%94%BE%E5%9C%A8%E9%A1%B6%E7%AB%AF" class="anchor" href="#%E6%8A%8Acss%E6%94%BE%E5%9C%A8%E9%A1%B6%E7%AB%AF"><span class="octicon octicon-link"></span></a>把css放在顶端</h3>
+<h3>把css放在顶端</h3>
 
-<p>这项得分是C<br><a href="/media/content/BlogPost/images/blog_opt/8.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/8.png" alt="8" style="max-width:100%;"></a><br>
-按照它说的，我现在通过修改Django的html模板把这两个css挪到html的head部分。原来这两个css没在head是因为它们是包含在body的block里面，从其它html里面加载的，所以就在body里面。现在我单独在head里面创建了一个block，这样就能把css加载到head里面。<br>
-修改之后效果如下，评价变成A了：<br><a href="/media/content/BlogPost/images/blog_opt/9.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/9.png" alt="9" style="max-width:100%;"></a></p>
+<p>这项得分是C <br />
+<img src="/media/content/BlogPost/images/blog_opt/8.png" alt="8" /> <br />
+按照它说的，我现在通过修改Django的html模板把这两个css挪到html的head部分。原来这两个css没在head是因为它们是包含在body的block里面，从其它html里面加载的，所以就在body里面。现在我单独在head里面创建了一个block，这样就能把css加载到head里面。 <br />
+修改之后效果如下，评价变成A了： <br />
+<img src="/media/content/BlogPost/images/blog_opt/9.png" alt="9" />   </p>
 
-<h3>
-<a name="user-content-cookie-free" class="anchor" href="#cookie-free"><span class="octicon octicon-link"></span></a>cookie-free</h3>
+<h3>cookie-free</h3>
 
-<p>最后一项不是A的是cookie-free<br><a href="/media/content/BlogPost/images/blog_opt/10.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/10.png" alt="10" style="max-width:100%;"></a><br>
+<p>最后一项不是A的是cookie-free <br />
+<img src="/media/content/BlogPost/images/blog_opt/10.png" alt="10" /> <br />
 要做到Cookie-free，需要我专门买个域名来存储静态文件，这一点我暂时未能为力。参见雅虎对于这一条的描述：  </p>
 
 <blockquote>
-<p>If your domain is <a href="http://www.example.org">www.example.org</a>, you can host your static components on static.example.org. However, if you've already set cookies on the top-level domainexample.org as opposed to <a href="http://www.example.org">www.example.org</a>, then all the requests to static.example.org will include those cookies. In this case, you can buy a whole new domain, host your static components there, and keep this domain cookie-free. Yahoo! uses yimg.com, YouTube uses ytimg.com, Amazon uses images-amazon.com and so on.</p>
+  <p>If your domain is www.example.org, you can host your static components on static.example.org. However, if you've already set cookies on the top-level domainexample.org as opposed to www.example.org, then all the requests to static.example.org will include those cookies. In this case, you can buy a whole new domain, host your static components there, and keep this domain cookie-free. Yahoo! uses yimg.com, YouTube uses ytimg.com, Amazon uses images-amazon.com and so on.</p>
 </blockquote>
 
 <p>YSlow能做的优化也就是这些了。但是Gtmetric还提供了一些别的优化条目。  </p>
 
-<h3>
-<a name="user-content-%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9" class="anchor" href="#%E5%9B%BE%E7%89%87%E5%8E%8B%E7%BC%A9"><span class="octicon octicon-link"></span></a>图片压缩</h3>
+<h3>图片压缩</h3>
 
-<p><a href="/media/content/BlogPost/images/blog_opt/11.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/11.png" alt="11" style="max-width:100%;"></a><br>
-因为我的图片从来都没有压缩过，所以很大。我找了一个图片压缩软件，叫做Caesium，按80%质量把图片压缩了一下，压缩比例如下：<br><a href="/media/content/BlogPost/images/blog_opt/12.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/12.png" alt="12" style="max-width:100%;"></a><br>
-替换掉原来的图片之后，再用Gtmetric测试一次，结果如下：<br><a href="/media/content/BlogPost/images/blog_opt/13.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/13.png" alt="13" style="max-width:100%;"></a><br>
+<p><img src="/media/content/BlogPost/images/blog_opt/11.png" alt="11" /> <br />
+因为我的图片从来都没有压缩过，所以很大。我找了一个图片压缩软件，叫做Caesium，按80%质量把图片压缩了一下，压缩比例如下： <br />
+<img src="/media/content/BlogPost/images/blog_opt/12.png" alt="12" /> <br />
+替换掉原来的图片之后，再用Gtmetric测试一次，结果如下： <br />
+<img src="/media/content/BlogPost/images/blog_opt/13.png" alt="13" /> <br />
 这项得分上升到了B。  </p>
 
-<p>另外还有两项得分很低<br><a href="/media/content/BlogPost/images/blog_opt/14.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/14.png" alt="14" style="max-width:100%;"></a><br>
+<p>另外还有两项得分很低 <br />
+<img src="/media/content/BlogPost/images/blog_opt/14.png" alt="14" /> <br />
 首先是使用CSS sprites。这个我不太会弄，所以就不做了。  </p>
 
-<p>还有一项是说我没有给图片指定width或height。这一项似乎检测有失误，至少第一张图thumbnail.jpg是有宽度的<br><a href="/media/content/BlogPost/images/blog_opt/15.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/15.png" alt="15" style="max-width:100%;"></a><br>
+<p>还有一项是说我没有给图片指定width或height。这一项似乎检测有失误，至少第一张图thumbnail.jpg是有宽度的 <br />
+<img src="/media/content/BlogPost/images/blog_opt/15.png" alt="15" /> <br />
 后面几张图因为在网页上的大小和原图一样，所以也就没有指定。</p>
 
 <p>至此优化完成，Gtmetric报告可见GTmetrix-report-laike9m.com_new.pdf  </p>
 
-<h2>
-<a name="user-content-%E5%89%8D%E5%90%8E%E5%AF%B9%E6%AF%94" class="anchor" href="#%E5%89%8D%E5%90%8E%E5%AF%B9%E6%AF%94"><span class="octicon octicon-link"></span></a>前后对比</h2>
+<h2>前后对比</h2>
 
-<p>优化前<br><a href="/media/content/BlogPost/images/blog_opt/16.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/16.png" alt="16" style="max-width:100%;"></a><br>
-优化后<br><a href="/media/content/BlogPost/images/blog_opt/17.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/17.png" alt="17" style="max-width:100%;"></a></p>
+<p>优化前 <br />
+<img src="/media/content/BlogPost/images/blog_opt/16.png" alt="16" /> <br />
+优化后 <br />
+<img src="/media/content/BlogPost/images/blog_opt/17.png" alt="17" />   </p>
 
-<p>优化前<br><a href="/media/content/BlogPost/images/blog_opt/18.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/18.png" alt="18" style="max-width:100%;"></a><br>
-优化后<br><a href="/media/content/BlogPost/images/blog_opt/19.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt/19.png" alt="19" style="max-width:100%;"></a><br>
-提升显著。详情参见GTmetrix-report-laike9m.com_old.pdf，GTmetrix-report-laike9m.com_new.pdf。</p>
+<p>优化前 <br />
+<img src="/media/content/BlogPost/images/blog_opt/18.png" alt="18" /> <br />
+优化后 <br />
+<img src="/media/content/BlogPost/images/blog_opt/19.png" alt="19" /> <br />
+提升显著。详情参见GTmetrix-report-laike9m.com<em>old.pdf，GTmetrix-report-laike9m.com</em>new.pdf。</p>
 
-<h2>
-<a name="user-content-%E8%BF%9B%E4%B8%80%E6%AD%A5%E7%9A%84%E5%B7%A5%E4%BD%9C" class="anchor" href="#%E8%BF%9B%E4%B8%80%E6%AD%A5%E7%9A%84%E5%B7%A5%E4%BD%9C"><span class="octicon octicon-link"></span></a>进一步的工作</h2>
+<h2>进一步的工作</h2>
 
 <p>如果想进一步优化，还可以加一个静态页面缓存的系统，并且使用css sprites。还有就是目前只对首页图片做了压缩，博文里的图片还没有压缩。</p>

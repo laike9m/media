@@ -1,106 +1,103 @@
-<h2>
-<a name="user-content-%E7%94%A8%E9%80%94" class="anchor" href="#%E7%94%A8%E9%80%94" aria-hidden="true"><span class="octicon octicon-link"></span></a>用途</h2>
+<h2>用途</h2>
 
-<p><strong>1. 多个文件作为输入, 遍历文件每一行</strong><br><strong>2. 在原处修改文件</strong>  </p>
+<p><strong>1. 多个文件作为输入, 遍历文件每一行</strong> <br />
+<strong>2. 在原处修改文件</strong>  </p>
 
-<h4>
-<a name="user-content-%E7%94%A8%E9%80%941" class="anchor" href="#%E7%94%A8%E9%80%941" aria-hidden="true"><span class="octicon octicon-link"></span></a>用途1</h4>
+<h4>用途1</h4>
 
-<p>如果我们有如下的文件夹结构：<br>
-test/<br>
-|_____ 1.txt   content: 
-|                 1_line1<br>
-|                 1_line2<br>
-|_____ 2.txt   content: 
-|                 2_line1
-|                 2_line2<br>
-|_____ test_fileinput.py  </p>
+<p>如果我们有如下的文件夹结构：  </p>
 
-<div class="highlight highlight-python"><pre><span class="kn">import</span> <span class="nn">fileinput</span>  
+<div class="codehilite"><pre><span></span><code>test/  
+<span class="p">|</span>_____ 1.txt   content: 
+<span class="p">|</span>                 1_line1  
+<span class="p">|</span>                 1_line2    
+<span class="p">|</span>_____ 2.txt   content: 
+<span class="p">|</span>                 2_line1
+<span class="p">|</span>                 2_line2  
+<span class="p">|</span>_____ test_fileinput.py  
+</code></pre></div>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">fileinput</span>  
 <span class="kn">import</span> <span class="nn">sys</span>  
 
 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fileinput</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
      <span class="k">print</span><span class="p">(</span><span class="n">fileinput</span><span class="o">.</span><span class="n">filename</span><span class="p">(),</span> <span class="n">fileinput</span><span class="o">.</span><span class="n">filelineno</span><span class="p">(),</span> <span class="n">line</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
 <p>在 Linux 下执行</p>
 
-<div class="highlight highlight-bash"><pre><span class="nv">$ </span>python test_fileinput.py *.txt
-</pre></div>
+<div class="codehilite"><pre><span></span><code>$ python test_fileinput.py *.txt
+</code></pre></div>
 
 <p>输出</p>
 
-<div class="highlight highlight-bash"><pre>1_line1
+<div class="codehilite"><pre><span></span><code>1_line1
 
 1_line2
 2_line1
 
 2_line2
-</pre></div>
+</code></pre></div>
 
-<p>在Windows下直接用*.txt, 系统不认<br><a href="/media/content/BlogPost/images/windows_fileinput_fail.jpg" target="_blank"><img src="/media/content/BlogPost/images/windows_fileinput_fail.jpg" alt="Windows Fail" style="max-width:100%;"></a></p>
+<p>在Windows下直接用*.txt, 系统不认 <br />
+<img src="/media/content/BlogPost/images/windows_fileinput_fail.jpg" alt="Windows Fail" /></p>
 
 <p>所以修改成</p>
 
-<div class="highlight highlight-python"><pre><span class="kn">import</span> <span class="nn">glob</span>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">glob</span>
 <span class="n">all_files</span> <span class="o">=</span> <span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">files</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">glob</span><span class="p">(</span><span class="n">files</span><span class="p">)]</span>
 <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fileinput</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="n">all_files</span><span class="p">):</span>
      <span class="k">print</span><span class="p">(</span><span class="n">fileinput</span><span class="o">.</span><span class="n">filename</span><span class="p">(),</span> <span class="n">fileinput</span><span class="o">.</span><span class="n">filelineno</span><span class="p">(),</span> <span class="n">line</span><span class="p">)</span>
-</pre></div>
+</code></pre></div>
 
-<p>这样兼容Linux/Windows, 两种形式 <code>*.txt</code> 和 <code>1.txt 2.txt</code> 都可以作为输入。<br>
+<p>这样兼容Linux/Windows, 两种形式 <code>*.txt</code> 和 <code>1.txt 2.txt</code> 都可以作为输入。 <br />
 总之最后提供一个 filelist 给 input 就行。也可以这样:  </p>
 
-<div class="highlight highlight-bash"><pre><span class="nv">$ </span>ls <span class="p">|</span> ./filein.py
-</pre></div>
+<div class="codehilite"><pre><span></span><code>$ ls <span class="p">|</span> ./filein.py
+</code></pre></div>
 
 <p>甚至并不一定是多个文件, 也可以是多个文件的内容, 例如  </p>
 
-<div class="highlight highlight-bash"><pre><span class="nv">$ </span>cat *.py <span class="p">|</span> python fileinput_grep.py fileinput
-</pre></div>
+<div class="codehilite"><pre><span></span><code>$ cat *.py <span class="p">|</span> python fileinput_grep.py fileinput
+</code></pre></div>
 
 <p>也能正常工作, 会遍历"所有.py文件的每一行"。以上的用法对单个文件/文件内容也同样适用。
 <br></p>
 
-<h4>
-<a name="user-content-%E7%94%A8%E9%80%942-%E5%9C%A8%E5%8E%9F%E5%A4%84inplace%E4%BF%AE%E6%94%B9%E6%96%87%E4%BB%B6" class="anchor" href="#%E7%94%A8%E9%80%942-%E5%9C%A8%E5%8E%9F%E5%A4%84inplace%E4%BF%AE%E6%94%B9%E6%96%87%E4%BB%B6" aria-hidden="true"><span class="octicon octicon-link"></span></a>用途2: 在原处(inplace)修改文件</h4>
+<h4>用途2: 在原处(inplace)修改文件</h4>
 
-<div class="highlight highlight-bash"><pre><span class="k">for</span> line in fileinput.input<span class="o">(</span><span class="s1">'file.txt'</span>, <span class="nv">inplace</span><span class="o">=</span>True<span class="o">)</span>:
-     <span class="nv">line</span> <span class="o">=</span> ...  <span class="c"># edit line</span>
-     print line,  <span class="c"># stdout is redirected to the file</span>
-</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="k">for</span> line in fileinput.input<span class="o">(</span><span class="s1">&#39;file.txt&#39;</span>, <span class="nv">inplace</span><span class="o">=</span>True<span class="o">)</span>:
+     <span class="nv">line</span> <span class="o">=</span> ...  <span class="c1"># edit line</span>
+     print line,  <span class="c1"># stdout is redirected to the file</span>
+</code></pre></div>
 
 <p><br></p>
 
-<h4>
-<a name="user-content-note" class="anchor" href="#note" aria-hidden="true"><span class="octicon octicon-link"></span></a>Note:</h4>
+<h4>Note:</h4>
 
 <ol>
 <li><p>fileinput 能够提供很多元数据信息, 例如上面看到的<code>fileinput.filename()</code>, <code>fileinput.filelineno()</code>,还有<code>fileinput.isfirstline()</code>, <code>fileinput.isstdin()</code> 等, 更多内容参考<a href="http://docs.python.org/3/library/fileinput.html#fileinput.filename">官方文档</a></p></li>
-<li>
-<p>fileinput 支持 context manager
+<li><p>fileinput 支持 context manager
 例如在原处修改文件最好写成</p>
 
-<div class="highlight highlight-python"><pre><span class="k">with</span> <span class="n">fileinput</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s">'file.txt'</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<div class="codehilite"><pre><span></span><code><span class="k">with</span> <span class="n">fileinput</span><span class="o">.</span><span class="n">input</span><span class="p">(</span><span class="s1">&#39;file.txt&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
     <span class="o">...</span>
-</pre></div>
+</code></pre></div>
 
-<p>否则最后还得调用 fileinput.close()</p>
-</li>
+<p>否则最后还得调用 fileinput.close()</p></li>
 <li><p>一个常见的任务是，如果某一行满足某个条件，那么修改/删除这一行。这时候<strong>不要忘记原样输出别的行！</strong></p></li>
-<li>
-<p>如果单纯地<code>print</code>会多出一些空白行，这是因为<code>print</code>的时候末尾自带一个换行符。解决方法有两种<br>
-(1) Python2.X<br>
+<li><p>如果单纯地<code>print</code>会多出一些空白行，这是因为<code>print</code>的时候末尾自带一个换行符。解决方法有两种 <br />
+(1) Python2.X <br />
 去掉末尾的换行，<code>strip</code>默认删除空白符（包括'\n', '\r',  '\t',  ' ')</p>
 
-<div class="highlight highlight-python"><pre><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><code><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">()</span>
 <span class="k">print</span> <span class="n">line</span>
-</pre></div>
+</code></pre></div>
 
-<p>(2) Python3.X<br><code>print()</code>函数有个参数是<code>end</code>，代表以什么结尾，默认是<code>\n</code>，我们用空字符做结尾</p>
+<p>(2) Python3.X <br />
+<code>print()</code>函数有个参数是<code>end</code>，代表以什么结尾，默认是<code>\n</code>，我们用空字符做结尾</p>
 
-<div class="highlight highlight-python"><pre><span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s">''</span><span class="p">)</span>
-</pre></div>
-</li>
+<div class="codehilite"><pre><span></span><code><span class="k">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</code></pre></div></li>
 </ol>

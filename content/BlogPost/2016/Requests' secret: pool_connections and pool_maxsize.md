@@ -1,6 +1,7 @@
 [Requests][1] is one of the, if not the most well-known Python third-party library for Python programmers. With its simple API and high performance, people tend to use requests rather than urllib2 in standard library for HTTP requests. However, people who use requests every day may not know the internals, and today I want to explain two concepts: `pool_connections` and `pool_maxsize`.
 
 Let's start with `Session`:
+
 ```python
 import requests
 
@@ -13,6 +14,7 @@ Registers a connection adapter to a prefix.
 Adapters are sorted in descending order by key length.
 
 No? Well, in fact you've already used this method when you [initialize a `Session` object][4]:
+
 ```python
 class Session(SessionRedirectMixin):
     
@@ -37,6 +39,7 @@ Now comes the interesting part. If you've read Ian Cordasco's article [Retries i
 * `max_retries(int)` – The maximum number of retries each connection should attempt. Note, this applies only to failed DNS lookups, socket connections and connection timeouts, never to requests where data has made it to the server. By default, Requests does not retry failed connections. If you need granular control over the conditions under which we retry a request, import urllib3’s Retry class and pass that instead.
 * `pool_block` – Whether the connection pool should block for connections.
 Usage:
+
 ```python
 >>> import requests
 >>> s = requests.Session()
@@ -45,6 +48,7 @@ Usage:
 ```
 
 If the above documentation confuses you, here's my explanation: what HTTP Adapter does is simply **providing different configurations for different requests according to target url**. Remember the code above?
+
 ```python
 self.mount('https://', HTTPAdapter())
 self.mount('http://', HTTPAdapter())
@@ -54,6 +58,7 @@ It creates two `HTTPAdapter` objects with the default argument `pool_connections
 As I said, the main purpose of this article is to explain `pool_connections` and `pool_maxsize`.
 
 First let's look at `pool_connections`. Yesterday I raised a [question][7] on stackoverflow cause I'm not sure if my understanding is correct, the answer eliminates my uncertainty. HTTP, as we all know, is based on TCP protocol. An HTTP connection is also a TCP connection, which is  identified by a tuple of **five** values:
+
 ```
 (<protocol>, <src addr>, <src port>, <dest addr>, <dest port>)
 ```
@@ -65,6 +70,7 @@ The question is, what determines if you can reuse old connection or not? Yes, `p
 I know, I know, I don't want to brought so many terminologies either, this is the last one, I promise. For easy understanding, **one connection pool corresponds to one host**, that's what it is.
 
 Here's an example(unrelated lines are ignored):
+
 ```python
 s = requests.Session()
 s.mount('https://', HTTPAdapter(pool_connections=1))
@@ -84,6 +90,7 @@ DEBUG:requests.packages.urllib3.connectionpool:"GET / HTTP/1.1" 200 None
 `HTTPAdapter(pool_connections=1)` is mounted to `https://`, which means only one connection pool persists at a time. After calling `s.get('https://www.baidu.com')`, the cached connection pool is `connectionpool('https://www.baidu.com')`. Now `s.get('https://www.zhihu.com')` came, and the session found that it cannot use the previously cached connection because it's not the same host(one connection pool corresponds to one host, remember?). Therefore the session had to create a new connection pool, or connection if you would like. Since `pool_connections=1`, session cannot hold two connection pools at the same time, thus it abandoned the old one which is `connectionpool('https://www.baidu.com')` and kept the new one which is `connectionpool('https://www.zhihu.com')`. Next `get` is the same. This is why we see three `Starting new HTTPS connection` in log.
 
 What if we set `pool_connections` to 2:
+
 ```python
 s = requests.Session()
 s.mount('https://', HTTPAdapter(pool_connections=2))
@@ -108,6 +115,7 @@ Actually, `pool_maxsize` is an argument for initializing urllib3's [`HTTPConnect
 `HTTPConnectionPool` is a container for a collection of connections to a specific host, and `pool_maxsize` is the number of connections to save that can be reused. If you're running your code in one thread, it's neither possible nor needed to create multiple connections to the same host, cause requests library is blocking, so that HTTP request are always sent one after another.
 
 Things are different if there are multiple threads.
+
 ```python
 def thread_get(url):
     s.get(url)
@@ -135,6 +143,7 @@ In this case, we create a connectionpool with `pool_maxsize=2`, and there're no 
 We can see that requests from `t3` and `t4` did not create new connections, they reused the old ones.
 
 What if there's not enough size?
+
 ```python
 s = requests.Session()
 s.mount('https://', HTTPAdapter(pool_connections=1, pool_maxsize=1))
@@ -160,6 +169,7 @@ WARNING:requests.packages.urllib3.connectionpool:Connection pool is full, discar
 """
 ```
 Now, `pool_maxsize=1`，warning came as expected:
+
 ```
 Connection pool is full, discarding connection: www.zhihu.com
 ```
@@ -167,6 +177,7 @@ We can also noticed that since only one connection can be saved in this pool, a 
 > If you’re planning on using such a pool in a multithreaded environment, you should set the maxsize of the pool to a higher number, such as the number of threads.
 
 Last but not least, `HTTPAdapter` instances mounted to different prefixes are **independent**.
+
 ```python
 s = requests.Session()
 s.mount('https://', HTTPAdapter(pool_connections=1, pool_maxsize=2))
@@ -195,16 +206,17 @@ I guess that's all. Hope this article help you understand requests better. BTW I
 ## Appendix
 1. For https, requests uses urllib3's [HTTPSConnectionPool][10], but it's pretty much the same as HTTPConnectionPool so I didn't differeniate them in this article.
 2. `Session`'s `mount` method ensures the longest prefix gets matched first. Its implementation is pretty interesting so I posted it here.
-    ```python
-    def mount(self, prefix, adapter):
-        """Registers a connection adapter to a prefix.
-        Adapters are sorted in descending order by key length."""
-        self.adapters[prefix] = adapter
-        keys_to_move = [k for k in self.adapters if len(k) < len(prefix)]
-        for key in keys_to_move:
-            self.adapters[key] = self.adapters.pop(key)
-    ```
-    Note that `self.adapters` is an `OrderedDict`.
+
+```python
+def mount(self, prefix, adapter):
+    """Registers a connection adapter to a prefix.
+    Adapters are sorted in descending order by key length."""
+    self.adapters[prefix] = adapter
+    keys_to_move = [k for k in self.adapters if len(k) < len(prefix)]
+    for key in keys_to_move:
+        self.adapters[key] = self.adapters.pop(key)
+```
+Note that `self.adapters` is an `OrderedDict`.
 
 3. 刚发现，我就说为什么白天晕乎乎的，原来是吃了白加黑的黑片\_(:3」∠)\_
 

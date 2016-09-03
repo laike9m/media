@@ -53,6 +53,7 @@ Brett 提倡尽可能不 return list，而是 return generator。说到 `iter(it
 然后就是讲了一个使用 iterator 时经常会碰到的问题：一个 iterator 被 exhaust 之后，再遍历就没东西了。他提出的解决方案是：  
 1. 如果要多次遍历一个 iterator，假定叫 `it`，使用 `if iter(it) is iter(it): raise xxx` 来防止问题发生；  
 2. 当然光有1还不行，他提出使用“generator container”，说白了就是自定义 `__iter__`，比如
+
 ```python
 class LoadCities(object):
 
@@ -65,4 +66,5 @@ class LoadCities(object):
                 city, count = line.split('\t')
                 yield city, int(count)
 ```
+
 然后用 `for x in LoadCities('pop.tsv')` 来遍历。因为每次是返回一个新的 iterator，所以不会出现之前的问题。不过其实吧，用 [`itertools.tee`](https://docs.python.org/3/library/itertools.html#itertools.tee) 可能更简单点。

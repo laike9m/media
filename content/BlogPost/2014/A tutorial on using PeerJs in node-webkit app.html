@@ -8,35 +8,36 @@
 
 <p>The node-webkit project I'm working on needs nodejs(db strorage, watching files, etc...) as well as PeerJs. First I tried something like this:</p>
 
-<div class="highlight highlight-html"><pre>&lt;!DOCTYPE html&gt;
-&lt;<span class="pl-ent">html</span>&gt;
-&lt;<span class="pl-ent">head</span> <span class="pl-e">lang</span>=<span class="pl-s1"><span class="pl-pds">"</span>en<span class="pl-pds">"</span></span>&gt;
-<span class="pl-s2">  &lt;<span class="pl-ent">script</span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>peer.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</span>
-&lt;/<span class="pl-ent">head</span>&gt;
-&lt;<span class="pl-ent">body</span>&gt;
-<span class="pl-s2">&lt;<span class="pl-ent">script</span>&gt;</span>
-<span class="pl-s2">  <span class="pl-s">var</span> peer <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Peer</span>(<span class="pl-s1"><span class="pl-pds">'</span>username<span class="pl-pds">'</span></span>, {key<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>my-key<span class="pl-pds">'</span></span>});</span>
-<span class="pl-s2">  <span class="pl-s">var</span> conn <span class="pl-k">=</span> peer.connect(<span class="pl-s1"><span class="pl-pds">'</span>hehe<span class="pl-pds">'</span></span>);</span>
-<span class="pl-s2">  <span class="pl-s">var</span> fs <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>fs<span class="pl-pds">'</span></span>);</span>
-<span class="pl-s2"></span>
-<span class="pl-s2">  <span class="pl-c">// sender side code</span></span>
-<span class="pl-s2">  conn.on(<span class="pl-s1"><span class="pl-pds">'</span>open<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(){</span>
-<span class="pl-s2">    <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">"</span>connect to peer<span class="pl-pds">"</span></span>);</span>
-<span class="pl-s2">    <span class="pl-s">var</span> data <span class="pl-k">=</span> fs.readFileSync(<span class="pl-s1"><span class="pl-pds">'</span>file-you-want-to-transfer<span class="pl-pds">'</span></span>);</span>
-<span class="pl-s2">    conn.<span class="pl-s3">send</span>(data);</span>
-<span class="pl-s2">    <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">'</span>data sent<span class="pl-pds">'</span></span>);</span>
-<span class="pl-s2">  });</span>
-<span class="pl-s2"></span>
-<span class="pl-s2">  <span class="pl-c">// receiver side code</span></span>
-<span class="pl-s2">  peer.on(<span class="pl-s1"><span class="pl-pds">'</span>connection<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">conn</span>) {</span>
-<span class="pl-s2">    conn.on(<span class="pl-s1"><span class="pl-pds">'</span>data<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">data</span>){</span>
-<span class="pl-s2">      fs.writeFileSync(<span class="pl-s1"><span class="pl-pds">'</span>received_file<span class="pl-pds">'</span></span>, data);</span>
-<span class="pl-s2">      <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">"</span>received complete: <span class="pl-pds">"</span></span>, <span class="pl-s3">Date</span>());</span>
-<span class="pl-s2">    });</span>
-<span class="pl-s2">  });</span>
-<span class="pl-s2">&lt;/<span class="pl-ent">script</span>&gt;</span>
-&lt;/<span class="pl-ent">body</span>&gt;
-&lt;/<span class="pl-ent">html</span>&gt;</pre></div>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head lang="en"&gt;
+  &lt;script src="peer.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;script&gt;
+  var peer = new Peer('username', {key: 'my-key'});
+  var conn = peer.connect('hehe');
+  var fs = require('fs');
+
+  // sender side code
+  conn.on('open', function(){
+    console.log("connect to peer");
+    var data = fs.readFileSync('file-you-want-to-transfer');
+    conn.send(data);
+    console.log('data sent');
+  });
+
+  // receiver side code
+  peer.on('connection', function(conn) {
+    conn.on('data', function(data){
+      fs.writeFileSync('received_file', data);
+      console.log("received complete: ", Date());
+    });
+  });
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
 
 <p>It doesn't work because there's no node.js runtime in html, So you can't read from/write to local using <code>fs.write/readFileSync</code>. You probabaly know that node-webkit's node runtime can't really interact with DOM environmen——it lets you require a nodejs's script and call its function from DOM, but you <strong>CAN'T GET THE RETURN VALUE</strong>, the functon you invoked is run in node runtime and knows nothing about DOM, that's why the above code couldn't work.</p>
 
@@ -46,7 +47,7 @@
 
 <p>This demo could be run either on a single machine or two machines. What it does is transfering <code>.gitignore</code> file to the other end. Here's its GUI:</p>
 
-<p><a href="https://camo.githubusercontent.com/9da94c11abf70f745b472aebe432d8e39dfeb38c/687474703a2f2f6c61696b65396d2e636f6d2f6d656469612f636f6e74656e742f426c6f67506f73742f696d616765732f706565722d6e772d312e6a7067" target="_blank"><img src="https://camo.githubusercontent.com/9da94c11abf70f745b472aebe432d8e39dfeb38c/687474703a2f2f6c61696b65396d2e636f6d2f6d656469612f636f6e74656e742f426c6f67506f73742f696d616765732f706565722d6e772d312e6a7067" alt="" data-canonical-src="http://laike9m.com/media/content/BlogPost/images/peer-nw-1.jpg" style="max-width:100%;"></a></p>
+<p><img src="http://laike9m.com/media/content/BlogPost/images/peer-nw-1.jpg" alt="" /></p>
 
 <p>To run this app, <code>npm install</code> first, then launch it following <a href="https://github.com/rogerwang/node-webkit/wiki/How-to-run-apps">node-webkit's documentation</a>. Assume you only have one computer, click the <code>receive</code> button, then click <code>send</code> button, you'll see a new file called <code>received_gitignore</code> appear in app's directory. Be sure to click <code>receive</code> before <code>send</code>, whether running on single machine or two machines.</p>
 
@@ -54,92 +55,97 @@
 
 <p>First is <code>package.json</code>:</p>
 
-<div class="highlight highlight-javascript"><pre>{
-    <span class="pl-s1"><span class="pl-pds">"</span>main<span class="pl-pds">"</span></span><span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">"</span>main.html<span class="pl-pds">"</span></span>,
-}</pre></div>
+<pre><code>{
+    "main": "main.html",
+}
+</code></pre>
 
 <p>So <code>main.html</code> is the first HTML page node-webkit should display.</p>
 
-<div class="highlight highlight-html"><pre>&lt;<span class="pl-ent">html</span>&gt;
-<span class="pl-s2">&lt;<span class="pl-ent">script</span>&gt;</span>
-<span class="pl-s2">  <span class="pl-s">var</span> main <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>./main.js<span class="pl-pds">'</span></span>);</span>
-<span class="pl-s2">  <span class="pl-s3">window</span>.<span class="pl-sc">location</span>.<span class="pl-sc">href</span> <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>http://127.0.0.1:12345/<span class="pl-pds">"</span></span>;</span>
-<span class="pl-s2">&lt;/<span class="pl-ent">script</span>&gt;</span>
-&lt;/<span class="pl-ent">html</span>&gt;</pre></div>
+<pre><code>&lt;html&gt;
+&lt;script&gt;
+  var main = require('./main.js');
+  window.location.href = "http://127.0.0.1:12345/";
+&lt;/script&gt;
+&lt;/html&gt;
+</code></pre>
 
 <p>Here's the interesting part: our <code>main.html</code> doesn't contain anything to display, it's only purpose is calling <code>require('./main')</code> which will launch an express server listening on <code>127.0.0.0:12345</code>, then connects to it.</p>
 
 <p>Let's see how it's done in <code>main.js</code>:</p>
 
-<div class="highlight highlight-javascript"><pre><span class="pl-c">// main.js part 1</span>
-<span class="pl-s">var</span> app <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>express<span class="pl-pds">'</span></span>)();
-<span class="pl-s">var</span> server <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>http<span class="pl-pds">'</span></span>).Server(app);
-<span class="pl-s">var</span> io <span class="pl-k">=</span> <span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>socket.io<span class="pl-pds">'</span></span>)(server);
+<pre><code>// main.js part 1
+var app = require('express')();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 
-server.listen(<span class="pl-c1">12345</span>);
-app.use(<span class="pl-s3">require</span>(<span class="pl-s1"><span class="pl-pds">'</span>express<span class="pl-pds">'</span></span>).static(<span class="pl-sv">__dirname</span> <span class="pl-k">+</span> <span class="pl-s1"><span class="pl-pds">'</span>/static<span class="pl-pds">'</span></span>));
-app.get(<span class="pl-s1"><span class="pl-pds">'</span>/<span class="pl-pds">'</span></span>, <span class="pl-st">function</span> (<span class="pl-vpf">req</span>, <span class="pl-vpf">res</span>) {
-  res.sendfile(<span class="pl-sv">__dirname</span> <span class="pl-k">+</span> <span class="pl-s1"><span class="pl-pds">'</span>/index.html<span class="pl-pds">'</span></span>);
-});</pre></div>
+server.listen(12345);
+app.use(require('express').static(__dirname + '/static'));
+app.get('/', function (req, res) {
+  res.sendfile(__dirname + '/index.html');
+});
+</code></pre>
 
-<p>Nothing special, just a regular express http server with socket.io.<br>
+<p>Nothing special, just a regular express http server with socket.io. <br />
 As we can see, visiting <code>http://127.0.0.1:12345/</code> gets <code>index.html</code> displayed. Here's <code>index.html</code>:</p>
 
-<div class="highlight highlight-html"><pre>&lt;!DOCTYPE html&gt;
-&lt;<span class="pl-ent">html</span>&gt;
-&lt;<span class="pl-ent">head</span> <span class="pl-e">lang</span>=<span class="pl-s1"><span class="pl-pds">"</span>en<span class="pl-pds">"</span></span>&gt;
-  &lt;<span class="pl-ent">meta</span> <span class="pl-e">charset</span>=<span class="pl-s1"><span class="pl-pds">"</span>UTF-8<span class="pl-pds">"</span></span>&gt;
-  &lt;<span class="pl-ent">meta</span> <span class="pl-e">name</span>=<span class="pl-s1"><span class="pl-pds">"</span>author<span class="pl-pds">"</span></span> <span class="pl-e">content</span>=<span class="pl-s1"><span class="pl-pds">"</span>laike9m<span class="pl-pds">"</span></span>&gt;
-  &lt;<span class="pl-ent">title</span>&gt;demo&lt;/<span class="pl-ent">title</span>&gt;
-<span class="pl-s2">  &lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s1"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>peer.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</span>
-<span class="pl-s2">  &lt;<span class="pl-ent">script</span> <span class="pl-e">type</span>=<span class="pl-s1"><span class="pl-pds">"</span>text/javascript<span class="pl-pds">"</span></span> <span class="pl-e">src</span>=<span class="pl-s1"><span class="pl-pds">"</span>/socket.io/socket.io.js<span class="pl-pds">"</span></span>&gt;&lt;/<span class="pl-ent">script</span>&gt;</span>
-&lt;/<span class="pl-ent">head</span>&gt;
-&lt;<span class="pl-ent">body</span>&gt;
-<span class="pl-s2">  &lt;<span class="pl-ent">script</span>&gt;</span>
-<span class="pl-s2">    <span class="pl-s3">window</span>.socket <span class="pl-k">=</span> io.connect(<span class="pl-s1"><span class="pl-pds">'</span>http://localhost/<span class="pl-pds">'</span></span>, { port<span class="pl-k">:</span> <span class="pl-c1">12345</span> });</span>
-<span class="pl-s2">    <span class="pl-st">function</span> <span class="pl-en">clickSend</span>() {</span>
-<span class="pl-s2">      <span class="pl-s">var</span> peer <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Peer</span>(<span class="pl-s1"><span class="pl-pds">'</span>sender<span class="pl-pds">'</span></span>, {key<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>45rvl4l8vjn3766r<span class="pl-pds">'</span></span>});</span>
-<span class="pl-s2">      <span class="pl-s">var</span> conn <span class="pl-k">=</span> peer.connect(<span class="pl-s1"><span class="pl-pds">'</span>receiver<span class="pl-pds">'</span></span>);</span>
-<span class="pl-s2">      conn.on(<span class="pl-s1"><span class="pl-pds">'</span>open<span class="pl-pds">'</span></span>, <span class="pl-st">function</span> () {</span>
-<span class="pl-s2">        <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">"</span>sender dataconn open<span class="pl-pds">"</span></span>);</span>
-<span class="pl-s2">        <span class="pl-s3">window</span>.socket.on(<span class="pl-s1"><span class="pl-pds">'</span>sendToPeer<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">data</span>) {</span>
-<span class="pl-s2">          <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">"</span>sent data: <span class="pl-pds">"</span></span>, <span class="pl-s3">Date</span>());</span>
-<span class="pl-s2">          conn.<span class="pl-s3">send</span>(data);</span>
-<span class="pl-s2">          peer.disconnect();</span>
-<span class="pl-s2">        });</span>
-<span class="pl-s2">        <span class="pl-s3">window</span>.socket.emit(<span class="pl-s1"><span class="pl-pds">'</span>send<span class="pl-pds">'</span></span>);</span>
-<span class="pl-s2">      });</span>
-<span class="pl-s2">    }</span>
-<span class="pl-s2">    <span class="pl-st">function</span> <span class="pl-en">clickRecv</span>(){</span>
-<span class="pl-s2">      <span class="pl-s">var</span> peer <span class="pl-k">=</span> <span class="pl-k">new</span> <span class="pl-en">Peer</span>(<span class="pl-s1"><span class="pl-pds">'</span>receiver<span class="pl-pds">'</span></span>, {key<span class="pl-k">:</span> <span class="pl-s1"><span class="pl-pds">'</span>45rvl4l8vjn3766r<span class="pl-pds">'</span></span>});</span>
-<span class="pl-s2">      peer.on(<span class="pl-s1"><span class="pl-pds">'</span>connection<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">conn</span>) {</span>
-<span class="pl-s2">        conn.on(<span class="pl-s1"><span class="pl-pds">"</span>open<span class="pl-pds">"</span></span>, <span class="pl-st">function</span>(){</span>
-<span class="pl-s2">          <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">"</span>receiver dataconn open<span class="pl-pds">"</span></span>);</span>
-<span class="pl-s2">          conn.on(<span class="pl-s1"><span class="pl-pds">'</span>data<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">data</span>){</span>
-<span class="pl-s2">            <span class="pl-en">console</span><span class="pl-s3">.log</span>(<span class="pl-s1"><span class="pl-pds">"</span>received data: <span class="pl-pds">"</span></span>, <span class="pl-s3">Date</span>());</span>
-<span class="pl-s2">            <span class="pl-s3">window</span>.socket.emit(<span class="pl-s1"><span class="pl-pds">'</span>receive<span class="pl-pds">'</span></span>, data);</span>
-<span class="pl-s2">          });</span>
-<span class="pl-s2">        });</span>
-<span class="pl-s2">      });</span>
-<span class="pl-s2">    }</span>
-<span class="pl-s2">  &lt;/<span class="pl-ent">script</span>&gt;</span>
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head lang="en"&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="author" content="laike9m"&gt;
+  &lt;title&gt;demo&lt;/title&gt;
+  &lt;script type="text/javascript" src="peer.js"&gt;&lt;/script&gt;
+  &lt;script type="text/javascript" src="/socket.io/socket.io.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;script&gt;
+    window.socket = io.connect('http://localhost/', { port: 12345 });
+    function clickSend() {
+      var peer = new Peer('sender', {key: '45rvl4l8vjn3766r'});
+      var conn = peer.connect('receiver');
+      conn.on('open', function () {
+        console.log("sender dataconn open");
+        window.socket.on('sendToPeer', function(data) {
+          console.log("sent data: ", Date());
+          conn.send(data);
+          peer.disconnect();
+        });
+        window.socket.emit('send');
+      });
+    }
+    function clickRecv(){
+      var peer = new Peer('receiver', {key: '45rvl4l8vjn3766r'});
+      peer.on('connection', function(conn) {
+        conn.on("open", function(){
+          console.log("receiver dataconn open");
+          conn.on('data', function(data){
+            console.log("received data: ", Date());
+            window.socket.emit('receive', data);
+          });
+        });
+      });
+    }
+  &lt;/script&gt;
   peerjs with nodewebkit demo
-  &lt;<span class="pl-ent">button</span> <span class="pl-e">onclick</span>=<span class="pl-s1"><span class="pl-pds">"</span>clickSend()<span class="pl-pds">"</span></span>&gt;send&lt;/<span class="pl-ent">button</span>&gt;
-  &lt;<span class="pl-ent">button</span> <span class="pl-e">onclick</span>=<span class="pl-s1"><span class="pl-pds">"</span>clickRecv()<span class="pl-pds">"</span></span>&gt;receive&lt;/<span class="pl-ent">button</span>&gt;
-&lt;/<span class="pl-ent">body</span>&gt;
-&lt;/<span class="pl-ent">html</span>&gt;</pre></div>
+  &lt;button onclick="clickSend()"&gt;send&lt;/button&gt;
+  &lt;button onclick="clickRecv()"&gt;receive&lt;/button&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
 
 <p>It contains two button: <code>send</code> and <code>receive</code>. When clicked, <code>clickSend</code> and <code>clickRecv</code> gets called. To understand what these functions do, let's see the other part of <code>main.js</code>.</p>
 
-<div class="highlight highlight-javascript"><pre><span class="pl-c">// main.js part 2</span>
-io.on(<span class="pl-s1"><span class="pl-pds">'</span>connection<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">socket</span>){
-  socket.on(<span class="pl-s1"><span class="pl-pds">'</span>send<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">data</span>){
-    socket.emit(<span class="pl-s1"><span class="pl-pds">'</span>sendToPeer<span class="pl-pds">'</span></span>, fs.readFileSync(<span class="pl-s1"><span class="pl-pds">'</span>.gitignore<span class="pl-pds">'</span></span>));
+<pre><code>// main.js part 2
+io.on('connection', function(socket){
+  socket.on('send', function(data){
+    socket.emit('sendToPeer', fs.readFileSync('.gitignore'));
   });
-  socket.on(<span class="pl-s1"><span class="pl-pds">'</span>receive<span class="pl-pds">'</span></span>, <span class="pl-st">function</span>(<span class="pl-vpf">data</span>){
-    fs.writeFileSync(<span class="pl-s1"><span class="pl-pds">'</span>received_gitignore<span class="pl-pds">'</span></span>, data);
+  socket.on('receive', function(data){
+    fs.writeFileSync('received_gitignore', data);
   });
-});</pre></div>
+});
+</code></pre>
 
 <p>So you clicked the <code>receive</code> button, PeerJs create a <code>Peer</code> with id <code>receiver</code> and a valid key I registered, then it waits for connection from sender. Then you clicked the <code>send</code> button, another <code>Peer</code> is created with id <code>sender</code>. <code>sender</code> tries to connect to <code>receiver</code> and when data connection successfully built, <code>window.socket</code>emits a <code>send</code> event, which is handled in <code>main.js</code>. The handler simply reads file content and sends it back to DOM environment. Note that socket.io supports binary data transfer from version 1.0, so you can't use a lower version socket.io.</p>
 

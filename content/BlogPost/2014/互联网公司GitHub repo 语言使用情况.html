@@ -1,44 +1,45 @@
-<p>做 PPT 太无聊了，突然想到可以统计一下这个东西，于是就做了一下<br>
+<p>做 PPT 太无聊了，突然想到可以统计一下这个东西，于是就做了一下 <br />
 现在基本上所有国外大公司和国内部分公司都在 GitHub 上开源了一部分代码。统计一下这些代码的语言使用情况，多少可以反映公司内部对语言的偏好。很多公司流行的项目都是单独建一个 repo的，没办法统计，所以这里统计大家就随便看看吧。使用了 GitHub 的 API，只有不到四十行代码，所以直接贴在这里了，复制下来装个 requests 就可以直接运行</p>
 
-<div class="highlight highlight-python"><pre><span class="pl-c"># coding: utf-8</span>
+<div class="codehilite"><pre><span></span><code><span class="c1"># coding: utf-8</span>
 
-<span class="pl-s1"><span class="pl-pds">"""</span></span>
-<span class="pl-s1">统计大公司github上的organization 中repo 的语言使用情况</span>
-<span class="pl-s1"><span class="pl-pds">"""</span></span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">统计大公司github上的organization 中repo 的语言使用情况</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
-<span class="pl-k">import</span> requests
-<span class="pl-k">from</span> collections <span class="pl-k">import</span> defaultdict
-<span class="pl-k">from</span> os.path <span class="pl-k">import</span> join
-<span class="pl-k">from</span> pprint <span class="pl-k">import</span> pprint
-
-
-<span class="pl-st">class</span> <span class="pl-en">GetLangStat</span>():
-
-    api_url <span class="pl-k">=</span> <span class="pl-s1"><span class="pl-pds">"</span>https://api.github.com/orgs<span class="pl-pds">"</span></span>
-    ORGANIZATIONS <span class="pl-k">=</span> (
-        <span class="pl-s1"><span class="pl-pds">'</span>Microsoft<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>aws<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>google<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>twitter<span class="pl-pds">'</span></span>, <span class="pl-s1"><span class="pl-pds">'</span>facebook<span class="pl-pds">'</span></span>,
-        <span class="pl-s1"><span class="pl-pds">'</span>alibaba<span class="pl-pds">'</span></span>
-    )
-    stats <span class="pl-k">=</span> {org: defaultdict(<span class="pl-s3">int</span>) <span class="pl-k">for</span> org <span class="pl-k">in</span> ORGANIZATIONS}
-
-    <span class="pl-en">@<span class="pl-s3">classmethod</span></span>
-    <span class="pl-st">def</span> <span class="pl-en">get_one_org_repos</span>(<span class="pl-vpf">cls</span>, <span class="pl-vpf">org</span>):
-        <span class="pl-k">print</span>(org)
-        url <span class="pl-k">=</span> join(<span class="pl-v">cls</span>.api_url, org, <span class="pl-s1"><span class="pl-pds">'</span>repos<span class="pl-pds">'</span></span>)
-        r <span class="pl-k">=</span> requests.get(url)
-        <span class="pl-k">for</span> repo <span class="pl-k">in</span> r.json():
-            <span class="pl-v">cls</span>.stats[org][repo[<span class="pl-s1"><span class="pl-pds">'</span>language<span class="pl-pds">'</span></span>]] <span class="pl-k">+=</span> <span class="pl-c1">1</span>
-
-    <span class="pl-en">@<span class="pl-s3">classmethod</span></span>
-    <span class="pl-st">def</span> <span class="pl-en">get_all_org_repos</span>(<span class="pl-vpf">cls</span>):
-        <span class="pl-k">for</span> org <span class="pl-k">in</span> <span class="pl-v">cls</span>.ORGANIZATIONS:
-            <span class="pl-v">cls</span>.get_one_org_repos(org)
-        pprint(<span class="pl-v">cls</span>.stats)
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="kn">import</span> <span class="n">join</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="kn">import</span> <span class="n">pprint</span>
 
 
-<span class="pl-k">if</span> <span class="pl-sv">__name__</span> <span class="pl-k">==</span> <span class="pl-s1"><span class="pl-pds">'</span>__main__<span class="pl-pds">'</span></span>:
-    GetLangStat.get_all_org_repos()</pre></div>
+<span class="k">class</span> <span class="nc">GetLangStat</span><span class="p">():</span>
+
+    <span class="n">api_url</span> <span class="o">=</span> <span class="s2">&quot;https://api.github.com/orgs&quot;</span>
+    <span class="n">ORGANIZATIONS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s1">&#39;Microsoft&#39;</span><span class="p">,</span> <span class="s1">&#39;aws&#39;</span><span class="p">,</span> <span class="s1">&#39;google&#39;</span><span class="p">,</span> <span class="s1">&#39;twitter&#39;</span><span class="p">,</span> <span class="s1">&#39;facebook&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;alibaba&#39;</span>
+    <span class="p">)</span>
+    <span class="n">stats</span> <span class="o">=</span> <span class="p">{</span><span class="n">org</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="k">for</span> <span class="n">org</span> <span class="ow">in</span> <span class="n">ORGANIZATIONS</span><span class="p">}</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_one_org_repos</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">org</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">org</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">api_url</span><span class="p">,</span> <span class="n">org</span><span class="p">,</span> <span class="s1">&#39;repos&#39;</span><span class="p">)</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">repo</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">():</span>
+            <span class="n">cls</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="n">org</span><span class="p">][</span><span class="n">repo</span><span class="p">[</span><span class="s1">&#39;language&#39;</span><span class="p">]]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_all_org_repos</span><span class="p">(</span><span class="n">cls</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">org</span> <span class="ow">in</span> <span class="n">cls</span><span class="o">.</span><span class="n">ORGANIZATIONS</span><span class="p">:</span>
+            <span class="n">cls</span><span class="o">.</span><span class="n">get_one_org_repos</span><span class="p">(</span><span class="n">org</span><span class="p">)</span>
+        <span class="n">pprint</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">stats</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">GetLangStat</span><span class="o">.</span><span class="n">get_all_org_repos</span><span class="p">()</span>
+</code></pre></div>
 
 <p>统计的公司包括 MS，amazon，google, twitter, facebook, 阿里。其中 amazon 似乎只开源了 aws 相关的代码，不过也算进来了。本来想找百度和腾讯的，结果发现百度没有一个统一的 organization，都是按产品散着的，腾讯则基本没有开源代码。。。</p>
 
@@ -49,30 +50,30 @@
 <table>
 <thead>
 <tr>
-<th>Language</th>
-<th>repo count</th>
+  <th>Language</th>
+  <th>repo count</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Java</td>
-<td>13</td>
+  <td>Java</td>
+  <td>13</td>
 </tr>
 <tr>
-<td>C</td>
-<td>8</td>
+  <td>C</td>
+  <td>8</td>
 </tr>
 <tr>
-<td>C++</td>
-<td>2</td>
+  <td>C++</td>
+  <td>2</td>
 </tr>
 <tr>
-<td>JavaScript</td>
-<td>2</td>
+  <td>JavaScript</td>
+  <td>2</td>
 </tr>
 <tr>
-<td>Perl</td>
-<td>2</td>
+  <td>Perl</td>
+  <td>2</td>
 </tr>
 </tbody>
 </table>
@@ -82,30 +83,30 @@
 <table>
 <thead>
 <tr>
-<th>Language</th>
-<th>repo count</th>
+  <th>Language</th>
+  <th>repo count</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>JavaScript</td>
-<td>9</td>
+  <td>JavaScript</td>
+  <td>9</td>
 </tr>
 <tr>
-<td>C++</td>
-<td>4</td>
+  <td>C++</td>
+  <td>4</td>
 </tr>
 <tr>
-<td>Ruby</td>
-<td>4</td>
+  <td>Ruby</td>
+  <td>4</td>
 </tr>
 <tr>
-<td>Python</td>
-<td>3</td>
+  <td>Python</td>
+  <td>3</td>
 </tr>
 <tr>
-<td>Java</td>
-<td>3</td>
+  <td>Java</td>
+  <td>3</td>
 </tr>
 </tbody>
 </table>
@@ -115,26 +116,26 @@
 <table>
 <thead>
 <tr>
-<th>Language</th>
-<th>repo count</th>
+  <th>Language</th>
+  <th>repo count</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Scala</td>
-<td>14</td>
+  <td>Scala</td>
+  <td>14</td>
 </tr>
 <tr>
-<td>Ruby</td>
-<td>9</td>
+  <td>Ruby</td>
+  <td>9</td>
 </tr>
 <tr>
-<td>Java</td>
-<td>3</td>
+  <td>Java</td>
+  <td>3</td>
 </tr>
 <tr>
-<td>Python,CSS,JavaScrit,Shell</td>
-<td>1</td>
+  <td>Python,CSS,JavaScrit,Shell</td>
+  <td>1</td>
 </tr>
 </tbody>
 </table>
@@ -144,30 +145,30 @@
 <table>
 <thead>
 <tr>
-<th>Language</th>
-<th>repo count</th>
+  <th>Language</th>
+  <th>repo count</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Java</td>
-<td>8</td>
+  <td>Java</td>
+  <td>8</td>
 </tr>
 <tr>
-<td>C++</td>
-<td>5</td>
+  <td>C++</td>
+  <td>5</td>
 </tr>
 <tr>
-<td>PHP</td>
-<td>4</td>
+  <td>PHP</td>
+  <td>4</td>
 </tr>
 <tr>
-<td>C</td>
-<td>3</td>
+  <td>C</td>
+  <td>3</td>
 </tr>
 <tr>
-<td>Python, Js, Objective-C</td>
-<td>2</td>
+  <td>Python, Js, Objective-C</td>
+  <td>2</td>
 </tr>
 </tbody>
 </table>
@@ -177,30 +178,30 @@
 <table>
 <thead>
 <tr>
-<th>Language</th>
-<th>repo count</th>
+  <th>Language</th>
+  <th>repo count</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Java</td>
-<td>8</td>
+  <td>Java</td>
+  <td>8</td>
 </tr>
 <tr>
-<td>Ruby</td>
-<td>6</td>
+  <td>Ruby</td>
+  <td>6</td>
 </tr>
 <tr>
-<td>PHP</td>
-<td>4</td>
+  <td>PHP</td>
+  <td>4</td>
 </tr>
 <tr>
-<td>JavaScript</td>
-<td>3</td>
+  <td>JavaScript</td>
+  <td>3</td>
 </tr>
 <tr>
-<td>Objective-C</td>
-<td>3</td>
+  <td>Objective-C</td>
+  <td>3</td>
 </tr>
 </tbody>
 </table>
@@ -210,18 +211,18 @@
 <table>
 <thead>
 <tr>
-<th>Language</th>
-<th>repo count</th>
+  <th>Language</th>
+  <th>repo count</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>C#</td>
-<td>29</td>
+  <td>C#</td>
+  <td>29</td>
 </tr>
 <tr>
-<td>C++</td>
-<td>1</td>
+  <td>C++</td>
+  <td>1</td>
 </tr>
 </tbody>
 </table>

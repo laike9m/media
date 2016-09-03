@@ -2,111 +2,106 @@
 趁十一假期终于完成了博客的迁移工作，在此记录。</p>
 
 <ol>
-<li>
-<p><strong>Dump PostgreSQL data</strong>  </p>
+<li><p><strong>Dump PostgreSQL data</strong>  </p>
 
-<pre><code>pg_dump -U laike9m -f dump.sql database1
-</code></pre>
+<div class="codehilite"><pre><span></span><code>pg_dump -U laike9m -f dump.sql database1
+</code></pre></div>
 
 <p>生成 425KB 的 dump.sql, 下载到本地，scp 到 DO machine。安装 PostgreSQL：</p>
 
-<pre><code>sudo apt-get update
+<div class="codehilite"><pre><span></span><code>sudo apt-get update
 sudo apt-get install postgresql postgresql-contrib
-</code></pre>
+</code></pre></div>
 
 <p>创建用户和数据库，参考 <a href="https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04">how-to-install-and-use-postgresql-on-ubuntu-14-04</a>。
-还要给用户 laike9m 数据库的管理员权限。先切到 postgres 用户，然后参考 <a href="http://stackoverflow.com/questions/4368789/error-must-be-owner-of-language-plpgsql">error-must-be-owner-of-language-plpgsql</a> 给 laike9m 管理员权限。</p>
-</li>
-<li>
-<p><strong>Load data</strong></p>
+还要给用户 laike9m 数据库的管理员权限。先切到 postgres 用户，然后参考 <a href="http://stackoverflow.com/questions/4368789/error-must-be-owner-of-language-plpgsql">error-must-be-owner-of-language-plpgsql</a> 给 laike9m 管理员权限。</p></li>
+<li><p><strong>Load data</strong></p>
 
-<pre><code>psql -U laike9m database1 &lt; dump.sql
-</code></pre>
-</li>
-<li>
-<p><strong>配置虚拟环境</strong><br>
+<div class="codehilite"><pre><span></span><code>psql -U laike9m database1 &lt; dump.sql
+</code></pre></div></li>
+<li><p><strong>配置虚拟环境</strong> <br />
 安装 virtualenvwrapper，<code>mkvirtualenv</code>, 安装依赖。在安装之前先</p>
 
-<pre><code>sudo apt-get install libpq-dev
+<div class="codehilite"><pre><span></span><code>sudo apt-get install libpq-dev
 sudo apt-get install python3-dev
-</code></pre>
+</code></pre></div>
 
-<p>因为要安装 psycopg2。</p>
-</li>
-<li>
-<p><strong>下载并修改代码</strong><br>
+<p>因为要安装 psycopg2。</p></li>
+<li><p><strong>下载并修改代码</strong> <br />
 在家目录创建 static, media 文件夹作为 <code>STATIC_ROOT</code> 和 <code>MEDIA_ROOT</code>。
 clone <a href="https://github.com/laike9m/My_Blog">代码</a>，clone <a href="https://github.com/laike9m/media">media 文件夹</a>，按照新路径修改 settings.py，
-下载 media 文件。设定密码环境变量（实际上这个用不到了）。<br>
+下载 media 文件。设定密码环境变量（实际上这个用不到了）。 <br />
 之前的 Django 版本是 1.5，这次我想趁迁移升级成 1.8。参照<a href="https://docs.djangoproject.com/en/1.8/topics/migrations/#upgrading-from-south">官方的教程</a>，
 先把 south 从 <code>INSTALLED_APPS</code> 中去掉，然后在 css3two_blog 文件夹中</p>
 
-<div class="highlight highlight-source-shell"><pre>mkdir migrations
-<span class="pl-c1">cd</span> migrations
-touch __init__.py</pre></div>
+<div class="codehilite"><pre><span></span><code>mkdir migrations
+<span class="nb">cd</span> migrations
+touch __init__.py
+</code></pre></div>
 
 <p>最后在根目录执行 <code>python manage.py makemigrations</code> 和 <code>python manage.py migrate --fake-initial</code></p>
 
-<div class="highlight highlight-source-shell"><pre>(blog)laike9m@laike9m1:<span class="pl-k">~</span>/Envs/blog/My_Blog$ python manage.py makemigrations
-Migrations <span class="pl-k">for</span> <span class="pl-smi">'css3two_blog</span><span class="pl-s"><span class="pl-pds">'</span>:</span>
-<span class="pl-s">  0001_initial.py:</span>
-<span class="pl-s">    - Create model BlogPost</span>
-<span class="pl-s">    - Create model BlogPostImage</span>
-<span class="pl-s">(blog)laike9m@laike9m1:~/Envs/blog/My_Blog$ python manage.py migrate --fake-initial</span>
-<span class="pl-s">Operations to perform:</span>
-<span class="pl-s">  Synchronize unmigrated apps: staticfiles, admindocs, messages, mytemplatetags, contact_form</span>
-<span class="pl-s">  Apply all migrations: css3two_blog, contenttypes, taggit, admin, auth, sites, sessions</span>
-<span class="pl-s">Synchronizing apps without migrations:</span>
-<span class="pl-s">  Creating tables...</span>
-<span class="pl-s">    Running deferred SQL...</span>
-<span class="pl-s">  Installing custom SQL...</span>
-<span class="pl-s">Running migrations:</span>
-<span class="pl-s">  Rendering model states... DONE</span>
-<span class="pl-s">  Applying contenttypes.0001_initial... FAKED</span>
-<span class="pl-s">  Applying auth.0001_initial... FAKED</span>
-<span class="pl-s">  Applying admin.0001_initial... FAKED</span>
-<span class="pl-s">  Applying contenttypes.0002_remove_content_type_name... OK</span>
-<span class="pl-s">  Applying auth.0002_alter_permission_name_max_length... OK</span>
-<span class="pl-s">  Applying auth.0003_alter_user_email_max_length... OK</span>
-<span class="pl-s">  Applying auth.0004_alter_user_username_opts... OK</span>
-<span class="pl-s">  Applying auth.0005_alter_user_last_login_null... OK</span>
-<span class="pl-s">  Applying auth.0006_require_contenttypes_0002... OK</span>
-<span class="pl-s">  Applying taggit.0001_initial... FAKED</span>
-<span class="pl-s">  Applying taggit.0002_auto_20150616_2121... OK</span>
-<span class="pl-s">  Applying css3two_blog.0001_initial... FAKED</span>
-<span class="pl-s">  Applying sessions.0001_initial... FAKED</span>
-<span class="pl-s">  Applying sites.0001_initial... FAKED</span></pre></div>
+<div class="codehilite"><pre><span></span><code><span class="o">(</span>blog<span class="o">)</span>laike9m@laike9m1:~/Envs/blog/My_Blog$ python manage.py makemigrations
+Migrations <span class="k">for</span> <span class="s1">&#39;css3two_blog&#39;</span>:
+  0001_initial.py:
+    - Create model BlogPost
+    - Create model BlogPostImage
+<span class="o">(</span>blog<span class="o">)</span>laike9m@laike9m1:~/Envs/blog/My_Blog$ python manage.py migrate --fake-initial
+Operations to perform:
+  Synchronize unmigrated apps: staticfiles, admindocs, messages, mytemplatetags, contact_form
+  Apply all migrations: css3two_blog, contenttypes, taggit, admin, auth, sites, sessions
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+  Installing custom SQL...
+Running migrations:
+  Rendering model states... DONE
+  Applying contenttypes.0001_initial... FAKED
+  Applying auth.0001_initial... FAKED
+  Applying admin.0001_initial... FAKED
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying taggit.0001_initial... FAKED
+  Applying taggit.0002_auto_20150616_2121... OK
+  Applying css3two_blog.0001_initial... FAKED
+  Applying sessions.0001_initial... FAKED
+  Applying sites.0001_initial... FAKED
+</code></pre></div>
 
 <p>最后拷贝静态文件</p>
 
-<div class="highlight highlight-source-shell"><pre>python manage.py collectstatic</pre></div>
+<div class="codehilite"><pre><span></span><code>python manage.py collectstatic
+</code></pre></div>
 
-<p>用 <code>runserver</code> 启动测试服务器，通过 ip 访问网站并执行各种操作，均没有出现问题。<br>
+<p>用 <code>runserver</code> 启动测试服务器，通过 ip 访问网站并执行各种操作，均没有出现问题。 <br />
 这里不得不赞一下 Django，原先以为 1.5 升级 1.8 将遇到各种问题，尤其是跨过了 1.7 
-这个内置 south 的重大改进版本，没想到居然顺利完成了。</p>
-</li>
-<li>
-<p><strong>安装配置 Nginx, uWSGI</strong><br>
+这个内置 south 的重大改进版本，没想到居然顺利完成了。</p></li>
+<li><p><strong>安装配置 Nginx, uWSGI</strong> <br />
 Nginx 我比较熟了，但是每次遇到 uWSGI 都很麻烦，这次也是。花了很长时间去解决
-<a href="http://stackoverflow.com/questions/32888850/uwsgi-nginx-uwsgi-cant-receive-request">这个问题</a>。后来发现在<a href="http://uwsgi-docs.readthedocs.org/en/latest/ThingsToKnow.html">文档</a>里已经有说明。<br>
+<a href="http://stackoverflow.com/questions/32888850/uwsgi-nginx-uwsgi-cant-receive-request">这个问题</a>。后来发现在<a href="http://uwsgi-docs.readthedocs.org/en/latest/ThingsToKnow.html">文档</a>里已经有说明。 <br />
 uWSGI 配置文件 <code>uwsgi.ini</code> 如下</p>
 
-<div class="highlight highlight-source-ini"><pre><span class="pl-en">[uwsgi]</span>
-<span class="pl-k">chdir</span>           = /home/laike9m/Envs/blog/My_Blog
-<span class="pl-k">module</span>          = my_blog.wsgi:application
-<span class="pl-k">home</span>            = /home/laike9m/Envs/blog/
-<span class="pl-k">master</span>          = true
-<span class="pl-k">processes</span>       = 3
-<span class="pl-k">socket</span>          = /tmp/uwsgi.sock
-<span class="pl-k">chmod-socket</span>    = 777
-<span class="pl-k">vacuum</span>          = true
-<span class="pl-k">logto</span>           = /home/laike9m/uwsgi.log</pre></div>
+<div class="codehilite"><pre><span></span><code><span class="k">[uwsgi]</span>
+<span class="na">chdir</span>           <span class="o">=</span> <span class="s">/home/laike9m/Envs/blog/My_Blog</span>
+<span class="na">module</span>          <span class="o">=</span> <span class="s">my_blog.wsgi:application</span>
+<span class="na">home</span>            <span class="o">=</span> <span class="s">/home/laike9m/Envs/blog/</span>
+<span class="na">master</span>          <span class="o">=</span> <span class="s">true</span>
+<span class="na">processes</span>       <span class="o">=</span> <span class="s">3</span>
+<span class="na">socket</span>          <span class="o">=</span> <span class="s">/tmp/uwsgi.sock</span>
+<span class="na">chmod-socket</span>    <span class="o">=</span> <span class="s">777</span>
+<span class="na">vacuum</span>          <span class="o">=</span> <span class="s">true</span>
+<span class="na">logto</span>           <span class="o">=</span> <span class="s">/home/laike9m/uwsgi.log</span>
+</code></pre></div>
 
-<p>Nginx 配置在<a href="https://github.com/laike9m/media/blob/master/Nginx/nginx.conf">这里</a>。<br>
+<p>Nginx 配置在<a href="https://github.com/laike9m/media/blob/master/Nginx/nginx.conf">这里</a>。 <br />
 原本想直接开个 screen 来运行 uwsgi，后来发现用 <a href="http://upstart.ubuntu.com/">upstart</a> 更好。
 下面是 uWSGI 的配置文件 <code>/etc/init/uwsgi.conf</code>:</p>
 
-<pre lang="conf"><code>env DJANGO_DB_PASSWORD=
+<pre><code>env DJANGO_DB_PASSWORD=
 env EMAIL_HOST_PASSWORD=
 env LC_ALL=en_US.UTF-8
 env LANG=en_US.UTF-8
@@ -120,29 +115,27 @@ setgid www-data
 exec /usr/local/bin/uwsgi --ini /home/laike9m/Envs/blog/My_Blog/uwsgi.ini
 </code></pre>
 
-<p>这样之后用 <code>sudo service uwsgi start/stop/restart</code> 就能操作 uWSGI 了</p>
-</li>
-<li>
-<p><strong>添加 HTTPS</strong><br>
-证书还是用之前的，主要是修改 Nginx 配置。对 80 端口的访问要自动跳转。<br>
+<p>这样之后用 <code>sudo service uwsgi start/stop/restart</code> 就能操作 uWSGI 了</p></li>
+<li><p><strong>添加 HTTPS</strong> <br />
+证书还是用之前的，主要是修改 Nginx 配置。对 80 端口的访问要自动跳转。 <br />
 这里只贴关键部分的配置。</p>
 
-<div class="highlight highlight-source-nginx"><pre><span class="pl-k">server</span> {
-    <span class="pl-k">listen</span> <span class="pl-s">80</span>;
-    <span class="pl-k">server_name</span>  laike9m.com www.laike9m.com;
-    <span class="pl-c1">return</span> <span class="pl-s">301</span> https://<span class="pl-smi">$server_name$request_uri</span>;
-}
+<div class="codehilite"><pre><span></span><code><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+    <span class="kn">server_name</span>  <span class="s">laike9m.com</span> <span class="s">www.laike9m.com</span><span class="p">;</span>
+    <span class="kn">return</span> <span class="mi">301</span> <span class="s">https://</span><span class="nv">$server_name$request_uri</span><span class="p">;</span>
+<span class="p">}</span>
 
-<span class="pl-k">server</span> {
-    ...
-    <span class="pl-k">listen</span> <span class="pl-s">443</span> ssl;
-    <span class="pl-k">server_name</span>  laike9m.com www.laike9m.com;
-    <span class="pl-k">ssl_certificate</span> /home/laike9m/files/laike9m_com/laike9m_com.crt;
-    <span class="pl-k">ssl_certificate_key</span> /home/laike9m/files/laike9m_com/key;
-    ...
-}</pre></div>
+<span class="k">server</span> <span class="p">{</span>
+    <span class="kn">...</span>
+    <span class="s">listen</span> <span class="mi">443</span> <span class="s">ssl</span><span class="p">;</span>
+    <span class="kn">server_name</span>  <span class="s">laike9m.com</span> <span class="s">www.laike9m.com</span><span class="p">;</span>
+    <span class="kn">ssl_certificate</span> <span class="s">/home/laike9m/files/laike9m_com/laike9m_com.crt</span><span class="p">;</span>
+    <span class="kn">ssl_certificate_key</span> <span class="s">/home/laike9m/files/laike9m_com/key</span><span class="p">;</span>
+    <span class="kn">...</span>
+<span class="err">}</span>
+</code></pre></div>
 
-<p><br>
-基本就是这样了。</p>
-</li>
+<p><br/>
+基本就是这样了。</p></li>
 </ol>

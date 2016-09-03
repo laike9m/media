@@ -1,79 +1,73 @@
 <p>原本是知乎上的一个答案，现在挪到博客里来。</p>
 
-<h2>
-<a id="user-content-1-type-hints---guido-van-rossum" class="anchor" href="#1-type-hints---guido-van-rossum" aria-hidden="true"><span class="octicon octicon-link"></span></a>1. Type Hints - Guido van Rossum</h2>
+<h2>1. Type Hints - Guido van Rossum</h2>
 
-<p>视频：<a href="https://www.youtube.com/watch?v=2wDvzy6Hgxg">https://www.youtube.com/watch?v=2wDvzy6Hgxg</a><br>
+<p>视频：https://www.youtube.com/watch?v=2wDvzy6Hgxg <br />
 主要就是讲 PEP 484 - Type Hints，通过 typing 这个模块，从 3.5 版本开始，Python 也可以做静态检查了！（更新：实际上 3.5 里还不能做静态检查，只是加入了类型标记，参见<a href="https://docs.python.org/3.6/whatsnew/3.5.html">What's New In Python 3.5</a>）</p>
 
-<h2>
-<a id="user-content-2-raymond-hettinger---beyond-pep-8----best-practices-for-beautiful-intelligible-code" class="anchor" href="#2-raymond-hettinger---beyond-pep-8----best-practices-for-beautiful-intelligible-code" aria-hidden="true"><span class="octicon octicon-link"></span></a>2. Raymond Hettinger - Beyond PEP 8 -- Best practices for beautiful intelligible code</h2>
+<h2>2. Raymond Hettinger - Beyond PEP 8 -- Best practices for beautiful intelligible code</h2>
 
-<p>视频：<a href="https://www.youtube.com/watch?v=wf-BqAjZb8M">https://www.youtube.com/watch?v=wf-BqAjZb8M</a><br>
-强烈推荐！Raymond Hettinger 的演讲适合所有层次的程序员看。这个演讲说的是，我们都知道用 PEP8 来规范 Python 代码，但是这样是否就够了呢？我们可能忽视了一件更重要的事：Pythonic！这个演讲举了几个例子，怎么 make code more pythonic，比如使用 context manager，使用 <code>@property</code>，使用 Adapter 包装已有代码让 <code>import</code> 更简洁。不过其中最神的我觉得还是通过定义 <code>__len__</code> 和 <code>__getitem__</code> 来构造一个 sequence，然后这个 sequence 自动就是 iterable 的，之前我一直以为必须通过定义 <code>__iter__</code> 和 <code>__next__</code> 方法构造 iterator 才能达到让类支持 for in 的效果。<br>
+<p>视频：https://www.youtube.com/watch?v=wf-BqAjZb8M <br />
+强烈推荐！Raymond Hettinger 的演讲适合所有层次的程序员看。这个演讲说的是，我们都知道用 PEP8 来规范 Python 代码，但是这样是否就够了呢？我们可能忽视了一件更重要的事：Pythonic！这个演讲举了几个例子，怎么 make code more pythonic，比如使用 context manager，使用 <code>@property</code>，使用 Adapter 包装已有代码让 <code>import</code> 更简洁。不过其中最神的我觉得还是通过定义 <code>__len__</code> 和 <code>__getitem__</code> 来构造一个 sequence，然后这个 sequence 自动就是 iterable 的，之前我一直以为必须通过定义 <code>__iter__</code> 和 <code>__next__</code> 方法构造 iterator 才能达到让类支持 for in 的效果。 <br />
 这个演讲没有 slide，不过代码不多。</p>
 
-<h2>
-<a id="user-content-3-david-beazley---modules-and-packages-live-and-let-die" class="anchor" href="#3-david-beazley---modules-and-packages-live-and-let-die" aria-hidden="true"><span class="octicon octicon-link"></span></a>3. David Beazley - Modules and Packages: Live and Let Die!</h2>
+<h2>3. David Beazley - Modules and Packages: Live and Let Die!</h2>
 
-<p>视频：<a href="https://www.youtube.com/watch?v=0oTh1CXRaQ0">https://www.youtube.com/watch?v=0oTh1CXRaQ0</a><br>
-Slide: <a href="http://www.dabeaz.com/modulepackage/ModulePackage.pdf">http://www.dabeaz.com/modulepackage/ModulePackage.pdf</a><br>
-代码：<a href="https://github.com/dabeaz/modulepackage">https://github.com/dabeaz/modulepackage</a><br>
-David Beazley 以前的视频我也看过几个，他的演讲最大特点就是 mind-blowing，会在短时间内让你意识到你根本就不会 Python！ 如果有人能在不查资料的情况下理解他的演讲的 50% 内容，那这个人绝对是 Python 高手。这次的视频也是一如既往得烧脑，讲的是和 import 相关的各种知识，因为之前写 <a href="https://github.com/laike9m/ezcf">ezcf</a> 的缘故这次终于能看懂稍微多一点。。。实在不想介绍了，各位可以自己去看。<br>
+<p>视频：https://www.youtube.com/watch?v=0oTh1CXRaQ0 <br />
+Slide: http://www.dabeaz.com/modulepackage/ModulePackage.pdf <br />
+代码：https://github.com/dabeaz/modulepackage <br />
+David Beazley 以前的视频我也看过几个，他的演讲最大特点就是 mind-blowing，会在短时间内让你意识到你根本就不会 Python！ 如果有人能在不查资料的情况下理解他的演讲的 50% 内容，那这个人绝对是 Python 高手。这次的视频也是一如既往得烧脑，讲的是和 import 相关的各种知识，因为之前写 <a href="https://github.com/laike9m/ezcf">ezcf</a> 的缘故这次终于能看懂稍微多一点。。。实在不想介绍了，各位可以自己去看。 <br />
 之前有人问 Python 里有哪些黑魔法。那个问题我没有答，我只想说 David Beazley 的每一个演讲都充斥着黑魔法。。。</p>
 
-<h2>
-<a id="user-content-4-dan-crosta---good-test-bad-test" class="anchor" href="#4-dan-crosta---good-test-bad-test" aria-hidden="true"><span class="octicon octicon-link"></span></a>4. Dan Crosta - Good Test, Bad Test</h2>
+<h2>4. Dan Crosta - Good Test, Bad Test</h2>
 
-<p>视频：<a href="https://www.youtube.com/watch?v=RfR_QRoNZxo">https://www.youtube.com/watch?v=RfR_QRoNZxo</a><br>
-Slide：<a href="https://speakerdeck.com/dcrosta/good-test-bad-test">https://speakerdeck.com/dcrosta/good-test-bad-test</a><br>
-文章：<a href="http://late.am/post/2015/04/20/good-test-bad-test.html">http://late.am/post/2015/04/20/good-test-bad-test.html</a><br>
-关于测试质量的演讲，重点讲述了三个测试的误区：<br>
-(1) 过分追求 100% 覆盖率。他认为有些代码反而应该尽量避免去测试，比如依赖于网络上某个服务的代码。<br>
-(2) 使用过多 assert。他的建议是一个 test function 里面最好只有一个 assert。<br>
-(3) Mock 一定会让测试更好。在测试中用到了数据库，与其直接 mock 一个返回值，不如用简单的代码模拟数据库的工作流程。<br>
+<p>视频：https://www.youtube.com/watch?v=RfR_QRoNZxo <br />
+Slide：https://speakerdeck.com/dcrosta/good-test-bad-test <br />
+文章：http://late.am/post/2015/04/20/good-test-bad-test.html <br />
+关于测试质量的演讲，重点讲述了三个测试的误区： <br />
+(1) 过分追求 100% 覆盖率。他认为有些代码反而应该尽量避免去测试，比如依赖于网络上某个服务的代码。 <br />
+(2) 使用过多 assert。他的建议是一个 test function 里面最好只有一个 assert。 <br />
+(3) Mock 一定会让测试更好。在测试中用到了数据库，与其直接 mock 一个返回值，不如用简单的代码模拟数据库的工作流程。 <br />
 第二条我觉得像只用一个 assert 在很多情况下并不方便，但是把 dict 的 assert 拆分成多个键值 assert 还是可以借鉴的。关于数据库的 mock，其实有很多工具可以使用，比如见过一个专门用来为单元测试生成假数据的第三方库，还有 Django 的测试自带测试数据库。</p>
 
-<h2>
-<a id="user-content-5-raymond-hettinger---super-considered-super" class="anchor" href="#5-raymond-hettinger---super-considered-super" aria-hidden="true"><span class="octicon octicon-link"></span></a>5. Raymond Hettinger - Super considered super!</h2>
+<h2>5. Raymond Hettinger - Super considered super!</h2>
 
-<p>视频：<a href="https://www.youtube.com/watch?v=EiOglTERPEo">https://www.youtube.com/watch?v=EiOglTERPEo</a><br>
-Reddit 讨论：<a href="http://dwz.cn/1ns168">http://dwz.cn/1ns168</a><br>
+<p>视频：https://www.youtube.com/watch?v=EiOglTERPEo <br />
+Reddit 讨论：http://dwz.cn/1ns168 <br />
 Raymond Hettinger 2 Hit！然而这不是最主要的，最重要的是 Raymond 去讲 <code>super</code> 了。没错，在写出著名的<a href="https://rhettinger.wordpress.com/2011/05/26/super-considered-super/">《Python’s super() considered super!》</a><strong>四年</strong>之后，Raymond 终于在 PyCon 上讲了这个主题。这个迟到了四年的演讲的内容除了文章里的那些，就是在逐条批驳 <a href="https://fuhm.net/super-harmful/">《Python's Super Considered Harmful》</a> 里的观点，不过我之前并没有读过 Harmful 一文，等读了再来补充。</p>
 
-<h3>
-<a id="user-content-6-ned-batchelder---facts-and-myths-about-python-names-and-values" class="anchor" href="#6-ned-batchelder---facts-and-myths-about-python-names-and-values" aria-hidden="true"><span class="octicon octicon-link"></span></a>6. Ned Batchelder - Facts and Myths about Python names and values</h3>
+<h3>6. Ned Batchelder - Facts and Myths about Python names and values</h3>
 
-<p>视频：<a href="https://www.youtube.com/watch?v=_AEJHKGk9ns">https://www.youtube.com/watch?v=_AEJHKGk9ns</a><br>
-Slide：<a href="http://nedbatchelder.com/text/names1.html">http://nedbatchelder.com/text/names1.html</a><br>
-比较初学者向的 talk，解释了 Python 的 name 到底是什么。比较经典的几句话是：<br>
-<strong>Assignment never copies data</strong><br>
-<strong>Mutable and immutable are assigned the same</strong><br>
-<strong>Function arguments are assignments</strong><br>
-前两句话的意思是，Python 的 assignment 做的事仅仅是把左边的 name refer 到右边的值，而右边给的值是什么，其实和这个 assignment 操作是没有关系的。<br>
-还有一个最佳实践，就是最好不要在函数中原地 modify 作为参数的 list，最好返回一个 new list 并在外面接收。<br>
+<p>视频：https://www.youtube.com/watch?v=_AEJHKGk9ns <br />
+Slide：http://nedbatchelder.com/text/names1.html <br />
+比较初学者向的 talk，解释了 Python 的 name 到底是什么。比较经典的几句话是： <br />
+<strong>Assignment never copies data</strong> <br />
+<strong>Mutable and immutable are assigned the same</strong> <br />
+<strong>Function arguments are assignments</strong> <br />
+前两句话的意思是，Python 的 assignment 做的事仅仅是把左边的 name refer 到右边的值，而右边给的值是什么，其实和这个 assignment 操作是没有关系的。 <br />
+还有一个最佳实践，就是最好不要在函数中原地 modify 作为参数的 list，最好返回一个 new list 并在外面接收。 <br />
 一个测试对 Python 了解程度的问题：<code>a = []</code>，<code>a += [1]</code> 是否等价于 <code>a = a + [1]</code>。答案是<strong>否</strong>。</p>
 
-<h3>
-<a id="user-content-7-brett-slatkin---how-to-be-more-effective-with-functions" class="anchor" href="#7-brett-slatkin---how-to-be-more-effective-with-functions" aria-hidden="true"><span class="octicon octicon-link"></span></a>7. Brett Slatkin - How to Be More Effective with Functions</h3>
+<h3>7. Brett Slatkin - How to Be More Effective with Functions</h3>
 
-<p>视频：<a href="https://www.youtube.com/watch?v=WjJUPxKB164">https://www.youtube.com/watch?v=WjJUPxKB164</a><br>
-Slide：<a href="http://www.onebigfluke.com/2015/04/how-to-be-more-effective-with-functions.html">http://www.onebigfluke.com/2015/04/how-to-be-more-effective-with-functions.html</a><br>
+<p>视频：https://www.youtube.com/watch?v=WjJUPxKB164 <br />
+Slide：http://www.onebigfluke.com/2015/04/how-to-be-more-effective-with-functions.html <br />
 虽然题目是讲 Function，不过核心内容却是在说 iterator 和 generator，以及卖书。。。 
-Brett 提倡尽可能不 return list，而是 return generator。说到 <code>iter(iter(some_list))</code> 其实和 <code>iter(some_list)</code> 返回一样的结果，也就是同一个 iterator。<br>
-然后就是讲了一个使用 iterator 时经常会碰到的问题：一个 iterator 被 exhaust 之后，再遍历就没东西了。他提出的解决方案是：<br>
-1. 如果要多次遍历一个 iterator，假定叫 <code>it</code>，使用 <code>if iter(it) is iter(it): raise xxx</code> 来防止问题发生；<br>
+Brett 提倡尽可能不 return list，而是 return generator。说到 <code>iter(iter(some_list))</code> 其实和 <code>iter(some_list)</code> 返回一样的结果，也就是同一个 iterator。 <br />
+然后就是讲了一个使用 iterator 时经常会碰到的问题：一个 iterator 被 exhaust 之后，再遍历就没东西了。他提出的解决方案是： <br />
+1. 如果要多次遍历一个 iterator，假定叫 <code>it</code>，使用 <code>if iter(it) is iter(it): raise xxx</code> 来防止问题发生； <br />
 2. 当然光有1还不行，他提出使用“generator container”，说白了就是自定义 <code>__iter__</code>，比如</p>
 
-<div class="highlight highlight-source-python"><pre><span class="pl-k">class</span> <span class="pl-en">LoadCities</span>(<span class="pl-e"><span class="pl-c1">object</span></span>):
+<div class="codehilite"><pre><span></span><code><span class="k">class</span> <span class="nc">LoadCities</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
 
-    <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__init__</span></span>(<span class="pl-smi">self</span>, <span class="pl-smi">path</span>):
-        <span class="pl-v">self</span>.path <span class="pl-k">=</span> path
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
 
-    <span class="pl-k">def</span> <span class="pl-en"><span class="pl-c1">__iter__</span></span>(<span class="pl-smi">self</span>):
-        <span class="pl-k">with</span> <span class="pl-c1">open</span>(<span class="pl-v">self</span>.path) <span class="pl-k">as</span> handle:
-            <span class="pl-k">for</span> line <span class="pl-k">in</span> handle:
-                city, count <span class="pl-k">=</span> line.split(<span class="pl-s"><span class="pl-pds">'</span><span class="pl-cce">\t</span><span class="pl-pds">'</span></span>)
-                <span class="pl-k">yield</span> city, <span class="pl-c1">int</span>(count)</pre></div>
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="k">as</span> <span class="n">handle</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">handle</span><span class="p">:</span>
+                <span class="n">city</span><span class="p">,</span> <span class="n">count</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="n">city</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">count</span><span class="p">)</span>
+</code></pre></div>
 
 <p>然后用 <code>for x in LoadCities('pop.tsv')</code> 来遍历。因为每次是返回一个新的 iterator，所以不会出现之前的问题。不过其实吧，用 <a href="https://docs.python.org/3/library/itertools.html#itertools.tee"><code>itertools.tee</code></a> 可能更简单点。</p>

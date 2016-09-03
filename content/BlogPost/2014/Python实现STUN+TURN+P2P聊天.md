@@ -22,20 +22,24 @@ PyPunchP2P工作流程
 --
 ### PART ONE: 连接
 
-假定你已经运行了`server.py`，并让其监听`1234`这个端口。客户端A首先会通过从[pystun][5]里面弄出来的那部分代码检测自己的NAT类型  
+假定你已经运行了`server.py`，并让其监听`1234`这个端口。客户端A首先会通过从[pystun][5]里面弄出来的那部分代码检测自己的NAT类型 
+ 
 ```python
 nat_type, _, _ = self.get_nat_type()
 ```  
 然后通知服务器端，发起连接请求，同时告知服务器自己的NAT类型。`client.py`的第三个参数是**pool**值，这个值是用来匹配客户端用的。如果说两个发起连接的客户端有一样的pool值，那么就认为它们是希望通信的客户端。指定的pool值也会发送给服务器。  
-```
+
+```python
 self.request_for_connection(nat_type_id=NATTYPE.index(nat_type))
 ```  
 其中  
-```
+
+```python
 NATTYPE = (FullCone, RestrictNAT, RestrictPortNAT, SymmetricNAT)
 ```  
 如果一切顺利，服务器接到了这个请求，那么它会保存客户端A的信息（addr, pool, nat_type），同时继续等待另一个客户端发起请求。  
 好，现在客户端B也发了个请求过来，并且pool值和之前相同。服务器意识到A和B希望和对方通信，于是分别把A和B的信息发给对方。显然，这就是**STUN server**的本职工作。
+
 ```python  
 a, b = poolqueue[pool].addr, addr  
 nat_type_id_a, nat_type_id_b = poolqueue[pool].nat_type_id, nat_type_id  

@@ -1,11 +1,11 @@
 <p>去年写过一篇文章《<a href="https://laike9m.com/blog/bo-ke-xing-neng-you-hua,33/">博客性能优化</a>》。
 网站搬迁之后，需要重新优化一下。下面的测试结果都来自 <a href="http://www.webpagetest.org/">webpagetest</a>。</p>
 
-<p>优化之前<br>
-<a href="/media/content/BlogPost/images/blog_opt2/waterfall1.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/waterfall1.png" alt="" style="max-width:100%;"></a>
-<a href="/media/content/BlogPost/images/blog_opt2/before.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/before.png" alt="" style="max-width:100%;"></a></p>
+<p>优化之前 <br />
+<img src="/media/content/BlogPost/images/blog_opt2/waterfall1.png" alt="" />
+<img src="/media/content/BlogPost/images/blog_opt2/before.png" alt="" /></p>
 
-<p><strong>对字体开启压缩</strong><br>
+<p><strong>对字体开启压缩</strong> <br />
 按照 <a href="http://drawingablank.me/blog/font-mime-types-in-nginx.html">FONT MIME TYPES IN NGINX</a> 这篇文章里说的，在 Nginx 的 <code>mime.types</code> 文件中加入下面几行：</p>
 
 <pre><code>font/ttf                      ttf;
@@ -16,181 +16,181 @@ application/vnd.ms-fontobject eot;
 
 <p>在 <code>nginx.conf</code> 的 gzip 类型中添加</p>
 
-<pre><code>gzip_types [...] font/ttf font/opentype application/vnd.ms-fontobject image/svg+xml;
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">gzip_types</span> <span class="s">[...]</span> <span class="s">font/ttf</span> <span class="s">font/opentype</span> <span class="s">application/vnd.ms-fontobject</span> <span class="s">image/svg+xml</span><span class="p">;</span>
+</code></pre></div>
 
 <p>除了 woff 文件，其它的字体都可以压缩。woff 本身就是压缩过的。</p>
 
-<p><strong>让客户端缓存静态文件</strong><br>
+<p><strong>让客户端缓存静态文件</strong> <br />
 之前静态文件的配置很简单：</p>
 
-<pre><code>location /static {
-    alias /home/laike9m/static;
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">location</span> <span class="s">/static</span> <span class="p">{</span>
+    <span class="kn">alias</span> <span class="s">/home/laike9m/static</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>完全没有客户端缓存。现在加上了：</p>
 
-<pre><code>location /static {
-    alias /home/laike9m/static;
-    etag on; 
-    expires max;
-    add_header Pragma public;
-    add_header Cache-Control "public";
-    access_log off;
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">location</span> <span class="s">/static</span> <span class="p">{</span>
+    <span class="kn">alias</span> <span class="s">/home/laike9m/static</span><span class="p">;</span>
+    <span class="kn">etag</span> <span class="no">on</span><span class="p">;</span> 
+    <span class="kn">expires</span> <span class="s">max</span><span class="p">;</span>
+    <span class="kn">add_header</span> <span class="s">Pragma</span> <span class="s">public</span><span class="p">;</span>
+    <span class="kn">add_header</span> <span class="s">Cache-Control</span> <span class="s">&quot;public&quot;</span><span class="p">;</span>
+    <span class="kn">access_log</span> <span class="no">off</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 
-<p>对 <code>/media</code> 作同样配置。<br>
+<p>对 <code>/media</code> 作同样配置。 <br />
 特别地，我希望 css 文件不要缓存那么久，因为我经常修改 css，希望第二天就能看到效果。</p>
 
-<pre><code>location ~* ^/static/(.+\.css)$ {
-    alias /home/laike9m/static/$1;
-    etag on; 
-    expires 1d;
-    add_header Pragma public;
-    add_header Cache-Control "public";
-    access_log off;
-}
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">location</span> <span class="p">~</span><span class="sr">*</span> <span class="s">^/static/(.+\.css)</span>$ <span class="p">{</span>
+    <span class="kn">alias</span> <span class="s">/home/laike9m/static/</span><span class="nv">$1</span><span class="p">;</span>
+    <span class="kn">etag</span> <span class="no">on</span><span class="p">;</span> 
+    <span class="kn">expires</span> <span class="s">1d</span><span class="p">;</span>
+    <span class="kn">add_header</span> <span class="s">Pragma</span> <span class="s">public</span><span class="p">;</span>
+    <span class="kn">add_header</span> <span class="s">Cache-Control</span> <span class="s">&quot;public&quot;</span><span class="p">;</span>
+    <span class="kn">access_log</span> <span class="no">off</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
 
 <p>这个 <code>alias</code> 写不对很容易就 404 了。还有就是注意要把 css 的这个 location 放在 /static 之前，因为
 Nginx 在正则匹配的时候是 sequential 的，即放在前面的会先匹配，而不是像前缀匹配取最长的那个。  </p>
 
-<p>效果<br>
-<a href="/media/content/BlogPost/images/blog_opt2/waterfall2.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/waterfall2.png" alt="" style="max-width:100%;"></a>
-<a href="/media/content/BlogPost/images/blog_opt2/after.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/after.png" alt="" style="max-width:100%;"></a><br>
+<p>效果 <br />
+<img src="/media/content/BlogPost/images/blog_opt2/waterfall2.png" alt="" />
+<img src="/media/content/BlogPost/images/blog_opt2/after.png" alt="" /> <br />
 似乎加载时间反而变长了。。。不过缓存对初次加载本来就没啥用。</p>
 
-<p><strong>开启 HTTP/2</strong><br>
+<p><strong>开启 HTTP/2</strong> <br />
 如果不是因为想尝试 HTTP/2，我也不会写这篇文章了。Nginx 从 <a href="https://www.nginx.com/blog/nginx-1-9-5/">1.9.5 版开始正式支持 HTTP/2</a>。</p>
 
-<p>首先要重新编译 Nginx，在 configure 时加入 <code>--with-http_v2_module</code>。<br>
+<p>首先要重新编译 Nginx，在 configure 时加入 <code>--with-http_v2_module</code>。 <br />
 然后安装 OpenSSL 1.0.2。官方的说法是“This is required to support the ALPN extension to TLS that our HTTP/2 implementation uses.”。</p>
 
-<p>然后就发现网站没法访问了_(:3」∠)_，出现错误 <code>ERR_SPDY_INADEQUATE_TRANSPORT_SECURITY</code>。<br>
-找到了两篇相关文章：<br>
-<a href="https://weakdh.org/sysadmin.html">Guide to Deploying Diffie-Hellman for TLS</a><br>
-<a href="https://wiki.mozilla.org/Security/Server_Side_TLS">Security/Server Side TLS</a><br>
+<p>然后就发现网站没法访问了_(:3」∠)_，出现错误 <code>ERR_SPDY_INADEQUATE_TRANSPORT_SECURITY</code>。 <br />
+找到了两篇相关文章： <br />
+<a href="https://weakdh.org/sysadmin.html">Guide to Deploying Diffie-Hellman for TLS</a> <br />
+<a href="https://wiki.mozilla.org/Security/Server_Side_TLS">Security/Server Side TLS</a> <br />
 某论坛的一个<a href="https://www.litespeedtech.com/support/forum/threads/solved-ls-5-0-stable-protocol-error-with-ssl-sites.11459/#post-86675">回复</a>里说</p>
 
 <blockquote>
-<p>To use HTTP/2, you need to make sure cipher ECDHE-RSA-AES128-GCM-SHA256 is the first one in your cipher configuration.</p>
+  <p>To use HTTP/2, you need to make sure cipher ECDHE-RSA-AES128-GCM-SHA256 is the first one in your cipher configuration.</p>
 </blockquote>
 
 <p>首先按第一篇文章说的生成一个新的 "Diffie-Hellman group"，作为 <code>ssl_dhparam</code> 的值。</p>
 
-<pre><code>openssl dhparam -out dhparams.pem 2048
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">openssl</span> <span class="s">dhparam</span> <span class="s">-out</span> <span class="s">dhparams.pem</span> <span class="mi">2048</span>
+</code></pre></div>
 
 <p>然后复制了一个以 <code>ECDHE-RSA-AES128-GCM-SHA256</code> 为起始的值作为 <code>ssl_ciphers</code>，网站就可以工作了。    </p>
 
-<p>效果<br>
-<a href="/media/content/BlogPost/images/blog_opt2/waterfall3.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/waterfall3.png" alt="" style="max-width:100%;"></a><br>
+<p>效果 <br />
+<img src="/media/content/BlogPost/images/blog_opt2/waterfall3.png" alt="" /> <br />
 HTTP/2 的 Multipexing 在这张图里体现得很明显，不会开多个连接去下载静态资源了。然而速度上似乎并没有提升。</p>
 
-<p>可能的后续优化<br>
-<a href="https://github.com/lebinh/nginx-conf#open-file-cache">Nginx Configuration Snippets</a><br>
+<p>可能的后续优化 <br />
+<a href="https://github.com/lebinh/nginx-conf#open-file-cache">Nginx Configuration Snippets</a> <br />
 <a href="https://imququ.com/post/my-nginx-conf-for-wpo.html">本博客 Nginx 配置之性能篇</a></p>
 
 <p>另外，webpagetest 给我的 First Byte Time 这一项评分是 B。官方的解释是：</p>
 
 <blockquote>
-<p>The First Byte time is the time from when the user started navigating to the page until the first bit of the server response arrived.  The bulk of this time is usually referred to the "back-end time" and is the amount of time the server spent building the page for the user.</p>
+  <p>The First Byte time is the time from when the user started navigating to the page until the first bit of the server response arrived.  The bulk of this time is usually referred to the "back-end time" and is the amount of time the server spent building the page for the user.</p>
 </blockquote>
 
 <p>评分标准</p>
 
 <blockquote>
-<p>The target time is the time needed for the DNS, socket and SSL negotiations + 100ms. A single letter grade will be deducted for every 100ms beyond the target.</p>
+  <p>The target time is the time needed for the DNS, socket and SSL negotiations + 100ms. A single letter grade will be deducted for every 100ms beyond the target.</p>
 </blockquote>
 
-<p><a href="/media/content/BlogPost/images/blog_opt2/TTFB.png" target="_blank"><img src="/media/content/BlogPost/images/blog_opt2/TTFB.png" alt="" style="max-width:100%;"></a><br>
+<p><img src="/media/content/BlogPost/images/blog_opt2/TTFB.png" alt="" /> <br />
 这一项没有达标的原因大概是后端现在什么缓存都没开。其实原来是有用 Memcached 缓存全站，但是不够令人满意。
 因为我在发布文章之后的一段时间可能会编辑文章，而加缓存之后总是要很慢才能生效。目前还在寻求更好的方法。
 理想状况是最新的一篇文章永远不缓存，或者是更新文章之后让缓存失效。这些都需要更精细的代码层面的控制。</p>
 
 <p>这篇文章之后应该还会更新。</p>
 
-<p>2015.10.20<br>
-<strong>添加 OCSP Stapling</strong><br>
+<p>2015.10.20 <br />
+<strong>添加 OCSP Stapling</strong> <br />
 引用 <a href="https://imququ.com/post/my-nginx-conf-for-wpo.html">JerryQu 的说法</a></p>
 
 <blockquote>
-<p>浏览器可能会在建立 TLS 连接时在线验证证书有效性，从而阻塞 TLS 握手，拖慢整体速度。OCSP stapling 是一种优化措施，服务端通过它可以在证书链中封装证书颁发机构的 OCSP（Online Certificate Status Protocol）响应，从而让浏览器跳过在线查询。服务端获取 OCSP 一方面更快（因为服务端一般有更好的网络环境），另一方面可以更好地缓存。</p>
+  <p>浏览器可能会在建立 TLS 连接时在线验证证书有效性，从而阻塞 TLS 握手，拖慢整体速度。OCSP stapling 是一种优化措施，服务端通过它可以在证书链中封装证书颁发机构的 OCSP（Online Certificate Status Protocol）响应，从而让浏览器跳过在线查询。服务端获取 OCSP 一方面更快（因为服务端一般有更好的网络环境），另一方面可以更好地缓存。</p>
 </blockquote>
 
 <p>在 <code>nginx.conf</code> 添加上这三行就可以了：</p>
 
-<pre><code>ssl_stapling on;
-ssl_stapling_verify on;
-ssl_trusted_certificate /home/laike9m/files/laike9m_com/laike9m_com.chain.crt;
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">ssl_stapling</span> <span class="no">on</span><span class="p">;</span>
+<span class="k">ssl_stapling_verify</span> <span class="no">on</span><span class="p">;</span>
+<span class="k">ssl_trusted_certificate</span> <span class="s">/home/laike9m/files/laike9m_com/laike9m_com.chain.crt</span><span class="p">;</span>
+</code></pre></div>
 
 <p><code>ssl_trusted_certificate</code> 所需要的 pem 文件其实就是 chained crt（问了 gogetssl 员工得知）。</p>
 
-<p>2015.10.30<br>
+<p>2015.10.30 <br />
 <strong>启用 Session Ticket</strong>  </p>
 
-<pre><code>ssl_session_tickets  on;
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">ssl_session_tickets</span>  <span class="no">on</span><span class="p">;</span>
+</code></pre></div>
 
 <p>Session Ticket 和 Session Cache 一样，也是简化 TLS 握手的方案。我不是很清楚在服务器都支持的情况下浏览器会选择哪一种。</p>
 
-<p><strong>修改 <code>ssl_buffer_size</code></strong><br>
+<p><strong>修改 <code>ssl_buffer_size</code></strong> <br />
 关于 <code>ssl_buffer_size</code>，<a href="http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_buffer_size">Nginx 文档</a>是这么解释的：</p>
 
 <blockquote>
-<p>Sets the size of the buffer used for sending data.</p>
-
-<p>By default, the buffer size is 16k, which corresponds to minimal overhead when sending big responses. To minimize Time To First Byte it may be beneficial to use smaller values, for example:</p>
-
-<p>ssl_buffer_size 4k;</p>
+  <p>Sets the size of the buffer used for sending data.</p>
+  
+  <p>By default, the buffer size is 16k, which corresponds to minimal overhead when sending big responses. To minimize Time To First Byte it may be beneficial to use smaller values, for example:</p>
+  
+  <p>ssl_buffer_size 4k;</p>
 </blockquote>
 
 <p>然而到底设成多少比较好，网上找不到相关的说明/测试。在 <a href="https://github.com/igrigorik/istlsfastyet.com/blob/master/nginx/nginx.conf#L15">Is TLS fast yet</a> 里 Ilya Grigorik 把这个值设成了 1400：</p>
 
 <blockquote>
-<p>ssl_buffer_size 1400;              # 1400 bytes to fit in one MTU</p>
+  <p>ssl_buffer_size 1400;              # 1400 bytes to fit in one MTU</p>
 </blockquote>
 
 <p>然后我也学着设成了 1400。不严谨的测试结果表明，TTFB 确实减小了，但是总的 download time 增大了一点。</p>
 
 <p><strong>开启 <code>tcp_nopush</code> + <code>tcp_nodelay</code> + <code>sendfile</code></strong>  </p>
 
-<pre><code>sendfile            on;
-tcp_nopush      on;
-tcp_nodelay     on;
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="k">sendfile</span>        <span class="no">on</span><span class="p">;</span>
+<span class="k">tcp_nopush</span>      <span class="no">on</span><span class="p">;</span>
+<span class="k">tcp_nodelay</span>     <span class="no">on</span><span class="p">;</span>
+</code></pre></div>
 
 <p><a href="https://t37.net/nginx-optimization-understanding-sendfile-tcp_nodelay-and-tcp_nopush.html">这篇文章</a>详细讲了为什么要这么配置。简单来说就是 <code>sendfile on</code> 启用了 <code>sendfile(2)</code> 这个系统调用，相比 <code>read()</code>/<code>write()</code> 有诸多优点；<code>tcp_nopush</code> 和 <code>tcp_nodelay</code> 结合起来保证充分利用 MTU 的同时还能尽快地把数据包发出去而不等 0.2s。</p>
 
-<p>2015.11.1<br>
-<strong>压缩 png/jpg</strong><br>
+<p>2015.11.1 <br />
+<strong>压缩 png/jpg</strong> <br />
 神器 <a href="https://tinypng.com/">tinypng.com</a>。</p>
 
-<p><strong>减小 favicon.ico 的大小</strong><br>
-原来的 favicon.ico 竟然有 30KB。上网一查才知道，ico 其实就是多层未压缩的 bmp。本来想用 Photoshop 编辑，但是居然打不开。安了一个插件之后能打开了，然而编辑功能简直糟糕，多图层都没法显示。好在找到一枚神器 <a href="http://icofx.ro/">IcoFX</a>，花钱买了正版。<br>
+<p><strong>减小 favicon.ico 的大小</strong> <br />
+原来的 favicon.ico 竟然有 30KB。上网一查才知道，ico 其实就是多层未压缩的 bmp。本来想用 Photoshop 编辑，但是居然打不开。安了一个插件之后能打开了，然而编辑功能简直糟糕，多图层都没法显示。好在找到一枚神器 <a href="http://icofx.ro/">IcoFX</a>，花钱买了正版。 <br />
 按照<a href="https://zoompf.com/blog/2012/04/instagram-and-optimizing-favicons">这篇文章</a>讲的，删掉了 64*64，24 * 24 两个图层。保留 32 * 32 是因为 Disqus 的站点缩略图可能要用。颜色也没有换成 4bit，仍然保留 8bit 256 色，毕竟已经减到 3KB 了。  </p>
 
-<p>2015.12.5<br>
+<p>2015.12.5 <br />
 参照 <a href="http://nginx.org/en/docs/http/ngx_http_core_module.html#sendfile">sendfile</a> 官方文档加上了 <code>aio on</code>：  </p>
 
 <blockquote>
-<p>aio can be used to pre-load data for sendfile()</p>
+  <p>aio can be used to pre-load data for sendfile()</p>
 </blockquote>
 
 <p>然后我无意之中发现，<code>sendfile on</code> 和 <code>gzip on</code> 无法同时起作用，来自官方的<a href="https://www.nginx.com/blog/tuning-nginx/">《Tuning NGINX for Performance》</a> 一文：  </p>
 
 <blockquote>
-<p>Note, however, that because data copied with sendfile() bypasses user space, it is not subject to the regular NGINX processing chain and filters that change content, such as gzip. When a configuration context includes both the sendfile directive and directives that activate a content-changing filter, NGINX automatically disables sendfile for that context.</p>
+  <p>Note, however, that because data copied with sendfile() bypasses user space, it is not subject to the regular NGINX processing chain and filters that change content, such as gzip. When a configuration context includes both the sendfile directive and directives that activate a content-changing filter, NGINX automatically disables sendfile for that context.</p>
 </blockquote>
 
 <p>因为 <code>sendfile on</code> 使用的是系统调用 <code>sendfile(2)</code>，实现了 zero-copy，文件内根本就不会被拷贝到用户态（“bypasses user space”），因此 Nginx 无法进行压缩处理。</p>
 
-<p>上网查了一下，唯一既能利用 zero-copy 又能利用 gzip 压缩的方案是启用 <a href="http://nginx.org/en/docs/http/ngx_http_gzip_static_module.html"><code>gzip_static</code></a>。这个功能并非开箱即用，而是要求使用者先把文件压缩好，这样 Nginx 才能找到，如果没找到，就 fall back 回普通的 gzip。因为比较麻烦，这次先不弄了。计划是添加一个 Django command 实现原来指定 gzip 压缩的那些格式的文件。几个可能有用的链接：<br>
-<a href="http://stackoverflow.com/questions/15793847/nginx-gzip-per-request-vs-static-gzip">Gzip per request vs static gzip</a>  比较两种 gzip 方式<br>
-<a href="http://wiki.linuxwall.info/doku.php/en:ressources:dossiers:nginx:nginx_performance_tuning#gzip_static_on">Nginx Performance Tuning</a> 对于 gzip_static 讲得比官方文档清楚<br>
+<p>上网查了一下，唯一既能利用 zero-copy 又能利用 gzip 压缩的方案是启用 <a href="http://nginx.org/en/docs/http/ngx_http_gzip_static_module.html"><code>gzip_static</code></a>。这个功能并非开箱即用，而是要求使用者先把文件压缩好，这样 Nginx 才能找到，如果没找到，就 fall back 回普通的 gzip。因为比较麻烦，这次先不弄了。计划是添加一个 Django command 实现原来指定 gzip 压缩的那些格式的文件。几个可能有用的链接： <br />
+<a href="http://stackoverflow.com/questions/15793847/nginx-gzip-per-request-vs-static-gzip">Gzip per request vs static gzip</a>  比较两种 gzip 方式 <br />
+<a href="http://wiki.linuxwall.info/doku.php/en:ressources:dossiers:nginx:nginx_performance_tuning#gzip_static_on">Nginx Performance Tuning</a> 对于 gzip_static 讲得比官方文档清楚 <br />
 <a href="http://inosin.iteye.com/blog/1299705">Nginx中gzip_static模块的使用</a> 使用 gzip_static 的一些注意事项  </p>
 
 <p>还有把 <code>gzip_comp_level</code> 从 6 改成了 9，提高压缩的程度，代价是更消耗 CPU，不过感觉 CPU 用的不多，所以无所谓。</p>

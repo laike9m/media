@@ -28,17 +28,15 @@
 <p>以上几个算是为了消除争议而做的设计。还有为了消除最佳实践的设计： </p>
 
 <ul>
-<li>
-<p><code>break LABEL</code>/<code>continue LABEL</code> 简直不要太爽<br>
+<li><p><code>break LABEL</code>/<code>continue LABEL</code> 简直不要太爽 <br />
 看看这个问题 <a href="http://stackoverflow.com/questions/189645/how-to-break-out-of-multiple-loops-in-python">How to break out of multiple loops in Python?</a>，最高票答案提出了一种最佳实践：把 nested loop 部分单独写成函数，然后把 <code>return</code> 当 <code>break</code> 用。我觉得这个方法相当丑陋，怎么可能 nested loop 部分的逻辑正好适合抽象成函数？更逗的是，下面有人提到：</p>
 
 <blockquote>
-<p><a href="http://www.python.org/dev/peps/pep-3136/">PEP 3136</a> proposes labeled break/continue.  Guido <a href="http://mail.python.org/pipermail/python-3000/2007-July/008663.html">rejected it</a> because "code so complicated to require this feature is very rare".  The PEP does mention some workarounds, though (such as the exception technique), while Guido feels refactoring to use return will be simpler in most cases.  </p>
+  <p><a href="http://www.python.org/dev/peps/pep-3136/">PEP 3136</a> proposes labeled break/continue.  Guido <a href="http://mail.python.org/pipermail/python-3000/2007-July/008663.html">rejected it</a> because "code so complicated to require this feature is very rare".  The PEP does mention some workarounds, though (such as the exception technique), while Guido feels refactoring to use return will be simpler in most cases.  </p>
 </blockquote>
 
-<p>虽然我支持 Guido 强推 Python3，但不得不承认老爹有时候是比较顽固，因为我实在不觉得这是 “very rare” 的情况。</p>
-</li>
-<li><p>数组作为值而不是引用传递<br>
+<p>虽然我支持 Guido 强推 Python3，但不得不承认老爹有时候是比较顽固，因为我实在不觉得这是 “very rare” 的情况。</p></li>
+<li><p>数组作为值而不是引用传递 <br />
 把列表传入函数并对其进行修改是常见需求。 如果是 Java/Python 这种默认传引用的语言，显然既可以在原处修改列表，也可以返回新列表。于是有人提出最佳实践，说应该返回新的列表而不是在原地修改。Go 这种新语言居然不是传引用而是像 C 一样默认传值，我认为是刻意设计的（当然也可能是我想多了），即是说，我们不需要讨论最佳实践，你们老实地返回新列表就行了。</p></li>
 </ul>
 
