@@ -1,0 +1,23 @@
+<p>今天田俊给 zhihu-card 提了个 <a href="https://github.com/laike9m/zhihu-card/issues/1">issue</a>，于是在刷 Redis 的时候顺便看了下之前的数据，发现居然有五条！</p>
+
+<div class="codehilite"><pre><span></span><code>127.0.0.1:6379&gt; KEYS *
+1<span class="o">)</span> <span class="s2">&quot;6487fb46d752cc83f9a5eebf2134ed1c&quot;</span>
+2<span class="o">)</span> <span class="s2">&quot;1f644a1b7da169d2b56e1a4c6da61fea&quot;</span>
+3<span class="o">)</span> <span class="s2">&quot;5a6237cebe73cf47a10f1ba0c604cb8c&quot;</span>
+4<span class="o">)</span> <span class="s2">&quot;ac5860a0000ac307eda1c957a4a23643&quot;</span>
+5<span class="o">)</span> <span class="s2">&quot;9dc46aa6570ad50f998d93e5e63049de&quot;</span>
+</code></pre></div>
+
+<p>不过其实有三条分别是我、程浩和田俊，算不上真正的用户。那么其它两条呢？</p>
+
+<p>一位是：https://www.zhihu.com/people/zhihudianxiaoer。我点进它的主页，果然有个人网站，网站上的确在使用 zhihu-card。 </p>
+
+<p><img src="/media/content/BlogPost/images/店小二.png" alt="" /></p>
+
+<p>然而尺寸似乎大了点，会不会是用户不知道可以调宽度呢？于是我就试着在网页里改了一下：</p>
+
+<p><img src="/media/content/BlogPost/images/zhihu-card-bug.png" alt="" /></p>
+
+<p>这下尴尬了，发现是因为代码有 bug 所以用户才不调整的……明天修一下好了。</p>
+
+<p>另一位是 https://www.zhihu.com/people/xlzd，不过没看到他的网站。</p>
