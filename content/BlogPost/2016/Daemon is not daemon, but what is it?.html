@@ -28,9 +28,9 @@
 
 <p>Google “daemon thread”，第一页全是 Java。我觉得很奇怪，于是找到了 <code>threading.py</code> 的<a href="https://github.com/python-git/python/commit/9ab4b7ee2daef59044647d43a6f43c19721de8cf">第一次 commit</a>，前两行赫然写着：</p>
 
-<pre><code># threading.py:
-# Proposed new threading module, emulating a subset of Java's threading model
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="c1"># threading.py:</span>
+<span class="c1"># Proposed new threading module, emulating a subset of Java&#39;s threading model</span>
+</code></pre></div>
 
 <p>当初看 <code>concurrent.futures</code> 源码的时候我还在想“直接照搬 Java 的 API 真的好么”，没想到 Guido 居然在 98 年就叛变革命了……</p>
 
@@ -52,18 +52,18 @@
 
 <p>Daemon thread 的特性很容易验证，不细说。</p>
 
-<pre><code>import threading
-import os
-import time
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
-def func():
-    time.sleep(5)
-    print("finish")
+<span class="k">def</span> <span class="nf">func</span><span class="p">():</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;finish&quot;</span><span class="p">)</span>
 
-threading.Thread(target=func).start()
-threading.Thread(target=func, daemon=True).start()
-print("aaa")
-</code></pre>
+<span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">func</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">func</span><span class="p">,</span> <span class="n">daemon</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;aaa&quot;</span><span class="p">)</span>
+</code></pre></div>
 
 <p>更有意义的问题是，为什么 Java/Python 要引入 daemon thread，有什么用处？好在已经<a href="http://stackoverflow.com/a/190017/2142577">有人解释过了</a>：</p>
 
@@ -98,29 +98,30 @@ print("aaa")
 
 <p>最后来看一下 daemon thread 的实现，其实很简单。使用最初始（第一次commit）的 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py"><code>threading.py</code></a> 来分析。</p>
 
-<p>首先看 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L457"><code>_MainThread</code></a> 这个类，它表示主线程，在 <code>import threading</code> 的时候会<a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L545">初始化一个实例</a>。<code>__init__</code> 函数里有<a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L469">这么一句</a>：
-<code>python
-_sys.exitfunc = self.__exitfunc
-</code>
-<code>_sys</code> 就是 <code>sys</code>，<code>sys.exitfunc</code> 已经被 <code>atexit</code> 替代，作用都是在程序退出的时候执行清理操作。那么 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L474-L489"><code>__exitfunc</code></a> 是什么呢？</p>
+<p>首先看 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L457"><code>_MainThread</code></a> 这个类，它表示主线程，在 <code>import threading</code> 的时候会<a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L545">初始化一个实例</a>。<code>__init__</code> 函数里有<a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L469">这么一句</a>：</p>
 
-<pre><code>def __exitfunc(self):
-    self._Thread__stop()
-    t = _pickSomeNonDaemonThread()
-    if t:
-        if __debug__:
-            self._note("%s: waiting for other threads", self)
-    while t:
-        t.join()
-        t = _pickSomeNonDaemonThread()
-    if self.__oldexitfunc:
-        if __debug__:
-            self._note("%s: calling exit handler", self)
-        self.__oldexitfunc()
-    if __debug__:
-        self._note("%s: exiting", self)
-    self._Thread__delete()
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="n">_sys</span><span class="o">.</span><span class="n">exitfunc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__exitfunc</span>
+</code></pre></div>
+
+<p><code>_sys</code> 就是 <code>sys</code>，<code>sys.exitfunc</code> 已经被 <code>atexit</code> 替代，作用都是在程序退出的时候执行清理操作。那么 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L474-L489"><code>__exitfunc</code></a> 是什么呢？</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">def</span> <span class="nf">__exitfunc</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_Thread__stop</span><span class="p">()</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">_pickSomeNonDaemonThread</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">t</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">__debug__</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: waiting for other threads&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">t</span><span class="p">:</span>
+        <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">_pickSomeNonDaemonThread</span><span class="p">()</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__oldexitfunc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">__debug__</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: calling exit handler&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__oldexitfunc</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">__debug__</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_note</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2">: exiting&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_Thread__delete</span><span class="p">()</span>
+</code></pre></div>
 
 <p>首先调用基类 <code>Thread</code> 中的 <a href="https://github.com/python-git/python/blob/9ab4b7ee2daef59044647d43a6f43c19721de8cf/Lib/threading.py#L394"><code>__stop</code> 函数</a>。下面是关键：</p>
 
@@ -128,9 +129,9 @@ _sys.exitfunc = self.__exitfunc
 <li>首先，<code>t = _pickSomeNonDaemonThread()</code> 顾名思义返回一个 non-daemon 线程。<code>_pickSomeNonDaemonThread</code> 其实就是遍历两个保存了已创建和创建中线程的字典，并检查其 daemon 属性，如果是 non-daemon 则返回。</li>
 <li><p>这三句是个人都知道在干嘛吧</p>
 
-<pre><code>while t:
-  t.join()
-  t = _pickSomeNonDaemonThread()
-</code></pre></li>
+<div class="codehilite"><pre><span></span><code><span class="k">while</span> <span class="n">t</span><span class="p">:</span>
+  <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+  <span class="n">t</span> <span class="o">=</span> <span class="n">_pickSomeNonDaemonThread</span><span class="p">()</span>
+</code></pre></div></li>
 <li>于是所有 non-daemon threads 都执行完了，主线程退出。</li>
 </ol>

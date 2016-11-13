@@ -80,6 +80,7 @@ Python 中有很多创建新进程的方法，并非都可以设置为 daemon pr
 最后来看一下 daemon thread 的实现，其实很简单。使用最初始（第一次commit）的 [`threading.py`][11] 来分析。
 
 首先看 [`_MainThread`][12] 这个类，它表示主线程，在 `import threading` 的时候会[初始化一个实例][13]。`__init__` 函数里有[这么一句][14]：
+
 ```python
 _sys.exitfunc = self.__exitfunc
 ```
