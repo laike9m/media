@@ -1,0 +1,38 @@
+<p>想理解 HTTP/2，目前还没有什么比读 RFC 更好的方式。不过 RFC7540 有些地方写的不够清楚，我花了很长时间才搞明白，故在此记录一些想法，请随 RFC 一起阅读。几点说明：</p>
+
+<ol>
+<li>本文及后续文章中的章节号、Page x 均指 RFC7540 中的章节号和页码；</li>
+<li>从实用性角度考虑，h2c only 的内容不太会涉及；</li>
+<li>因为是笔记，所以基本只会写个人认为值得讨论或注意的地方，也会有一些总结；</li>
+<li>不涉及 RFC7541，即 HAPCK 头部压缩；</li>
+<li>不想翻译或不好翻译的术语不翻译；</li>
+<li>有时用 frame 类型名指代这种类型的 frame，比如“发送 HEADERS”指的是发送 HEADERS frame。</li>
+</ol>
+
+<h2>1. Introduction</h2>
+
+<h2>2. HTTP/2 Protocol Overview</h2>
+
+<p>最基本的介绍性内容，也是网上大部分相关文章的深度。只想了解的话，读这两章也就够了。如果想继续阅读，2.2 节中的名词解释很重要，介绍了 "MUST", "SHOULD" 等词（参考 <a href="https://www.ietf.org/rfc/rfc2119.txt">RFC2119</a>），以及 client, connection, endpoint, peer 等术语的含义。</p>
+
+<h2>3. Starting HTTP/2</h2>
+
+<h3>3.5 HTTP/2 Connection Preface</h3>
+
+<p><strong>client</strong> preface = 0x505249202a20485454502f322e300d0a0d0a534d0d0a0d0a + SETTINGS frame  </p>
+
+<p><strong>server</strong> preface = SETTINGS frame（默认是空的）</p>
+
+<p>h2 client 的 preface 是 TLS connection 传输的 data 的第一段（server 也是），允许在接收到 server preface 之前发送其它数据，比如比如 HEADER，别的 setting，这样省去了等待 server preface 的时间。</p>
+
+<p>两边的 preface 都需要对方发送 ACK frame 进行确认，ACK 是一种特殊的 SETTINGS frame，参见 6.5 节。</p>
+
+<h2>4. HTTP Frames</h2>
+
+<h3>4.1 Frame Format</h3>
+
+<p>frame 基本结构是 9 字节的 header 加上不定长的 payload。header 的第一部分是 payload length，占 24 位，也就是说 payload 最多是 2^24 - 1 字节。这个 payload length 有初始值，是 2^14，如果想提升这个值得靠 <code>SETTINGS_MAX_FRAME_SIZE</code>，参考 Page 39。还有一点就是 header 的 9 个字节是不计入 payload length 的。</p>
+
+<p>Flags 在不同的 frame type 下含义是不一样的，每一位并没有固定的含义。</p>
+
+<p>Stream Identifier 即所谓 stream ID。在 RFC 及我后续的笔记当中都经常会用到“frame 在 stream A 上发送”这种说法，实际上指的就是某个 frame 的 stream ID 是 A。</p>
