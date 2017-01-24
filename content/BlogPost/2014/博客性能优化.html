@@ -50,50 +50,31 @@ Webfaction提供了一个给静态文件添加Expires头的方法。我的static
 <p>这项得分是C。Js确实可以减少，有两个目前是多余的。因为之后可能会用到，所以先采用注释掉的解决方法。
 <img src="/media/content/BlogPost/images/blog_opt/5.png" alt="5" /> <br />
 关于CSS，我自己定义的css由于是按功能划分便于开发所以不太好合并了，但是发现一个外部css比较短，所以考虑直接给变成Inline的。 <br />
-<img src="/media/content/BlogPost/images/blog_opt/6.png" alt="6" /> <br />
-```css <br />
-/* MailChimp Form Embed Code - Slim - 08/17/2011 */</p>
+<img src="/media/content/BlogPost/images/blog_opt/6.png" alt="6" />  </p>
 
-<h1>mc<em>embed</em>signup form {display:block; position:relative; text-align:left; padding:10px 0 10px 3%}</h1>
+<div class="codehilite"><pre><span></span><code><span class="c">/* MailChimp Form Embed Code - Slim - 08/17/2011 */</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">form</span> <span class="p">{</span><span class="nb">display</span><span class="o">:</span><span class="nb">block</span><span class="p">;</span> <span class="nb">position</span><span class="o">:</span><span class="nb">relative</span><span class="p">;</span> <span class="nb">text-align</span><span class="o">:</span><span class="nb">left</span><span class="p">;</span> <span class="nb">padding</span><span class="o">:</span><span class="m">10px</span> <span class="m">0</span> <span class="m">10px</span> <span class="m">3%</span><span class="p">}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">h2</span> <span class="p">{</span><span class="nb">font-weight</span><span class="o">:</span><span class="nb">bold</span><span class="p">;</span> <span class="nb">padding</span><span class="o">:</span><span class="m">0</span><span class="p">;</span> <span class="nb">margin</span><span class="o">:</span><span class="m">15px</span> <span class="m">0</span><span class="p">;</span> <span class="nb">font-size</span><span class="o">:</span><span class="m">1.4em</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">input</span> <span class="p">{</span><span class="nb">border</span><span class="o">:</span><span class="m">1px</span> <span class="nb">solid</span> <span class="m">#999</span><span class="p">;</span> <span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">appearance</span><span class="o">:</span><span class="nb">none</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">input</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="nt">checkbox</span><span class="o">]</span><span class="p">{</span><span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">appearance</span><span class="o">:</span><span class="n">checkbox</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">input</span><span class="o">[</span><span class="nt">type</span><span class="o">=</span><span class="nt">radio</span><span class="o">]</span><span class="p">{</span><span class="o">-</span><span class="n">webkit</span><span class="o">-</span><span class="n">appearance</span><span class="o">:</span><span class="n">radio</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">input</span><span class="nd">:focus</span> <span class="p">{</span><span class="nb">border-color</span><span class="o">:</span><span class="m">#333</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nc">.button</span> <span class="p">{</span><span class="nb">clear</span><span class="o">:</span><span class="nb">both</span><span class="p">;</span> <span class="nb">background-color</span><span class="o">:</span> <span class="m">#aaa</span><span class="p">;</span> <span class="nb">border</span><span class="o">:</span> <span class="m">0</span> <span class="nb">none</span><span class="p">;</span> <span class="nb">border</span><span class="o">-</span><span class="n">radius</span><span class="o">:</span><span class="m">4px</span><span class="p">;</span> <span class="nb">color</span><span class="o">:</span> <span class="m">#FFFFFF</span><span class="p">;</span> <span class="nb">cursor</span><span class="o">:</span> <span class="nb">pointer</span><span class="p">;</span> <span class="nb">display</span><span class="o">:</span> <span class="nb">inline</span><span class="o">-</span><span class="nb">block</span><span class="p">;</span> <span class="nb">font-size</span><span class="o">:</span><span class="m">15px</span><span class="p">;</span> <span class="nb">font-weight</span><span class="o">:</span> <span class="nb">bold</span><span class="p">;</span> <span class="nb">height</span><span class="o">:</span> <span class="m">32px</span><span class="p">;</span> <span class="nb">line-height</span><span class="o">:</span> <span class="m">32px</span><span class="p">;</span> <span class="nb">margin</span><span class="o">:</span> <span class="m">0</span> <span class="m">5px</span> <span class="m">10px</span> <span class="m">0</span><span class="p">;</span> <span class="nb">padding</span><span class="o">:</span><span class="m">0</span><span class="p">;</span> <span class="nb">text-align</span><span class="o">:</span> <span class="nb">center</span><span class="p">;</span> <span class="nb">text-decoration</span><span class="o">:</span> <span class="nb">none</span><span class="p">;</span> <span class="nb">vertical-align</span><span class="o">:</span> <span class="nb">top</span><span class="p">;</span> <span class="nb">white-space</span><span class="o">:</span> <span class="nb">nowrap</span><span class="p">;</span> <span class="nb">width</span><span class="o">:</span> <span class="nb">auto</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nc">.button</span><span class="nd">:hover</span> <span class="p">{</span><span class="nb">background-color</span><span class="o">:</span><span class="m">#777</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nc">.small-meta</span> <span class="p">{</span><span class="nb">font-size</span><span class="o">:</span> <span class="m">11px</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nc">.nowrap</span> <span class="p">{</span><span class="nb">white-space</span><span class="o">:</span><span class="nb">nowrap</span><span class="p">;}</span> 
+<span class="nn">#mc_embed_signup</span> <span class="nc">.clear</span> <span class="p">{</span><span class="nb">clear</span><span class="o">:</span><span class="nb">none</span><span class="p">;</span> <span class="nb">display</span><span class="o">:</span><span class="nb">inline</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">label</span> <span class="p">{</span><span class="nb">display</span><span class="o">:</span><span class="nb">block</span><span class="p">;</span> <span class="nb">font-size</span><span class="o">:</span><span class="m">16px</span><span class="p">;</span> <span class="nb">padding-bottom</span><span class="o">:</span><span class="m">10px</span><span class="p">;</span> <span class="nb">font-weight</span><span class="o">:</span><span class="nb">bold</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">input</span><span class="nc">.email</span> <span class="p">{</span><span class="nb">display</span><span class="o">:</span><span class="nb">block</span><span class="p">;</span> <span class="nb">padding</span><span class="o">:</span><span class="m">8px</span> <span class="m">0</span><span class="p">;</span> <span class="nb">margin</span><span class="o">:</span><span class="m">0</span> <span class="m">4%</span> <span class="m">10px</span> <span class="m">0</span><span class="p">;</span> <span class="nb">text-indent</span><span class="o">:</span><span class="m">5px</span><span class="p">;</span> <span class="nb">width</span><span class="o">:</span><span class="m">58%</span><span class="p">;</span> <span class="nb">min-width</span><span class="o">:</span><span class="m">130px</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">input</span><span class="nc">.button</span> <span class="p">{</span><span class="nb">display</span><span class="o">:</span><span class="nb">block</span><span class="p">;</span> <span class="nb">width</span><span class="o">:</span><span class="m">35%</span><span class="p">;</span> <span class="nb">margin</span><span class="o">:</span><span class="m">0</span> <span class="m">0</span> <span class="m">10px</span> <span class="m">0</span><span class="p">;</span> <span class="nb">min-width</span><span class="o">:</span><span class="m">90px</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">div</span><span class="nn">#mce-responses</span> <span class="p">{</span><span class="nb">float</span><span class="o">:</span><span class="nb">left</span><span class="p">;</span> <span class="nb">top</span><span class="o">:-</span><span class="m">1.4em</span><span class="p">;</span> <span class="nb">padding</span><span class="o">:</span><span class="m">0em</span> <span class="m">.5em</span> <span class="m">0em</span> <span class="m">.5em</span><span class="p">;</span> <span class="nb">overflow</span><span class="o">:</span><span class="nb">hidden</span><span class="p">;</span> <span class="nb">width</span><span class="o">:</span><span class="m">90%</span><span class="p">;</span><span class="nb">margin</span><span class="o">:</span> <span class="m">0</span> <span class="m">5%</span><span class="p">;</span> <span class="nb">clear</span><span class="o">:</span> <span class="nb">both</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">div</span><span class="nc">.response</span> <span class="p">{</span><span class="nb">margin</span><span class="o">:</span><span class="m">1em</span> <span class="m">0</span><span class="p">;</span> <span class="nb">padding</span><span class="o">:</span><span class="m">1em</span> <span class="m">.5em</span> <span class="m">.5em</span> <span class="m">0</span><span class="p">;</span> <span class="nb">font-weight</span><span class="o">:</span><span class="nb">bold</span><span class="p">;</span> <span class="nb">float</span><span class="o">:</span><span class="nb">left</span><span class="p">;</span> <span class="nb">top</span><span class="o">:-</span><span class="m">1.5em</span><span class="p">;</span> <span class="nb">z-index</span><span class="o">:</span><span class="m">1</span><span class="p">;</span> <span class="nb">width</span><span class="o">:</span><span class="m">80%</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nn">#mce-error-response</span> <span class="p">{</span><span class="nb">display</span><span class="o">:</span><span class="nb">none</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nn">#mce-success-response</span> <span class="p">{</span><span class="nb">color</span><span class="o">:</span><span class="m">#529214</span><span class="p">;</span> <span class="nb">display</span><span class="o">:</span><span class="nb">none</span><span class="p">;}</span>
+<span class="nn">#mc_embed_signup</span> <span class="nt">label</span><span class="nc">.error</span> <span class="p">{</span><span class="nb">display</span><span class="o">:</span><span class="nb">block</span><span class="p">;</span> <span class="nb">float</span><span class="o">:</span><span class="nb">none</span><span class="p">;</span> <span class="nb">width</span><span class="o">:</span><span class="nb">auto</span><span class="p">;</span> <span class="nb">margin-left</span><span class="o">:</span><span class="m">1.05em</span><span class="p">;</span> <span class="nb">text-align</span><span class="o">:</span><span class="nb">left</span><span class="p">;</span> <span class="nb">padding</span><span class="o">:.</span><span class="m">5em</span> <span class="m">0</span><span class="p">;}</span>
+</code></pre></div>
 
-<h1>mc<em>embed</em>signup h2 {font-weight:bold; padding:0; margin:15px 0; font-size:1.4em;}</h1>
-
-<h1>mc<em>embed</em>signup input {border:1px solid #999; -webkit-appearance:none;}</h1>
-
-<h1>mc<em>embed</em>signup input[type=checkbox]{-webkit-appearance:checkbox;}</h1>
-
-<h1>mc<em>embed</em>signup input[type=radio]{-webkit-appearance:radio;}</h1>
-
-<h1>mc<em>embed</em>signup input:focus {border-color:#333;}</h1>
-
-<h1>mc<em>embed</em>signup .button {clear:both; background-color: #aaa; border: 0 none; border-radius:4px; color: #FFFFFF; cursor: pointer; display: inline-block; font-size:15px; font-weight: bold; height: 32px; line-height: 32px; margin: 0 5px 10px 0; padding:0; text-align: center; text-decoration: none; vertical-align: top; white-space: nowrap; width: auto;}</h1>
-
-<h1>mc<em>embed</em>signup .button:hover {background-color:#777;}</h1>
-
-<h1>mc<em>embed</em>signup .small-meta {font-size: 11px;}</h1>
-
-<h1>mc<em>embed</em>signup .nowrap {white-space:nowrap;}</h1>
-
-<h1>mc<em>embed</em>signup .clear {clear:none; display:inline;}</h1>
-
-<h1>mc<em>embed</em>signup label {display:block; font-size:16px; padding-bottom:10px; font-weight:bold;}</h1>
-
-<h1>mc<em>embed</em>signup input.email {display:block; padding:8px 0; margin:0 4% 10px 0; text-indent:5px; width:58%; min-width:130px;}</h1>
-
-<h1>mc<em>embed</em>signup input.button {display:block; width:35%; margin:0 0 10px 0; min-width:90px;}</h1>
-
-<h1>mc<em>embed</em>signup div#mce-responses {float:left; top:-1.4em; padding:0em .5em 0em .5em; overflow:hidden; width:90%;margin: 0 5%; clear: both;}</h1>
-
-<h1>mc<em>embed</em>signup div.response {margin:1em 0; padding:1em .5em .5em 0; font-weight:bold; float:left; top:-1.5em; z-index:1; width:80%;}</h1>
-
-<h1>mc<em>embed</em>signup #mce-error-response {display:none;}</h1>
-
-<h1>mc<em>embed</em>signup #mce-success-response {color:#529214; display:none;}</h1>
-
-<h1>mc<em>embed</em>signup label.error {display:block; float:none; width:auto; margin-left:1.05em; text-align:left; padding:.5em 0;}</h1>
-
-<p>``` <br />
-把上面这部分代码直接贴进html并且取消掉原来的css external link。重新测试： <br />
+<p>把上面这部分代码直接贴进html并且取消掉原来的css external link。重新测试： <br />
 <img src="/media/content/BlogPost/images/blog_opt/7.png" alt="7" /> <br />
 成效显著，由C提升到B  </p>
 

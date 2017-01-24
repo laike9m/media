@@ -1,0 +1,97 @@
+<p>上一篇中我犯了个严重错误，well 实际上是两个。出错的部分已经用删除线划掉。之所以不直接删掉，是考虑到曾经的错误理解也是有价值的，提醒自己不要两次踏进同一条河。</p>
+
+<p>这次仍然讲 5.1 节的状态图，因为这个图是在是太太太重要了。会涵盖如下内容：</p>
+
+<ol>
+<li>到底什么是 stream state？</li>
+<li>half-closed vs reserved</li>
+<li>server push stream 的关闭过程，暨对之前错误的修正</li>
+</ol>
+
+<h2>到底什么是 stream state？</h2>
+
+<p>前不久在 SO 写过一个零赞<a href="http://stackoverflow.com/a/41354992/2142577">答案</a>，为什么没人赞呢，因为除了包括 implementer 在内的少数人外，几乎没人理解 HTTP/2 stream state 的本质。我非常确信的是，那个提问者到现在也不懂，因为他采纳了一个完全没有触及本质的答案。那个问题其实是非常好的切入点，我姑且描述一下意思。</p>
+
+<p>他问，既然 <code>reserved(local)</code> 状态只会在 server 端出现，而 <code>reserved(remote)</code> 只会在 client 端出现，那么是不是意味着在写 HTTP/2 server 和 client 的时候，分别只需要实现部分状态就行了？</p>
+
+<p>下面是我的答案：</p>
+
+<blockquote>
+  <p>It's true that client will never enter the <code>reserved(local)</code> state, same for server with <code>reserved(remote)</code>.        <strong>However, in order to keep stream states synchronized, the simplest(maybe only) way is to also keep peer's state. In fact, stream state is not about one endpoint, but both endpoints.</strong> For any moment in a stream's life cycle, the stream's state is comprised of the client's state and the server's state. Sometimes they are the same(idle, open, closed), sometimes they're not identical(reserved, half-closed).</p>
+  
+  <p>With that said, I can understand why you say that, but you really shouldn't think that way. <strong>There's no client stream state and server stream state, just one stream state with copies saved on both sides.</strong></p>
+  
+  <p><img src="https://farm1.staticflickr.com/63/200867665_3a892f2f27.jpg" alt="" /></p>
+  
+  <p>It's kind of like a coin, with two sides having different images. No matter which direction you see from, the coin doesn't change, but you name the side you see "front side/local state", and the one you don't see "back side/remote state".</p>
+  
+  <p>The "remote/local" wording in the state machine diagram is very subtle, and worth thinking over.</p>
+</blockquote>
+
+<p>就不翻译了，大家应该能看懂。之所以有人误认为 stream 状态被分为了 client 状态和 server 状态，主要是因为 RFC 在说明 remote 和 local 区别的同时并没有强调它们是一体的（这种不明确的描述在 RFC 7540 中到处都是，之后我们还会看到）。 此外，5.1 节的一段话也容易引起误解：</p>
+
+<blockquote>
+  <p>Both endpoints have a subjective view of the state of a stream that could be different when frames are in transit. Endpoints do not coordinate the creation of streams; they are created unilaterally by either endpoint. The negative consequences of a mismatch in states are limited to the "closed" state after sending <a href="http://httpwg.org/specs/rfc7540.html#RST_STREAM">RST_STREAM</a>, where frames might be received for some time after closing.</p>
+</blockquote>
+
+<p>意思是，client 和 server 保存的 stream state 有可能不同步，因为 stream 可以被任意 endpoint 单方面创建而不需要通知 peer。没错，不同步是普遍存在的，因为 frame 传输需要时间，但这并不意味着两边的状态不需要同步，实际上，只要在某个 stream 上有 frame 传输，并且 frame 成功到达 peer，那么状态总是可以同步的。“subjective”很容易让人以为两边分别保存自己的状态而不用管对方，这就大错特错了。为了方便记忆，我把关键点总结如下：</p>
+
+<p><strong>One state, two views, kept by two endpoints. Should sync, could sync, often mismatch.</strong></p>
+
+<h2>half-closed vs reserved</h2>
+
+<p>这两个状态是最难理解的，并且它们的关系非常微妙。</p>
+
+<p>先说 <code>half-closed</code>。在笔记一里我写到：</p>
+
+<blockquote>
+  <p>half-closed 表示一边想 close，但另一边还没有同意的状态。</p>
+</blockquote>
+
+<p>如果某个 endpoint 处于 <code>half-closed(local)</code>，代表该 endpoint 想 close 但 peer 还未同意。这个时候，该 endpoint 不能再发送 HEADERS 和 DATA 这种真正携带了数据的 frame，否则就跟说好的不一样了（能发送的只有 WINDOW_UPDATE, PRIORITY, RST_STREAM）。由于 peer 还没有同意 close，所以有可能接收到 peer 发送的任何种类的 frame。如果接到 END_STREAM，说明 peer 也同意 close，于是 stream 进入 closed 状态。</p>
+
+<p>如果说 <code>half-closed(local)</code> 是硬币的一面，那么 <code>half-closed(remote)</code> 就是硬币的另一面，代表 peer 想 close 但该 endpoint 还未同意。相对地，此时可以发送任何种类的 frame，但是不应该接收到除 WINDOW_UPDATE, PRIORITY, RST_STREAM 之外的 frame。</p>
+
+<p>half-closed 的设计看起来挺不错的，两边各发送一个 END_STREAM 来确认关闭。真的如此吗？如果我们只考虑 request-response 工作流（参见笔记二中的绿线），是的。但在 server push 工作流里（参见笔记三中的紫线），half-closed 就像一块丑陋的补丁一样。不夸张地说，这是我觉得 HTTP/2 设计中最糟糕的一点</p>
+
+<p><center>
+<img src="/media/content/BlogPost/images/server-push-flow.png" alt="" />
+</center></p>
+
+<p>让我们仔细看一下这张图。首先，在 PUSH_PROMISE 流程中，client 只能进入 <code>half-closed(local)</code> 状态，不会进入 <code>half-closed(remote)</code>，而图上并没有说明这一点。更让人费解的是 <code>reserved -&gt; half-cloased</code> 的状态转移，居然是靠 server 发送 HEADERS？？？这完全不符合 <code>half-closed</code> 的语义啊，凭什么 server 发送 HEADERS 就代表 client 要 close？？ </p>
+
+<p>然后你会发现一件更奇怪的事：<code>reserved</code> 和 <code>half-closed</code> 中，总有一个状态是多余的。从 server push 的角度看，既然只有 server 发送数据，close stream 也只需要 server 同意即可，那么设计成 <code>reserved(local) -- send END\_STREAM --&gt; closed</code> 岂不是正好？为什么非要画蛇添足强行走到 <code>half-closed</code>？从 request-response 的角度看，既然 PP 可以对应到 client 发送的 HEADERS（request），那么发送完 PP 为什么不能像发送完 request 一样直接进入 <code>half-closed</code> 状态呢？为了讲清楚这个问题，我们需要先了解 <a href="http://httpwg.org/specs/rfc7540.html#rfc.section.5.1.2">5.1.2 节</a> 中的 Stream Concurrency。</p>
+
+<p>简单说一下 Stream Concurrency。我们知道，HTTP/2 之所以快，一是头部压缩，二是 stream multiplexing，换句话说就是许多 stream 同时传输。但是资源有限，不可能允许无限多个 stream 同时传输。解决方法也很简单，就是设置一个上限。在 HTTP/2 中，这个上限叫做 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code>，代表活跃 stream 的最大数量。需要注意的是，每个 endpoint 可以有不同的 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code>，分别限制由自己<strong>初始化</strong>的 stream。</p>
+
+<p>所以 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code> 和 stream 状态又有什么关系呢？关系大了，因为<strong>并不是所有状态的 stream 都计入活跃 stream，只有处于 open 和 half-closed</strong> 状态的 stream 才算。相信看到这里你已经晕了，所以我来举个例子。</p>
+
+<p><center>
+<img src="/media/content/BlogPost/images/stream_concurrency.png" alt="" />
+</center></p>
+
+<p>上图中，client 初始化了 3 个 stream：stream 1，stream 3，stream 5（正常 request-response）；server 初始化了 2 个 stream（用于 server push），分别是 stream2 和 stream 4。此时 stream 1 因为已经关闭，client 这边的活跃 stream 是 stream3 和 stream 5。stream 4 处于 reserved 状态不计入，所以 server 这边活跃 stream 只有 stream 2。</p>
+
+<p>好，现在我们了解了 stream concurrency，终于可以回到正题，说明为什么需要有 reserved 和 half-closed 两个状态。我原先也不懂，直到最近看到 mailing list 里的讨论。</p>
+
+<p><a href="https://lists.w3.org/Archives/Public/ietf-http-wg/2016JulSep/0601.html">https://lists.w3.org/Archives/Public/ietf-http-wg/2016JulSep/0601.html</a></p>
+
+<p>在这封邮件里，RFC 的作者 Martin 写到：（意译）“reserved 和 half-closed 的最大区别，在于前者不计入 endpoint 当前维护的活跃 stream，而后者计入。如果我们也限制 reserved stream 的数量，就有可能导致 server 不能及时发出 PUSH_PROMISE……RFC 里的很多设计都基于一个看法，即发送 HEADERS 几乎是没有成本的。”RFC 之所以难读，一个原因是前后内容相互引用，并且 Martin 又是一个热衷于这么干的人……我来解读一下。Martin 的意思是，server push 过程中应该尽快让 server 把 PUSH_PROMISE 发出去而不受 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code> 的限制，因为发送 PUSH_PROMISE 几乎是零成本的（在他的表述里把 PUSH_PROMISR 算作了 HEADERS），并且好处很大（client 接到 PP 才不会发后续请求）。这时候就体现出 reserved 状态的作用了，因为处于 reserved stream 是不计入活跃 stream 的，所以即使已经发出很多 PP 并带来一堆 reserved stream，也不会导致后续 PP 因为活跃 stream 达到上限而阻塞。那么 <code>half-closed</code> 呢？你会发现，因为 server 发送 HEADERS 后立刻进入 <code>half-closed(local)</code>  状态，所以 <strong>server push 的 DATA 实际上是在 <code>half-closed</code> 状态下发送的。</strong>发送 DATA 是有代价的，正好被 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code> 限制住。</p>
+
+<p>看了 Martin 的解释，不得不说这个设计还是有道理的。但不限制 PP 却留下了某种隐患：server 不论发送多少 PP 都是合法的。最近 Scott Mitchell（Netty 排第三的 contributor）对这一点提出了<a href="https://lists.w3.org/Archives/Public/ietf-http-wg/2017JanMar/0057.html">质疑</a>，我还回邮件<a href="https://lists.w3.org/Archives/Public/ietf-http-wg/2017JanMar/0088.html">反驳</a>了一下。然后之前邮件里问 Martin 问题的哥们说，我在实现 Golang 的 server push 功能的时候就是把 <code>reserved</code> 和 <code>half-closed</code> 合并成一个状态的，参见：</p>
+
+<p><a href="https://github.com/golang/net/commit/c46f265c325130a7a6c7b27db8c6fe14b64f1a68">https://github.com/golang/net/commit/c46f265c325130a7a6c7b27db8c6fe14b64f1a68</a></p>
+
+<p>最后讨论不了了之，Scott 还是坚持认为应该对 PP 做某种限制。究竟哪种更好？谁知道呢。</p>
+
+<h2>Server push stream 的关闭过程，暨对之前错误的修正</h2>
+
+<p>之前我以为，到达 <code>half-closed</code> 状态总是需要一个 END_STREAM，其实 server push 不需要。这是我犯的第一个错误。<code>half-closed -&gt; closed</code> 过程是统一的，需要一个 END_STREAM。Server push 的整个流程 client 都不发送 END_STREAM。</p>
+
+<p>第二个错误是弄错了 server push 中 DATA 发送的状态。如上文所说，<code>half-closed</code> 才是发送 DATA 时 stream 所处的状态，而非 <code>reserved</code>。</p>
+
+<h2>后记？</h2>
+
+<p>这篇文章耗费了我三个晚上，内容也已远远超出“笔记”的范畴。也许文章的内容读者并不能看懂，但我想借此表达一点：RFC 不是完美的标准，它也是人写出来的，也有这样那样的问题，不论是措辞上，还是设计上。记下一些规则不难，只要肯花时间，但是理解背后的思想却极为困难，至少我做不到。而且有些东西别人不说，也许你就永远无法知道了。</p>
+
+<p>最后，如果有人能看懂，我发自真心地祝贺你。<s>说的好像有人看一样</s></p>
