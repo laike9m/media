@@ -60,9 +60,9 @@
 
 <p>让我们仔细看一下这张图。首先，在 PUSH_PROMISE 流程中，client 只能进入 <code>half-closed(local)</code> 状态，不会进入 <code>half-closed(remote)</code>，而图上并没有说明这一点。更让人费解的是 <code>reserved -&gt; half-cloased</code> 的状态转移，居然是靠 server 发送 HEADERS？？？这完全不符合 <code>half-closed</code> 的语义啊，凭什么 server 发送 HEADERS 就代表 client 要 close？？ </p>
 
-<p>然后你会发现一件更奇怪的事：<code>reserved</code> 和 <code>half-closed</code> 中，总有一个状态是多余的。从 server push 的角度看，既然只有 server 发送数据，close stream 也只需要 server 同意即可，那么设计成 <code>reserved(local) -- send END\_STREAM --&gt; closed</code> 岂不是正好？为什么非要画蛇添足强行走到 <code>half-closed</code>？从 request-response 的角度看，既然 PP 可以对应到 client 发送的 HEADERS（request），那么发送完 PP 为什么不能像发送完 request 一样直接进入 <code>half-closed</code> 状态呢？为了讲清楚这个问题，我们需要先了解 <a href="http://httpwg.org/specs/rfc7540.html#rfc.section.5.1.2">5.1.2 节</a> 中的 Stream Concurrency。</p>
+<p>然后你会发现一件更奇怪的事：<code>reserved</code> 和 <code>half-closed</code> 中，总有一个状态是多余的。从 server push 的角度看，既然只有 server 发送数据，close stream 也只需要 server 同意即可，那么设计成 <code>reserved(local) -- send END_STREAM --&gt; closed</code> 岂不是正好？为什么非要画蛇添足强行走到 <code>half-closed</code>？从 request-response 的角度看，既然 PP 可以对应到 client 发送的 HEADERS（request），那么发送完 PP 为什么不能像发送完 request 一样直接进入 <code>half-closed</code> 状态呢？为了讲清楚这个问题，我们需要先了解 <a href="http://httpwg.org/specs/rfc7540.html#rfc.section.5.1.2">5.1.2 节</a> 中的 Stream Concurrency。</p>
 
-<p>简单说一下 Stream Concurrency。我们知道，HTTP/2 之所以快，一是头部压缩，二是 stream multiplexing，换句话说就是许多 stream 同时传输。但是资源有限，不可能允许无限多个 stream 同时传输。解决方法也很简单，就是设置一个上限。在 HTTP/2 中，这个上限叫做 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code>，代表活跃 stream 的最大数量。需要注意的是，每个 endpoint 可以有不同的 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code>，分别限制由自己<strong>初始化</strong>的 stream。</p>
+<p>简单说一下 Stream Concurrency。我们知道，HTTP/2 之所以快，一是头部压缩，二是 stream multiplexing，换句话说就是许多 stream 同时传输。但是资源有限，不可能允许无限多个 stream 同时传输。解决方法也很简单，就是设置一个上限。在 HTTP/2 中，这个上限叫做 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code>，代表<strong>活跃 stream 的最大数量</strong>。需要注意的是，每个 endpoint 可以有不同的 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code>，分别限制由自己初始化的 stream。</p>
 
 <p>所以 <code>SETTINGS_MAX_CONCURRENT_STREAMS</code> 和 stream 状态又有什么关系呢？关系大了，因为<strong>并不是所有状态的 stream 都计入活跃 stream，只有处于 open 和 half-closed</strong> 状态的 stream 才算。相信看到这里你已经晕了，所以我来举个例子。</p>
 

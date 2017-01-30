@@ -52,9 +52,9 @@ half-closed 的设计看起来挺不错的，两边各发送一个 END\_STREAM �
 
 让我们仔细看一下这张图。首先，在 PUSH\_PROMISE 流程中，client 只能进入 `half-closed(local)` 状态，不会进入 `half-closed(remote)`，而图上并没有说明这一点。更让人费解的是 `reserved -> half-cloased` 的状态转移，居然是靠 server 发送 HEADERS？？？这完全不符合 `half-closed` 的语义啊，凭什么 server 发送 HEADERS 就代表 client 要 close？？ 
 
-然后你会发现一件更奇怪的事：`reserved` 和 `half-closed` 中，总有一个状态是多余的。从 server push 的角度看，既然只有 server 发送数据，close stream 也只需要 server 同意即可，那么设计成 `reserved(local) -- send END\_STREAM --> closed` 岂不是正好？为什么非要画蛇添足强行走到 `half-closed`？从 request-response 的角度看，既然 PP 可以对应到 client 发送的 HEADERS（request），那么发送完 PP 为什么不能像发送完 request 一样直接进入 `half-closed` 状态呢？为了讲清楚这个问题，我们需要先了解 [5.1.2 节](http://httpwg.org/specs/rfc7540.html#rfc.section.5.1.2) 中的 Stream Concurrency。
+然后你会发现一件更奇怪的事：`reserved` 和 `half-closed` 中，总有一个状态是多余的。从 server push 的角度看，既然只有 server 发送数据，close stream 也只需要 server 同意即可，那么设计成 `reserved(local) -- send END_STREAM --> closed` 岂不是正好？为什么非要画蛇添足强行走到 `half-closed`？从 request-response 的角度看，既然 PP 可以对应到 client 发送的 HEADERS（request），那么发送完 PP 为什么不能像发送完 request 一样直接进入 `half-closed` 状态呢？为了讲清楚这个问题，我们需要先了解 [5.1.2 节](http://httpwg.org/specs/rfc7540.html#rfc.section.5.1.2) 中的 Stream Concurrency。
 
-简单说一下 Stream Concurrency。我们知道，HTTP/2 之所以快，一是头部压缩，二是 stream multiplexing，换句话说就是许多 stream 同时传输。但是资源有限，不可能允许无限多个 stream 同时传输。解决方法也很简单，就是设置一个上限。在 HTTP/2 中，这个上限叫做 `SETTINGS_MAX_CONCURRENT_STREAMS`，代表活跃 stream 的最大数量。需要注意的是，每个 endpoint 可以有不同的 `SETTINGS_MAX_CONCURRENT_STREAMS`，分别限制由自己**初始化**的 stream。
+简单说一下 Stream Concurrency。我们知道，HTTP/2 之所以快，一是头部压缩，二是 stream multiplexing，换句话说就是许多 stream 同时传输。但是资源有限，不可能允许无限多个 stream 同时传输。解决方法也很简单，就是设置一个上限。在 HTTP/2 中，这个上限叫做 `SETTINGS_MAX_CONCURRENT_STREAMS`，代表**活跃 stream 的最大数量**。需要注意的是，每个 endpoint 可以有不同的 `SETTINGS_MAX_CONCURRENT_STREAMS`，分别限制由自己初始化的 stream。
 
 所以 `SETTINGS_MAX_CONCURRENT_STREAMS` 和 stream 状态又有什么关系呢？关系大了，因为**并不是所有状态的 stream 都计入活跃 stream，只有处于 open 和 half-closed** 状态的 stream 才算。相信看到这里你已经晕了，所以我来举个例子。
 

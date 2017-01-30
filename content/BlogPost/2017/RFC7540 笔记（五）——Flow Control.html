@@ -1,0 +1,88 @@
+<p>这一篇主要讲 Flow Control，包含 5.2 节和 6.9 节的内容。</p>
+
+<h2>5.2 Flow Control</h2>
+
+<p>Flow control 这个词相信大家并不陌生，因为 TCP 中也有。不过 HTTP/1.1 并未包含 flow control 机制，依靠 TCP 的 flow control 也工作得很好，为什么 HTTP/2 需要添加呢？原因很明显，因为 HTTP/2 引入了 stream 和 multiplexing，想让众多 stream 协同工作，就需要一种控制机制。</p>
+
+<h3>5.2.1 Flow-Control Principles</h3>
+
+<p>这一节讲了 flow control 的基本原则。挑几条解释一下：</p>
+
+<ul>
+<li><blockquote>
+  <p>Flow control is specific to a connection. Both types of flow control are between the endpoints of a single hop and not over the entire end-to-end path.</p>
+</blockquote>
+
+<p>意思是说，flow control 的作用范围并不是从浏览器到所访问网站的“end-to-end path”，而是针对每个 connection 的。比如说，server 前面有一个 front-end proxy 如 Nginx，这时就会有两个 connection，browser &lt;—&gt; Nginx, Nginx &lt;—&gt; server。flow control 分别作用于两个 connection。详情参考<a href="http://stackoverflow.com/a/40750973/2142577">这里</a>。</p></li>
+<li><p><strong>H2 的 flow-control 是 receiver 控制 sender 发送速度的一种机制</strong>。这里的 receiver 和 sender 指的不是 client 和 server，而是谁当前在发送 frame，谁就是 sender，peer 则是 receiver。</p></li>
+<li><p>flow-control 无法禁用。</p></li>
+<li><p><strong>RFC 只规定 WINDOW_UPDATE 的语义，而不规定具体的算法</strong>。不同的 HTTP/2 实现可以选择不同的 flow-control 策略。</p></li>
+<li><p>HTTP/2 的 flow control 既可以作用于 stream，也可以作用于 connection。</p></li>
+</ul>
+
+<h3>6.9 WINDOW_UPDATE</h3>
+
+<p>下面具体讲一下 WINDOW_UPDATE。WINDOW_UPDATE 是一种 frame，payload 结构如下：</p>
+
+<pre><code>+-+-------------------------------------------------------------+ 
+|R|                Window Size Increment (31)                   | 
++-+-------------------------------------------------------------+
+</code></pre>
+
+<p>Window Size Increment 是一个 31 位整数，取值范围 1~2^31-1。在说明其含义之前，还需要介绍另一个概念：flow-control window。</p>
+
+<h4>6.9.1 The Flow-Control Window</h4>
+
+<p>Flow-control window 被用来限制 sender 的发送速度。</p>
+
+<p><center>
+<img src="/media/content/BlogPost/images/window1.png" alt="" />
+</center></p>
+
+<p>用一张图来说明原理：sender 发送了两个 DATA frame，则 flow-control window 的大小就要减掉发送 DATA frame 的 payload 的大小。发送其它类型的 frame 不会减小窗口。不允许发送 payload 大小超过 window 的 DATA。</p>
+
+<p>Sender 发送 DATA 给 receiver，receiver 接到之后必然需要通过某种方法通知 sender 来恢复 window，否则后续的 DATA 可能就发不过来了。怎么通知呢？正是通过 WINDOW_UPDATE。Receiver 接收到 DATA 之后，发送 WINDOW_UPDATE 给 sender，其中 Window Size Increment 的值代表 sender 应该把 window 增大多少。 注意这个值并不一定等于 DATA payload 大小，具体是多少取决于实现所用的算法。通过这种方式，receiver 就可以限制 sender 的发送速度了。<strong>Flow-control window 的大小实际上代表 receiver 处理接收到数据的速度快慢。</strong></p>
+
+<p>之前提到：HTTP/2 的 flow control 既可以作用于 stream，也可以作用于 connection。Connection 也有 flow-control window，如下图所示：</p>
+
+<p><center>
+<img src="/media/content/BlogPost/images/window2.png" alt="" />
+</center></p>
+
+<p>这里又涉及一个 RFC 中没讲清楚的问题：每个 stream/connection 到底维护几个 window？答案是每个 endpoint 各有一个，这两个 window 是不同且独立的。因为 stream 是双向的，理论上每个 endpoint 都可以作为 sender，所以两边都需要窗口来控制发送速度（在实现中，每个 endpoint 除了维护自己的 window，也会记录 peer window 的 size，就不展开讲了）。</p>
+
+<p>Connection flow-control window 和 stream flow-control window 的关系可以总结为：<strong>一起减，分开加</strong>。“一起减”指的是任意 stream 发送 DATA，作为 sender 的 endpoint 的 connection 和 stream window 大小都要减少。“分开加”指的是 WINDOW_UPDATE 要么增大 stream 的 window，要么增大 connection 的 window：在 stream 0 上发送，增大 connection window，在非零 stream 上发送，增大对应 stream 的 window。</p>
+
+<p>可以看到，HTTP/2 的 flow-contorl 和 TCP 的滑动窗口作用类似，但不建议用滑动窗口来类比，原因如下：</p>
+
+<ul>
+<li>HTTP/2 flow-control 不带确认功能，只是用来控制发送速度</li>
+<li>HTTP/2 中并不区分发送方窗口和接收方窗口</li>
+</ul>
+
+<h3>6.9.2 Initial Flow-Control Window Size</h3>
+
+<p>关于 flow control 还剩下一个重点没讲，那就是<strong>初始窗口大小</strong>。</p>
+
+<p>Connection 和 stream 的初始 flow-control window 大小都是 65535，代表 65535 bytes。Connection 的初始窗口大小不能改变，但 stream 的可以，通过发送 SETTINGS frame，携带 <a href="http://httpwg.org/specs/rfc7540.html#SETTINGS_INITIAL_WINDOW_SIZE"><code>SETTINGS_INITIAL_WINDOW_SIZE</code></a>，这个值即为新的 stream flow-control window 初始大小。</p>
+
+<p><strong>初始窗口大小的改变针对所有 stream 而非单个</strong>。对于非活跃 stream 而言，改变初始窗口大小对它们影响不大，只要之后真正开始在上面发数据时按新的大小生成窗口即可。</p>
+
+<p>对于活跃 stream（<code>open</code> 和 <code>half-closed</code> ，参考笔记四），情况就比较复杂了。RFC 中规定：</p>
+
+<blockquote>
+  <p>When the value of SETTINGS_INITIAL_WINDOW_SIZE changes, a receiver MUST adjust the size of all stream flow-control windows that it maintains by the difference between the new value and the old value.</p>
+</blockquote>
+
+<p>这就有可能造成窗口大小变为负数。举例如下：</p>
+
+<pre><code>1. 初始 window size = 65535
+2. 在某个 stream 上发送了 60KB 的 DATA，更新 window size = 65536 - 60K
+3. 这时，初始 window size 被设置为 16KB
+4. 当前 window size
+ = 原来的 window size + 初始 window size 的变化值
+ = (65536 - 60K) + (16K - 65535)
+ = -44K
+</code></pre>
+
+<p>窗口大小为负数并不会造成错误，但会阻止 sender 发送 DATA。一旦出现这种情况，只有等待 WINDOW_UPDATE 增加窗口大小，才能继续发送 DATA。</p>
