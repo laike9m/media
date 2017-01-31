@@ -18,7 +18,7 @@
 >
 > With that said, I can understand why you say that, but you really shouldn't think that way. **There's no client stream state and server stream state, just one stream state with copies saved on both sides.**
 >
-> ![](https://farm1.staticflickr.com/63/200867665_3a892f2f27.jpg)
+> ![](/media/content/BlogPost/images/coin.jpg)
 >
 > It's kind of like a coin, with two sides having different images. No matter which direction you see from, the coin doesn't change, but you name the side you see "front side/local state", and the one you don't see "back side/remote state".
 >

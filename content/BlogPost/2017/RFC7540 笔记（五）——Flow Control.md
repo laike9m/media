@@ -32,7 +32,7 @@ Flow control 这个词相信大家并不陌生，因为 TCP 中也有。不过 H
 
 Window Size Increment 是一个 31 位整数，取值范围 1~2^31-1。在说明其含义之前，还需要介绍另一个概念：flow-control window。
 
-#### 6.9.1 The Flow-Control Window
+### 6.9.1 The Flow-Control Window
 
 Flow-control window 被用来限制 sender 的发送速度。
 
