@@ -65,6 +65,9 @@ export CC=/usr/local/Cellar/gcc49/4.9.3/bin/gcc-4.9
 ```
 这下终于安装成功。
 
+**2017-2-9**  
+最近发现有时候必须得在 virtualenv 里才能安装成功……
+
 [1]: https://developer.apple.com/library/mac/documentation/Security/Conceptual/System_Integrity_Protection_Guide/ConfiguringSystemIntegrityProtection/ConfiguringSystemIntegrityProtection.html
 [2]: http://stackoverflow.com/questions/32659348/operation-not-permitted-when-on-root-el-capitan-rootless-disabled#
 [3]: http://stackoverflow.com/questions/19535422/os-x-10-9-gcc-links-to-clang

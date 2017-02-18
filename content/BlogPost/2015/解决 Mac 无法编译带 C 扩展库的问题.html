@@ -6,13 +6,13 @@
 
 <p>终于找到一个地方提示说可以手动把 Xcode 里面的文件夹链接过去。尝试执行</p>
 
-<pre><code>sudo ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include /usr/include
-</code></pre>
+<div class="codehilite"><pre><span></span><code>sudo ln -s /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/usr/include /usr/include
+</code></pre></div>
 
 <p>提示</p>
 
-<pre><code>ln: /usr/include: Operation not permitted
-</code></pre>
+<div class="codehilite"><pre><span></span><code>ln: /usr/include: Operation not permitted
+</code></pre></div>
 
 <p>搜索发现原因是 Mac 默认开启了 <a href="https://developer.apple.com/library/mac/documentation/Security/Conceptual/System_Integrity_Protection_Guide/ConfiguringSystemIntegrityProtection/ConfiguringSystemIntegrityProtection.html">Configuring System Integrity Protection</a>，简单来说就是一些系统相关的文件夹被设为只读。解决方法参考<a href="http://stackoverflow.com/questions/32659348/operation-not-permitted-when-on-root-el-capitan-rootless-disabled#">这里</a>：</p>
 
@@ -22,9 +22,9 @@
 <li>选择 utilities &gt; terminal，输入命令</li>
 </ol>
 
-<pre><code>csrutil disable   
+<div class="codehilite"><pre><span></span><code>csrutil disable   
 reboot
-</code></pre>
+</code></pre></div>
 
 <ol>
 <li>再次执行 <code>ln</code>，成功。</li>
@@ -32,27 +32,27 @@ reboot
 
 <p>再次尝试安装，这里以 <code>greenlet</code> 为例</p>
 
-<pre><code>$ pip install greenlet
+<div class="codehilite"><pre><span></span><code>$ pip install greenlet
 ...
-Building wheels for collected packages: greenlet
-  Running setup.py bdist_wheel for greenlet
-  Complete output from command /usr/local/opt/python3/bin/python3.5 -c "import setuptools;__file__='/private/var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/pip-build-amdm1ven/greenlet/setup.py';exec(compile(open(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" bdist_wheel -d /var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/tmp4a1nacfbpip-wheel-:
+Building wheels <span class="k">for</span> collected packages: greenlet
+  Running setup.py bdist_wheel <span class="k">for</span> greenlet
+  Complete output from <span class="nb">command</span> /usr/local/opt/python3/bin/python3.5 -c <span class="s2">&quot;import setuptools;__file__=&#39;/private/var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/pip-build-amdm1ven/greenlet/setup.py&#39;;exec(compile(open(__file__).read().replace(&#39;\r\n&#39;, &#39;\n&#39;), __file__, &#39;exec&#39;))&quot;</span> bdist_wheel -d /var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/tmp4a1nacfbpip-wheel-:
   running bdist_wheel
   running build
   running build_ext
-  building 'greenlet' extension
+  building <span class="s1">&#39;greenlet&#39;</span> extension
   creating build
   creating build/temp.macosx-10.10-x86_64-3.5
   clang -Wno-unused-result -Wsign-compare -Wunreachable-code -fno-common -dynamic -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -I/usr/local/include -I/usr/local/opt/openssl/include -I/usr/local/opt/sqlite/include -I/usr/local/Cellar/python3/3.5.1/Frameworks/Python.framework/Versions/3.5/include/python3.5m -c greenlet.c -o build/temp.macosx-10.10-x86_64-3.5/greenlet.o
-  Assertion failed: (!contains(New, this) &amp;&amp; "this-&gt;replaceAllUsesWith(expr(this)) is NOT valid!"), function replaceAllUsesWith, file /Users/laike9m/Dev/C_CPP/Lib/cling/src/lib/IR/Value.cpp, line 343.
+  Assertion failed: <span class="o">(</span>!contains<span class="o">(</span>New, this<span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="s2">&quot;this-&gt;replaceAllUsesWith(expr(this)) is NOT valid!&quot;</span><span class="o">)</span>, <span class="k">function</span> replaceAllUsesWith, file /Users/laike9m/Dev/C_CPP/Lib/cling/src/lib/IR/Value.cpp, line 343.
  ...
 
     ********************
-    error: command 'clang' failed with exit status 254
+    error: <span class="nb">command</span> <span class="s1">&#39;clang&#39;</span> failed with <span class="nb">exit</span> status 254
 
     ----------------------------------------
-Command "/usr/local/opt/python3/bin/python3.5 -c "import setuptools, tokenize;__file__='/private/var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/pip-build-amdm1ven/greenlet/setup.py';exec(compile(getattr(tokenize, 'open', open)(__file__).read().replace('\r\n', '\n'), __file__, 'exec'))" install --record /var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/pip-l6qwwxng-record/install-record.txt --single-version-externally-managed --compile" failed with error code 1 in /private/var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/pip-build-amdm1ven/greenlet 
-</code></pre>
+Command <span class="s2">&quot;/usr/local/opt/python3/bin/python3.5 -c &quot;</span>import setuptools, tokenize<span class="p">;</span><span class="nv">__file__</span><span class="o">=</span><span class="s1">&#39;/private/var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/pip-build-amdm1ven/greenlet/setup.py&#39;</span><span class="p">;</span>exec<span class="o">(</span>compile<span class="o">(</span>getattr<span class="o">(</span>tokenize, <span class="s1">&#39;open&#39;</span>, open<span class="o">)(</span>__file__<span class="o">)</span>.read<span class="o">()</span>.replace<span class="o">(</span><span class="s1">&#39;\r\n&#39;</span>, <span class="s1">&#39;\n&#39;</span><span class="o">)</span>, __file__, <span class="s1">&#39;exec&#39;</span><span class="o">))</span><span class="s2">&quot; install --record /var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/pip-l6qwwxng-record/install-record.txt --single-version-externally-managed --compile&quot;</span> failed with error code <span class="m">1</span> in /private/var/folders/sy/msgzx60s2_332s1wdb92fqw80000gn/T/pip-build-amdm1ven/greenlet 
+</code></pre></div>
 
 <p>我不相信 greenlet 的代码有问题，遂怀疑是 clang 的问题。于是想用 gcc 来编译。尝试 <code>export CC=gcc</code> 未果，发现仍然在使用 clang，报同样的错。还是在 SO 上找到了<a href="http://stackoverflow.com/questions/19535422/os-x-10-9-gcc-links-to-clang">解释</a></p>
 
@@ -62,12 +62,15 @@ Command "/usr/local/opt/python3/bin/python3.5 -c "import setuptools, tokenize;__
 
 <p>解决方法是用 homebrew 安装 gcc，这样不会和系统的 gcc 冲突。</p>
 
-<pre><code>$ brew install gcc49
-</code></pre>
+<div class="codehilite"><pre><span></span><code>$ brew install gcc49
+</code></pre></div>
 
 <p>然后</p>
 
-<pre><code>export CC=/usr/local/Cellar/gcc49/4.9.3/bin/gcc-4.9
-</code></pre>
+<div class="codehilite"><pre><span></span><code><span class="nb">export</span> <span class="nv">CC</span><span class="o">=</span>/usr/local/Cellar/gcc49/4.9.3/bin/gcc-4.9
+</code></pre></div>
 
 <p>这下终于安装成功。</p>
+
+<p><strong>2017-2-9</strong> <br />
+最近发现有时候必须得在 virtualenv 里才能安装成功……</p>
