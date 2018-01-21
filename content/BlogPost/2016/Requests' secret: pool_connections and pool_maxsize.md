@@ -207,7 +207,7 @@ I guess that's all. Hope this article help you understand requests better. BTW I
 1. For https, requests uses urllib3's [HTTPSConnectionPool][10], but it's pretty much the same as HTTPConnectionPool so I didn't differeniate them in this article.
 2. `Session`'s `mount` method ensures the longest prefix gets matched first. Its implementation is pretty interesting so I posted it here.
 
-```python
+    ```python
 def mount(self, prefix, adapter):
     """Registers a connection adapter to a prefix.
     Adapters are sorted in descending order by key length."""
@@ -215,10 +215,19 @@ def mount(self, prefix, adapter):
     keys_to_move = [k for k in self.adapters if len(k) < len(prefix)]
     for key in keys_to_move:
         self.adapters[key] = self.adapters.pop(key)
-```
+    ```
 Note that `self.adapters` is an `OrderedDict`.
+3. A more advanced config option `pool_block`  
+Notice that when creating an adapter, we didn't introduce the last parameter `pool_block`
+    ```
+    HTTPAdapter(pool_connections=10, pool_maxsize=10, max_retries=0, pool_block=False)
+    ```
+Setting it to `True` is equivalent to setting `block=True` when creating a [urllib3.connectionpool.HTTPConnectionPool][12], the effect is this, quoted from urllib3's doc:  
+    >If set to True, no more than maxsize connections will be used at a time. When no free connections are available, the call will block until a connection has been released. This is a useful side effect for particular multithreaded situations where one does not want to use more than maxsize connections per host to prevent flooding.
 
-3. 刚发现，我就说为什么白天晕乎乎的，原来是吃了白加黑的黑片\_(:3」∠)\_
+    But actually, requests doesn't set a timeout([https://github.com/shazow/urllib3/issues/1101](https://github.com/shazow/urllib3/issues/1101)), which means that if there's no free connection, an `EmptyPoolError` will be raised immediately.
+
+4. 刚发现，我就说为什么白天晕乎乎的，原来是吃了白加黑的黑片\_(:3」∠)\_
 
 [1]: http://docs.python-requests.org/en/latest/
 [2]: http://docs.python-requests.org/en/latest/user/advanced/#session-objects
@@ -231,3 +240,5 @@ Note that `self.adapters` is an `OrderedDict`.
 [9]: http://urllib3.readthedocs.org/en/latest/pools.html#module-urllib3.connectionpool
 [10]: http://urllib3.readthedocs.org/en/latest/pools.html#urllib3.connectionpool.HTTPSConnectionPool
 [11]: https://gist.github.com/laike9m/ead19c65a416c7022c00
+[12]: https://urllib3.readthedocs.io/en/1.4/pools.html#urllib3.connectionpool.HTTPConnectionPool
+[13]: https://github.com/shazow/urllib3/blob/1191719a9ce99e3b87f280f92ffede99929bc9dd/urllib3/connectionpool.py#L236

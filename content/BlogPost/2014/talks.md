@@ -1,6 +1,12 @@
 Talks
 ==
 
+* [**Awesome Chrome Extension!**][9]   
+Lunch sharing in my group.
+
+* [**HTTP/2 Introduction**][8]   
+Lunch sharing in my group.
+
 * **Concurrent.futures: history, usage, internal, future** [online-html][6], [pdf][7]  
 A 30-minutes talk I gave at PyCon2014 China(Beijing). I tried to make clear why `concurrent.futures` is brought into Python beyond how to use it, explore the internal implementation of `Future.result()` and `ProcessPoolExecutor`, and finally explained why we should use it.    
 在 PyCon2014 北京场做的主题演讲，主要针对 Python3.2引入的 `concurrent.futures`。我试图理清这个模块被引入的前因后果，同时也讲到了一部分底层的实现，最后说明了为什么我们应当使用这它。   
@@ -22,6 +28,7 @@ A talk at OpenCAS seminar.
 My first talk at OpenCAS seminar. I introduced Python to students told them how to start learning it.  
 我第一次在中科院开源软件协会技术交流会上作演讲，介绍了 Python 语言，并引导同学们学习 Python
 
+
 [0]: http://www.laike9m.com/media/files/pdf/Python.pdf  
 [1]: http://www.laike9m.com/media/files/pdf/Python%20Generators.pdf  
 [2]: http://www.laike9m.com/media/files/pdf/Python%20Context%20Manager.pdf  
@@ -29,4 +36,6 @@ My first talk at OpenCAS seminar. I introduced Python to students told them how 
 [4]: http://www.laike9m.com/media/files/pdf/ChinaUnicom模拟登陆.pdf  
 [5]: http://www.laike9m.com/media/files/pdf/node-and-nw.pdf  
 [6]: http://www.laike9m.com/media/files/html/PyCon2014-concurrent.futures.html#/
-[7]: http://www.laike9m.com/media/files/pdf/PyCon2014-cf-laike9m.pdf  
+[7]: http://www.laike9m.com/media/files/pdf/PyCon2014-cf-laike9m.pdf   
+[8]: https://drive.google.com/file/d/0B94OmXaDRH6XZnVvaGJESXFSR1U/view?usp=sharing
+[9]: https://docs.google.com/presentation/d/1npG2_JJUUD-vocTkPUaoI1cyKhKzJvVT6Hks6tylmF0/edit?usp=sharing

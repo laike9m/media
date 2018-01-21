@@ -1,45 +1,42 @@
-<p>OK，如果你还在为并发（concurrency）和并行（parallesim）这两个词的区别而感到困扰，那么这篇文章就是写给你看的。搞这种词语辨析到底有什么意义？其实没什么意义，但是有太多人在混用错用这两个词（比如遇到的某门课的老师）。不论中文圈还是英文圈，即使已经有数不清的文章在讨论并行vs并发，却极少有能讲清楚的。让一个讲不清楚的人来解释，比不解释更可怕。比如我随便找了个网上的解释：</p>
+<p>OK，如果你还在为并发（concurrency）和并行（parallelism）这两个词的区别而感到困扰，那么这篇文章就是写给你看的。搞这种词语辨析到底有什么意义？其实没什么意义，但是有太多人在混用错用这两个词（比如遇到的某门课的老师）。不论中文圈还是英文圈，即使已经有数不清的文章在讨论并行vs并发，却极少有能讲清楚的。让一个讲不清楚的人来解释，比不解释更可怕。比如我随便找了个网上的解释：</p>
 
 <blockquote>
-<p>前者是逻辑上的同时发生（simultaneous），而后者是物理上的同时发生．</p>
-
-<p>并发性(concurrency)，又称共行性，是指能处理多个同时性活动的能力，并发事件之间不一定要同一时刻发生。</p>
-
-<p>并行(parallelism)是指同时发生的两个并发事件，具有并发的含义，而并发则不一定并行。</p>
-
-<p>来个比喻：并发和并行的区别就是一个人同时吃三个馒头和三个人同时吃三个馒头。</p>
+  <p>前者是逻辑上的同时发生（simultaneous），而后者是物理上的同时发生．</p>
+  
+  <p>并发性(concurrency)，又称共行性，是指能处理多个同时性活动的能力，并发事件之间不一定要同一时刻发生。</p>
+  
+  <p>并行(parallelism)是指同时发生的两个并发事件，具有并发的含义，而并发则不一定并行。</p>
+  
+  <p>来个比喻：并发和并行的区别就是一个人同时吃三个馒头和三个人同时吃三个馒头。</p>
 </blockquote>
 
 <p>看了之后，你懂了么？不懂，更晕了。写出这类解释的人，自己也是一知半解，却又把自己脑子里模糊的影像拿出来写成文章，让读者阅毕反而更加疑惑。当然也有可能他确实懂了，但是写出这种文字也不能算负责。至于本文，请相信，一定是准确的，我也尽量做到讲解清晰。</p>
 
-<p>OK，下面进入正题，<strong>concurrency vs parallesim</strong></p>
+<p>OK，下面进入正题，<strong>concurrency vs parallelism</strong></p>
 
 <p>让我们大声朗读下面这句话：</p>
 
-<h2>
-<a id="user-content-并发指的是程序的结构并行指的是程序运行时的状态" class="anchor" href="#%E5%B9%B6%E5%8F%91%E6%8C%87%E7%9A%84%E6%98%AF%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%BB%93%E6%9E%84%E5%B9%B6%E8%A1%8C%E6%8C%87%E7%9A%84%E6%98%AF%E7%A8%8B%E5%BA%8F%E8%BF%90%E8%A1%8C%E6%97%B6%E7%9A%84%E7%8A%B6%E6%80%81" aria-hidden="true"><span class="octicon octicon-link"></span></a>“并发”指的是程序的结构，“并行”指的是程序运行时的状态</h2>
+<h2>“并发”指的是程序的结构，“并行”指的是程序运行时的状态</h2>
 
 <p>即使不看详细解释，也请记住这句话。下面来具体说说：</p>
 
-<h3>
-<a id="user-content-并行parallesim" class="anchor" href="#%E5%B9%B6%E8%A1%8Cparallesim" aria-hidden="true"><span class="octicon octicon-link"></span></a>并行（parallesim）</h3>
+<h3>并行（parallelism）</h3>
 
 <p>这个概念很好理解。所谓并行，就是<strong>同时执行</strong>的意思，无需过度解读。判断程序是否处于并行的<strong>状态</strong>，就看同一时刻是否有超过一个“工作单位”在运行就好了。所以，<strong>单线程永远无法达到并行状态</strong>。</p>
 
 <p>要达到并行状态，最简单的就是利用多线程和多进程。但是 Python 的多线程由于存在著名的 GIL，无法让两个线程真正“同时运行”，所以实际上是无法到达并行状态的。</p>
 
-<h3>
-<a id="user-content-并发concurrency" class="anchor" href="#%E5%B9%B6%E5%8F%91concurrency" aria-hidden="true"><span class="octicon octicon-link"></span></a>并发（concurrency）</h3>
+<h3>并发（concurrency）</h3>
 
 <p>要理解“并发”这个概念，必须得清楚，<strong>并发指的是程序的“结构”</strong>。当我们说这个程序是并发的，实际上，这句话应当表述成“这个程序采用了支持并发的设计”。好，既然并发指的是人为设计的结构，那么怎样的程序结构才叫做支持并发的设计？</p>
 
 <p><strong>正确的并发设计的标准是：使多个操作可以在重叠的时间段内进行(two tasks can start, run, and complete in overlapping time periods)</strong>。</p>
 
-<p>这句话的重点有两个。我们先看“（操作）在重叠的时间段内进行”这个概念。它是否就是我们前面说到的并行呢？是，也不是。并行，当然是在重叠的时间段内执行，但是另外一种执行模式，也属于在重叠时间段内进行。这就是<a href="http://zh.wikipedia.org/wiki/%E5%8D%8F%E7%A8%8B">协程</a>。</p>
+<p>这句话的重点有两个。我们先看“（操作）在重叠的时间段内进行”这个概念。它是否就是我们前面说到的并行呢？是，也不是。并行，当然是在重叠的时间段内执行，但是另外一种执行模式，也属于在重叠时间段内进行。这就是<a href="http://zh.wikipedia.org/wiki/协程">协程</a>。</p>
 
 <p>使用协程时，程序的执行看起来往往是这个样子：</p>
 
-<p><a href="/media/content/BlogPost/images/coroutine.jpg" target="_blank"><img src="/media/content/BlogPost/images/coroutine.jpg" alt="" style="max-width:100%;"></a></p>
+<p><img src="/media/content/BlogPost/images/coroutine.jpg" alt="" /></p>
 
 <p>task1, task2 是两段不同的代码，比如两个函数，其中黑色块代表某段代码正在执行。注意，这里从始至终，<strong>在任何一个时间点上都只有一段代码在执行</strong>，但是，由于 task1 和 task2 在重叠的时间段内执行，所以这是一个支持并发的设计。与并行不同，单核单线程能支持并发。</p>
 
@@ -58,24 +55,23 @@
 
 <p>之所以并发设计往往需要把流程拆开，是因为如果不拆分也就不可能在同一时间段进行多个任务了。这种拆分可以是平行的拆分，比如抽象成同类的任务，也可以是不平行的，比如分为多个步骤。</p>
 
-<h3>
-<a id="user-content-并发和并行的关系" class="anchor" href="#%E5%B9%B6%E5%8F%91%E5%92%8C%E5%B9%B6%E8%A1%8C%E7%9A%84%E5%85%B3%E7%B3%BB" aria-hidden="true"><span class="octicon octicon-link"></span></a>并发和并行的关系</h3>
+<h3>并发和并行的关系</h3>
 
 <blockquote>
-<p><strong>Different concurrent designs enable different ways to parallelize.</strong></p>
+  <p><strong>Different concurrent designs enable different ways to parallelize.</strong></p>
 </blockquote>
 
 <p>这句话来自著名的talk: <a href="http://blog.golang.org/concurrency-is-not-parallelism"><strong>Concurrency is not parallelism</strong></a>。它足够concise，以至于不需要过多解释。但是仅仅引用别人的话总是不太好，所以我再用之前文字的总结来说明：<strong>并发设计让并发执行成为可能，而并行是并发执行的一种模式</strong>。</p>
 
 <p>最后，关于Concurrency is not parallelism这个talk再多说点。自从这个talk出来，直接引爆了一堆讨论并发vs并行的文章，并且无一例外提到这个talk，甚至有的文章直接用它的slide里的图片来说明。比如这张：</p>
 
-<p><a href="/media/content/BlogPost/images/gophercomplex0.jpg" target="_blank"><img src="/media/content/BlogPost/images/gophercomplex0.jpg" alt="" style="max-width:100%;"></a></p>
+<p><img src="/media/content/BlogPost/images/gophercomplex0.jpg" alt="" /></p>
 
 <p>以为我要解释这张图吗？NO。放这张图的唯一原因就是萌萌的gopher。</p>
 
 <p>再来张特写：</p>
 
-<p><a href="/media/content/BlogPost/images/gopher.png" target="_blank"><img src="/media/content/BlogPost/images/gopher.png" alt="" style="max-width:100%;"></a></p>
+<p><img src="/media/content/BlogPost/images/gopher.png" alt="" /></p>
 
 <p>之前看到知乎上有个关于go为什么流行的问题，有个答案是“logo萌”当时我就笑喷了。</p>
 
@@ -86,54 +82,54 @@
 <p>事实上我之前的理解还是有错误。在<a href="http://www.laike9m.com/blog/zui-jin-de-ji-ge-mian-shi,71/">《最近的几个面试》</a>这篇文章里有提到。最近买了<a href="https://pragprog.com/book/pb7con/seven-concurrency-models-in-seven-weeks">《七周七并发模型》</a>这本书，发现其中有讲，在此摘录一下（英文版 p3~p4）：</p>
 
 <blockquote>
-<p>Although there’s a tendency to think that parallelism means multiple cores,
-<strong>modern computers are parallel on many different levels</strong>. The reason why
-individual cores have been able to get faster every year, until recently, is that
-they’ve been using all those extra transistors predicted by Moore’s law in
-parallel, both at the bit and at the instruction level.</p>
-
-<p><strong>Bit-Level Parallelism</strong><br>
-Why is a 32-bit computer faster than an 8-bit one? Parallelism. If an 8-bit
-computer wants to add two 32-bit numbers, it has to do it as a sequence of
-8-bit operations. By contrast, a 32-bit computer can do it in one step, handling
-each of the 4 bytes within the 32-bit numbers in parallel.
-That’s why the history of computing has seen us move from 8- to 16-, 32-,
-and now 64-bit architectures. The total amount of benefit we’ll see from this
-kind of parallelism has its limits, though, which is why we’re unlikely to see
-128-bit computers soon.</p>
-
-<p><strong>Instruction-Level Parallelism</strong><br>
-Modern CPUs are highly parallel, using techniques like pipelining, out-of-order
-execution, and speculative execution.<br>
-As programmers, we’ve mostly been able to ignore this because, despite the
-fact that the processor has been doing things in parallel under our feet, it’s
-carefully maintained the illusion that everything is happening sequentially.
-This illusion is breaking down, however. Processor designers are no longer
-able to find ways to increase the speed of an individual core. As we move into
-a multicore world, we need to start worrying about the fact that instructions
-aren’t handled sequentially. We’ll talk about this more in Memory Visibility,
-on page ?.</p>
-
-<p><strong>Data Parallelism</strong><br>
-Data-parallel (sometimes called SIMD, for “single instruction, multiple data”)
-architectures are capable of performing the same operations on a large
-quantity of data in parallel. They’re not suitable for every type of problem,
-but they can be extremely effective in the right circumstances.
-One of the applications that’s most amenable to data parallelism is image
-processing. To increase the brightness of an image, for example, we increase
-the brightness of each pixel. For this reason, modern GPUs (graphics processing
-units) have evolved into extremely powerful data-parallel processors.</p>
-
-<p><strong>Task-Level Parallelism</strong><br>
-Finally, we reach what most people think of as parallelism—multiple processors.
-From a programmer’s point of view, the most important distinguishing
-feature of a multiprocessor architecture is the memory model, specifically
-whether it’s shared or distributed.</p>
+  <p>Although there’s a tendency to think that parallelism means multiple cores,
+  <strong>modern computers are parallel on many different levels</strong>. The reason why
+  individual cores have been able to get faster every year, until recently, is that
+  they’ve been using all those extra transistors predicted by Moore’s law in
+  parallel, both at the bit and at the instruction level.</p>
+  
+  <p><strong>Bit-Level Parallelism</strong> <br />
+  Why is a 32-bit computer faster than an 8-bit one? Parallelism. If an 8-bit
+  computer wants to add two 32-bit numbers, it has to do it as a sequence of
+  8-bit operations. By contrast, a 32-bit computer can do it in one step, handling
+  each of the 4 bytes within the 32-bit numbers in parallel.
+  That’s why the history of computing has seen us move from 8- to 16-, 32-,
+  and now 64-bit architectures. The total amount of benefit we’ll see from this
+  kind of parallelism has its limits, though, which is why we’re unlikely to see
+  128-bit computers soon.</p>
+  
+  <p><strong>Instruction-Level Parallelism</strong> <br />
+  Modern CPUs are highly parallel, using techniques like pipelining, out-of-order
+  execution, and speculative execution. <br />
+  As programmers, we’ve mostly been able to ignore this because, despite the
+  fact that the processor has been doing things in parallel under our feet, it’s
+  carefully maintained the illusion that everything is happening sequentially.
+  This illusion is breaking down, however. Processor designers are no longer
+  able to find ways to increase the speed of an individual core. As we move into
+  a multicore world, we need to start worrying about the fact that instructions
+  aren’t handled sequentially. We’ll talk about this more in Memory Visibility,
+  on page ?.</p>
+  
+  <p><strong>Data Parallelism</strong> <br />
+  Data-parallel (sometimes called SIMD, for “single instruction, multiple data”)
+  architectures are capable of performing the same operations on a large
+  quantity of data in parallel. They’re not suitable for every type of problem,
+  but they can be extremely effective in the right circumstances.
+  One of the applications that’s most amenable to data parallelism is image
+  processing. To increase the brightness of an image, for example, we increase
+  the brightness of each pixel. For this reason, modern GPUs (graphics processing
+  units) have evolved into extremely powerful data-parallel processors.</p>
+  
+  <p><strong>Task-Level Parallelism</strong> <br />
+  Finally, we reach what most people think of as parallelism—multiple processors.
+  From a programmer’s point of view, the most important distinguishing
+  feature of a multiprocessor architecture is the memory model, specifically
+  whether it’s shared or distributed.</p>
 </blockquote>
 
 <p>最关键的一点是，<strong>计算机在不同层次上都使用了并行技术</strong>。之前我讨论的实际上仅限于 Task-Level 这一层，在这一层上，并行无疑是并发的一个子集。但是并行并非并发的子集，因为在 Bit-Level 和 Instruction-Level 上的并行不属于并发——比如引文中举的 32 位计算机执行 32 位数加法的例子，同时处理 4 个字节显然是一种并行，但是它们都属于 32 位加法这一个任务，并不存在多个任务，也就根本没有并发。</p>
 
-<p>所以，正确的说法是这样：<br>
+<p>所以，正确的说法是这样： <br />
 <strong>并行指物理上同时执行，并发指能够让多个任务在逻辑上交织执行的程序设计</strong></p>
 
 <p>按照我现在的理解，并发针对的是 Task-Level 及更高层，并行则不限。这也是它们的区别。</p>
