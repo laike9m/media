@@ -27,7 +27,7 @@
 
 <p>OK, so what is value semantics? isocpp has a <a href="https://isocpp.org/wiki/faq/value-vs-ref-semantics">whole page</a> talking about it, but basically, value semantics means <strong>assignment copies the value</strong>, like <code>T b = a;</code>. That's the definition, but <strong>often times value semantics just means to create, use, store the object itself, pass, return by value, rather than pointers or references</strong>.</p>
 
-<p>The opposite concept is reference semantics, where assignment copies the pointer. In reference semantics, what's important is identity, for example <code>T&amp; b = a;</code> , we have to remember that <code>b</code> is an alias of <code>a</code>, not anything else. But in value semantics, we don't care about identity at all, we only care about the value an object<sup>1</sup> holds. This is brought by the nature of copy, because a copy is ensured to give us two independent objects that hold the same value, you can't tell which one is the source, nor it has any affect on usage.</p>
+<p>The opposite concept is reference semantics, where assignment copies the pointer. In reference semantics, what's important is identity, for example <code>T&amp; b = a;</code> , we have to remember that <code>b</code> is an alias of <code>a</code>, not anything else. But in value semantics, we don't care about identity at all, we only care about the value an object<sup>1</sup> holds. This is brought by the nature of copy, because a copy is ensured to give us two independent objects that hold the same value, you can't tell which one is the source, nor does it affect usage.</p>
 
 <p>Unlike other languages(Java, C#, JavaScript), C++ is built on value semantics. By default, assignment does bit-wise-copy(if no user-defined copy ctor is involved), arguments and return values are copy-constructed(yes I know there's RVO). Keeping value semantics is considered a good thing in C++. On the one hand, it's safer, because you don't need to worry about dangling pointers and all the creepy stuff; on the other hand, it's faster, because you have less indirection, see <a href="https://isocpp.org/wiki/faq/value-vs-ref-semantics#compos-vs-heap">here</a> for the official explanation.</p>
 
@@ -44,6 +44,8 @@
 <blockquote>
   <p><em>Move semantics allows us to keep value semantics, but at the same time gain the performance of reference semantics in those cases where the value of the original (copied-from) object is unimportant to program logic.</em></p>
 </blockquote>
+
+<p><strong>EDIT</strong>: Howard added some comment that really worth mentioning. By definition, move semantics acts more like reference semantics, because the moved-to and moved-from objects are not independent, when modifying(either by move-construction or move-assignment) the moved-to object, the moved-from object is also modified. However, <strong>it doesn't really matter——when move semantics takes place, you don't care about the moved-from object</strong>, it's either a pure rvalue (so nobody else has a reference to the original), or when the programmer specifically says "I don't care about the value of the original after the copy" (by using <code>std::move</code> instead of copy). Since modification to the original object has no impact on the program, you can use the moved-to object as if it's an independent copy, retaining the appearance of value semantics.</p>
 
 <h2 id="move-semantics-and-performance-optimization">Move Semantics and Performance Optimization</h2>
 
@@ -74,11 +76,11 @@
 
 <p>A <code>std::vector&lt;T&gt;</code> object is basically a set of pointers to an internal data buffer on heap, like <code>begin()</code> and <code>end()</code>. Copying a vector is expensive due to allocating new memory for the data buffer. When move is used instead of copy, only the pointers get copied and point to the old buffer.</p>
 
-<p>What's more, move also boosts vector <code>insert</code> operation. This is explained in the <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/n1377.htm#vector%20Example">vector Example</a> section in the proposal. Say we have a <code>std::vector&lt;string&gt;</code> with two elements <code>"AAAAA"</code> and <code>"BBBBB"</code>, now we want to insert <code>"CCCCC"</code> at index 1. Assume the vector has enough capacity, the following graph demonstrates the process of inserting with copy vs move.</p>
+<p>What's more, move also boosts vector <code>insert</code> operation. This is explained in the <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/n1377.htm#vector%20Example">vector Example</a> section in the proposal. Say we have a <code>std::vector&lt;string&gt;</code> with two elements <code>"AAAAA"</code> and <code>"BBBBB"</code>, now we want to insert <code>"CCCCC"</code> at index 1. Assuming the vector has enough capacity, the following graph demonstrates the process of inserting with copy vs move.</p>
 
-<p><img src="https://oftdwlsct.qnssl.com/move-semantics_vector.png" alt="" /></p>
+<p><img src="https://oftdwlsct.qnssl.com/move-semantics_vector_new.png" alt="" /></p>
 
-<p>Everything shown on the graph is on heap, including the vector's data buffer and each element string's data buffer. With copy, <code>str_b</code>'s data buffer has to be copied, which involves a buffer allocation then deallocation. With move, old <code>str_b</code>'s data buffer is reused by the new <code>str_b</code> in the new address, no buffer allocation or deallocation is needed. This brings a huge performance boost, yet it means more than that, because now you can store expensive objects into a vector without sacrificing performance, while previously having to store pointers. This also helps extend usage of value semantics.</p>
+<p>Everything shown on the graph is on heap, including the vector's data buffer and each element string's data buffer. With copy, <code>str_b</code>'s data buffer has to be copied, which involves a buffer allocation then deallocation. With move, old <code>str_b</code>'s data buffer is reused by the new <code>str_b</code> in the new address, no buffer allocation or deallocation is needed(As Howard pointed out, the "data" that old <code>str_b</code> now points to is unspecified). This brings a huge performance boost, yet it means more than that, because now you can store expensive objects into a vector without sacrificing performance, while previously having to store pointers. This also helps extend usage of value semantics.</p>
 
 <h2 id="move-semantics-and-resource-management">Move Semantics and Resource Management</h2>
 
@@ -157,7 +159,7 @@
 
 <ol>
 <li>Move semantics boosts performance while keeping value semantics;</li>
-<li>Move semantics helps bring every piece of resource management together to become what it is today. Especially, it is the key that makes value semantics and RAII truly work together, as it should have been long ago.</li>
+<li>Move semantics helps bring every piece of resource management together to become what it is today. In particular, it is the key that makes value semantics and RAII truly work together, as it should have been long ago.</li>
 </ol>
 
 <p>I'm a learner on this topic myself, so feel free to point out anything that you feel is wrong, I really appreciate it.</p>
