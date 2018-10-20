@@ -60,7 +60,7 @@ A `std::vector<T>` object is basically a set of pointers to an internal data buf
 
 What's more, move also boosts vector `insert` operation. This is explained in the [vector Example](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/n1377.htm#vector%20Example) section in the proposal. Say we have a `std::vector<string>` with two elements `"AAAAA"` and `"BBBBB"`, now we want to insert `"CCCCC"` at index 1. Assuming the vector has enough capacity, the following graph demonstrates the process of inserting with copy vs move.
 
-![](https://oftdwlsct.qnssl.com/move-semantics_vector_new.png)
+![](https://image-laike9m.oss-cn-beijing.aliyuncs.com/move-semantics_vector_new.png)
 
 Everything shown on the graph is on heap, including the vector's data buffer and each element string's data buffer. With copy, `str_b`'s data buffer has to be copied, which involves a buffer allocation then deallocation. With move, old `str_b`'s data buffer is reused by the new `str_b` in the new address, no buffer allocation or deallocation is needed(As Howard pointed out, the "data" that old `str_b` now points to is unspecified). This brings a huge performance boost, yet it means more than that, because now you can store expensive objects into a vector without sacrificing performance, while previously having to store pointers. This also helps extend usage of value semantics.
 

@@ -78,7 +78,7 @@
 
 <p>What's more, move also boosts vector <code>insert</code> operation. This is explained in the <a href="http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2002/n1377.htm#vector%20Example">vector Example</a> section in the proposal. Say we have a <code>std::vector&lt;string&gt;</code> with two elements <code>"AAAAA"</code> and <code>"BBBBB"</code>, now we want to insert <code>"CCCCC"</code> at index 1. Assuming the vector has enough capacity, the following graph demonstrates the process of inserting with copy vs move.</p>
 
-<p><img src="https://oftdwlsct.qnssl.com/move-semantics_vector_new.png" alt="" /></p>
+<p><img src="https://image-laike9m.oss-cn-beijing.aliyuncs.com/move-semantics_vector_new.png" alt="" /></p>
 
 <p>Everything shown on the graph is on heap, including the vector's data buffer and each element string's data buffer. With copy, <code>str_b</code>'s data buffer has to be copied, which involves a buffer allocation then deallocation. With move, old <code>str_b</code>'s data buffer is reused by the new <code>str_b</code> in the new address, no buffer allocation or deallocation is needed(As Howard pointed out, the "data" that old <code>str_b</code> now points to is unspecified). This brings a huge performance boost, yet it means more than that, because now you can store expensive objects into a vector without sacrificing performance, while previously having to store pointers. This also helps extend usage of value semantics.</p>
 
