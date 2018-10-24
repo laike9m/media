@@ -29,13 +29,13 @@ My first talk at OpenCAS seminar. I introduced Python to students told them how 
 我第一次在中科院开源软件协会技术交流会上作演讲，介绍了 Python 语言，并引导同学们学习 Python
 
 
-[0]: http://www.laike9m.com/media/files/pdf/Python.pdf  
-[1]: http://www.laike9m.com/media/files/pdf/Python%20Generators.pdf  
-[2]: http://www.laike9m.com/media/files/pdf/Python%20Context%20Manager.pdf  
-[3]: http://www.laike9m.com/media/files/pdf/Python%20HTTP.pdf  
-[4]: http://www.laike9m.com/media/files/pdf/ChinaUnicom模拟登陆.pdf  
-[5]: http://www.laike9m.com/media/files/pdf/node-and-nw.pdf  
-[6]: http://www.laike9m.com/media/files/html/PyCon2014-concurrent.futures.html#/
-[7]: http://www.laike9m.com/media/files/pdf/PyCon2014-cf-laike9m.pdf   
+[0]: http://laike9m.com/media/files/pdf/Python.pdf  
+[1]: http://laike9m.com/media/files/pdf/Python%20Generators.pdf  
+[2]: http://laike9m.com/media/files/pdf/Python%20Context%20Manager.pdf  
+[3]: http://laike9m.com/media/files/pdf/Python%20HTTP.pdf  
+[4]: http://laike9m.com/media/files/pdf/ChinaUnicom模拟登陆.pdf  
+[5]: http://laike9m.com/media/files/pdf/node-and-nw.pdf  
+[6]: http://laike9m.com/media/files/html/PyCon2014-concurrent.futures.html#/
+[7]: http://laike9m.com/media/files/pdf/PyCon2014-cf-laike9m.pdf   
 [8]: https://drive.google.com/file/d/0B94OmXaDRH6XZnVvaGJESXFSR1U/view?usp=sharing
 [9]: https://docs.google.com/presentation/d/1npG2_JJUUD-vocTkPUaoI1cyKhKzJvVT6Hks6tylmF0/edit?usp=sharing

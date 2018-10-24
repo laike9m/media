@@ -122,14 +122,14 @@ exec /usr/local/bin/uwsgi --ini /home/laike9m/Envs/blog/My_Blog/uwsgi.ini
 
 <div class="codehilite"><pre><span></span><code><span class="k">server</span> <span class="p">{</span>
     <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-    <span class="kn">server_name</span>  <span class="s">laike9m.com</span> <span class="s">www.laike9m.com</span><span class="p">;</span>
+    <span class="kn">server_name</span>  <span class="s">laike9m.com</span> <span class="s">laike9m.com</span><span class="p">;</span>
     <span class="kn">return</span> <span class="mi">301</span> <span class="s">https://</span><span class="nv">$server_name$request_uri</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="k">server</span> <span class="p">{</span>
     <span class="kn">...</span>
     <span class="s">listen</span> <span class="mi">443</span> <span class="s">ssl</span><span class="p">;</span>
-    <span class="kn">server_name</span>  <span class="s">laike9m.com</span> <span class="s">www.laike9m.com</span><span class="p">;</span>
+    <span class="kn">server_name</span>  <span class="s">laike9m.com</span> <span class="s">laike9m.com</span><span class="p">;</span>
     <span class="kn">ssl_certificate</span> <span class="s">/home/laike9m/files/laike9m_com/laike9m_com.crt</span><span class="p">;</span>
     <span class="kn">ssl_certificate_key</span> <span class="s">/home/laike9m/files/laike9m_com/key</span><span class="p">;</span>
     <span class="kn">...</span>

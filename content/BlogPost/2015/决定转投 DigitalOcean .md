@@ -24,7 +24,7 @@ Webfaction 按年买价格最低，但也要 102 刀一年，平均下来就是 
 最后放个 DigitalOcean 的[推广链接][5]，说是用这个链接买主机，买的人有 10 刀优惠。如果花了 25 刀以上，我也能拿到 25 刀。
 
 
-[1]: https://www.laike9m.com/blog/yong-djangoda-jian-ge-ren-bo-ke,22/
+[1]: https://laike9m.com/blog/yong-djangoda-jian-ge-ren-bo-ke,22/
 [2]: https://education.github.com/pack/offers
 [3]: http://www.zhihu.com/question/25529727
 [4]: http://speedtest-sgp1.digitalocean.com/
