@@ -47,4 +47,4 @@ About This Site
 
 If you want to know more about my site you should check out the [blogpost][blog] about how I wrote it. (It's in 中文)
 
-[blog]: http://laike9m.com/blog/permant_link,22/
+[blog]: https://laike9m.com/blog/permant_link,22/

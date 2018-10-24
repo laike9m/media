@@ -28,7 +28,7 @@ fbt_log = _motorclient.fbt_log
 
 怎么做呢？
 
-我突然想到，David Beazley 的演讲里好像提到了这个概念（关于他的演讲请参考 [PyCon2015 笔记](http://laike9m.com/blog/pycon2015-bi-ji,66/)）。在 [slide](http://www.dabeaz.com/modulepackage/ModulePackage.pdf) 的 150-152 页，他当时想实现的是，import 某个 package 的时候，不直接把 submodules/subpackage 都给 import 进来（因为很耗时间，相当于把所有文件执行一次），而是**按需 import**，他把这个技巧叫 "Lazy Module Assembly"。我面临的需求和他类似，也要用 "lazy" 的方式加载，只不过针对的是一个 module 里的变量。
+我突然想到，David Beazley 的演讲里好像提到了这个概念（关于他的演讲请参考 [PyCon2015 笔记](https://laike9m.com/blog/pycon2015-bi-ji,66/)）。在 [slide](http://www.dabeaz.com/modulepackage/ModulePackage.pdf) 的 150-152 页，他当时想实现的是，import 某个 package 的时候，不直接把 submodules/subpackage 都给 import 进来（因为很耗时间，相当于把所有文件执行一次），而是**按需 import**，他把这个技巧叫 "Lazy Module Assembly"。我面临的需求和他类似，也要用 "lazy" 的方式加载，只不过针对的是一个 module 里的变量。
 
 上网搜了搜，参考了[ SO 上的某答案](http://stackoverflow.com/a/2447383/2142577)，完成了 lazy 版，我把它叫做 **lazy module attribute**。
 
@@ -93,7 +93,7 @@ sys.modules[__name__] = Wrapper(sys.modules[__name__])
 
 据 Brett Cannon 在《How Import Works》演讲的 [slide](https://speakerdeck.com/pyconslides/how-import-works-by-brett-cannon) 第 27 页对 `load_module` 函数的描述，`sys.modules` 所用的 key 是 `fullname`：
 
-![](http://laike9m.com/media/content/BlogPost/images/load_module.png)
+![](https://laike9m.com/media/content/BlogPost/images/load_module.png)
 
 如果标准库中有类似 `module.__name__ = fullname` 这种东西，那么我们可以断定 `__name__` 就是 `fullname`。于是苦逼地翻了半天源码，好在终于找到了，有[这么一句话](https://github.com/python/cpython/blob/master/Lib/importlib/_bootstrap.py#L516)：
 ```python

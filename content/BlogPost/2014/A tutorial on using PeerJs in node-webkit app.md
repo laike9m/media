@@ -48,7 +48,7 @@ Then my friend suggested me to run an express server on localhost and use socket
 
 This demo could be run either on a single machine or two machines. What it does is transfering `.gitignore` file to the other end. Here's its GUI:
 
-![](http://laike9m.com/media/content/BlogPost/images/peer-nw-1.jpg)
+![](https://laike9m.com/media/content/BlogPost/images/peer-nw-1.jpg)
 
 To run this app, `npm install` first, then launch it following [node-webkit's documentation][6]. Assume you only have one computer, click the `receive` button, then click `send` button, you'll see a new file called `received_gitignore` appear in app's directory. Be sure to click `receive` before `send`, whether running on single machine or two machines.
 

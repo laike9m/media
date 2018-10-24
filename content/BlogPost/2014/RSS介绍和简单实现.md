@@ -24,7 +24,7 @@ RSS标准格式如下，下面只列出需要关注的标签
 
 rss 有总的 title, link, description, 有一堆 item, 每一个 item 自己也有 title, link, description 属性，description 就是正文, 例如一篇博客文章的内容。有这些内容就够了。
 
-那么如何给自己的网站加上 rss 呢？很简单，只要照着这个格式生成一个页面就好了。这里还是以 Django 和我自己的博客为例。我的博客的 rss 地址是 [http://laike9m.com/blog/rss/](http://laike9m.com/blog/rss/)
+那么如何给自己的网站加上 rss 呢？很简单，只要照着这个格式生成一个页面就好了。这里还是以 Django 和我自己的博客为例。我的博客的 rss 地址是 [https://laike9m.com/blog/rss/](https://laike9m.com/blog/rss/)
 
 虽说是自己实现，但是 Django 已经把大部分事情都做好了。  
 首先我们要用 Django 提供的 `Feed` 类派生出一个子类
@@ -52,7 +52,7 @@ class BlogPostFeed(Feed):
      def item_description(self, item):
           html = item.display_html()
           import re
-          html = re.sub(r"/media/", r"http://laike9m.com/media/", html)
+          html = re.sub(r"/media/", r"https://laike9m.com/media/", html)
           return html
 
      def item_pubdate(self, item):

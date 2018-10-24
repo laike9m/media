@@ -96,7 +96,7 @@ ADMINS = (
 ```
 
 为什么`settings.py`没有包含在内呢？这个问题比较复杂，在我的另一篇文章 [Django Best Practice: How to deal with settings.py in Git][settings] 里面有详细讲述。
-[settings]:http://laike9m.com/blog/django-best-practice-how-to-deal-with-settingspy-in-git,27/
+[settings]:https://laike9m.com/blog/django-best-practice-how-to-deal-with-settingspy-in-git,27/
 
 使用Markdown
 ------------
