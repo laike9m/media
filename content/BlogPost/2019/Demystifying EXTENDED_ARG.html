@@ -1,0 +1,126 @@
+<ul>
+  <li><a href="#before-python-36">Before Python 3.6</a></li>
+  <li><a href="#after-python-36">After Python 3.6</a></li>
+  <li><a href="#wait-the-documentation-is-wrong">Wait, the documentation is wrong?</a></li>
+  <li><a href="#play-with-it-yourself">Play with it yourself</a></li>
+</ul>
+<p>Recently I was studying Python <a href="https://docs.python.org/3.8/glossary.html#term-bytecode">bytecode</a> for my personal project. One particular thing that bothered me was <a href="https://docs.python.org/3/library/dis.html#opcode-EXTENDED_ARG">EXTENDED_ARG</a>. Guess what, the documentation is outdated(or, you could say, wrong), thus causing my confusion. But even without the error, it is not easy to understand at first glance. In this article, I'll explain it in detail.   </p>
+
+<p><strong>Early warning</strong>: If you've never heard of Python's bytecode, you probably want to learn about it before continue reading.</p>
+
+<h2 id="before-python-36">Before Python 3.6</h2>
+
+<p>Let's first take a look at the *original* documentation.</p>
+
+<blockquote>
+  <p><strong><code>EXTENDED_ARG</code></strong>(<em>ext</em>)</p>
+  
+  <p>Prefixes any opcode which has an argument too big to fit into the default two bytes. <em>ext</em> holds two additional bytes which, taken together with the subsequent opcode’s argument, comprise a four-byte argument, <em>ext</em> being the two most-significant bytes.</p>
+</blockquote>
+
+<p>Before Python 3.6, each instruction takes 1 or 3 bytes, depending on whether it takes an argument. Example:</p>
+
+<div class="codehilite"><pre><span></span><code>RETURN_VALUE             <span class="c1"># opcode takes 1 byte, total is 1</span>
+LOAD_CONST     0x0000    <span class="c1"># argument takes 2 bytes, total is 3</span>
+</code></pre></div>
+
+<p>But what if you want to have a larger argument which cannot fit into 2 bytes? That's when <code>EXTENDED_ARG</code> comes into play. Let's say, the argument is <code>0x123456</code></p>
+
+<div class="codehilite"><pre><span></span><code>LOAD_CONST     0x123456  <span class="c1"># INVALID!! argument exceeds size limit</span>
+<span class="c1">##################################################</span>
+EXTENDED_ARG   0x0012
+LOAD_CONST     0x3456    <span class="c1"># valid</span>
+</code></pre></div>
+
+<p>Here's what Python does: it splits the argument into two parts, with 2 bytes each. The most significant 2 bytes <code>0x0012</code> becomes argument of <code>EXTENDED_ARG</code>, the remaining 2 bytes becomes argument of <code>LOAD_CONST</code>. When Python virtual machine sees <code>EXTENDED_ARG</code>, it knows to read the next instruction, and adds their arguments together. So the actual operation Python does is <code>LOAD_CONST</code> with argument <code>0x00123456</code>.</p>
+
+<h2 id="after-python-36">After Python 3.6</h2>
+
+<p>Python 3.6 changed the size of instructions. So starting from Python 3.6, <strong>every</strong> instruction takes <strong>2 bytes</strong>, where opcode still takes 1 byte, argument also takes 1 byte now. If there's no argument, it's just zero.</p>
+
+<p>So what's the equivalent bytecode representation of <code>LOAD_CONST 0x123456</code> in the latest version of Python? It's like this:</p>
+
+<div class="codehilite"><pre><span></span><code>EXTENDED_ARG   0x12
+EXTENDED_ARG   0x34
+LOAD_CONST     0x56
+</code></pre></div>
+
+<p>The change is pretty straight forward, the only difference is the use of multiple <code>EXTENDED_ARG</code>. The size limit for argument is 4 bytes, so there will be 3 <code>EXTENDED_ARG</code> instructions at most, for each subsequent instruction(in this example, <code>LOAD_CONST</code>).</p>
+
+<h2 id="wait-the-documentation-is-wrong">Wait, the documentation is wrong?</h2>
+
+<p>Funny enough, the documentation was not updated to reflect this change(which is understandable given the amount of work needed to be done). So I made a <a href="https://github.com/python/cpython/pull/13985">PR</a> to fix it.</p>
+
+<h2 id="play-with-it-yourself">Play with it yourself</h2>
+
+<p>Finally, some code to prove the things we talked about.</p>
+
+<p>I'll be using a brilliant library made by Victor Stinner, called <strong><a href="https://github.com/vstinner/bytecode">bytecode</a></strong>. Thanks <a href="https://twitter.com/thautwarm">@thautwarm</a> who introduced it to me.</p>
+
+<p>Complete program can be found <a href="https://gist.github.com/laike9m/6527fa614c208a3686a46f3dff87c61e">here</a>.</p>
+
+<p>In this program, I constructs a series of instructions by hand, which does two things: <code>LOAD_CONST 0x1234567</code> , and then <code>RETURN_VALUE</code> to pop up the loaded value from VM stack. With the help of bytecode lib, things become really simple.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="kn">from</span> <span class="nn">bytecode</span> <span class="kn">import</span> <span class="n">ConcreteInstr</span><span class="p">,</span> <span class="n">ConcreteBytecode</span>
+
+<span class="n">CONST_ARG</span> <span class="o">=</span> <span class="mh">0x1234567</span>  <span class="c1"># The real argument we want to set.</span>
+<span class="n">cbc</span> <span class="o">=</span> <span class="n">bytecode</span><span class="o">.</span><span class="n">ConcreteBytecode</span><span class="p">()</span>
+<span class="n">cbc</span><span class="o">.</span><span class="n">consts</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">CONST_ARG</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># Make sure co_consts is big enough.</span>
+<span class="n">cbc</span><span class="o">.</span><span class="n">consts</span><span class="p">[</span><span class="n">CONST_ARG</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;foo&quot;</span>  <span class="c1"># Sets the value we want to load.</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+    <span class="n">cbc</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+        <span class="n">ConcreteInstr</span><span class="p">(</span><span class="s2">&quot;EXTENDED_ARG&quot;</span><span class="p">,</span> <span class="mh">0x1</span><span class="p">),</span>
+        <span class="n">ConcreteInstr</span><span class="p">(</span><span class="s2">&quot;EXTENDED_ARG&quot;</span><span class="p">,</span> <span class="mh">0x23</span><span class="p">),</span>
+        <span class="n">ConcreteInstr</span><span class="p">(</span><span class="s2">&quot;EXTENDED_ARG&quot;</span><span class="p">,</span> <span class="mh">0x45</span><span class="p">),</span>
+        <span class="n">ConcreteInstr</span><span class="p">(</span><span class="s2">&quot;LOAD_CONST&quot;</span><span class="p">,</span> <span class="mh">0x67</span><span class="p">),</span>
+        <span class="n">ConcreteInstr</span><span class="p">(</span><span class="s2">&quot;RETURN_VALUE&quot;</span><span class="p">),</span>
+    <span class="p">])</span>
+</code></pre></div>
+
+<p><code>cbc.extend</code> manually constructs the instructions, and the instructions should look familiar now. The tricky thing is about preparing value. Since we want to call <code>LOAD_CONST 0x1234567</code>, there needs to be a value located at <code>co_consts[0x1234567]</code>(If you don't know what <code>co_consts</code> is, check out <a href="https://docs.python.org/3/library/inspect.html#module-inspect">the doc</a>). So what we do is set the value manually: <code>cbc.consts[0x1234567] = "foo"</code>.</p>
+
+<p>Now comes the interesting part, let's <code>dis</code> the code object we just created:</p>
+
+<div class="codehilite"><pre><span></span><code>  <span class="mi">1</span>           <span class="mi">0</span> <span class="n">EXTENDED_ARG</span>             <span class="mi">1</span>
+              <span class="mi">2</span> <span class="n">EXTENDED_ARG</span>           <span class="mi">291</span>
+              <span class="mi">4</span> <span class="n">EXTENDED_ARG</span>         <span class="mi">74565</span>
+              <span class="mi">6</span> <span class="n">LOAD_CONST</span>           <span class="mi">19088743</span> <span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+              <span class="mi">8</span> <span class="n">RETURN_VALUE</span>
+</code></pre></div>
+
+<p>Is something wrong? Why is the argument different from what we set? Here's how it works</p>
+
+<div class="codehilite"><pre><span></span><code><span class="mi">1</span> <span class="o">=</span> <span class="mh">0x01</span>
+<span class="mi">291</span> <span class="o">=</span> <span class="mh">0x0123</span>
+<span class="mi">74565</span> <span class="o">=</span> <span class="mh">0x012345</span>
+<span class="mi">19088743</span> <span class="o">=</span> <span class="mh">0x01234567</span>
+</code></pre></div>
+
+<p>Now it's clear, Python accumulates the arguments when seeing <code>EXTENDED_ARG</code>, and it becomes <a href="https://docs.python.org/3/library/dis.html#dis.Instruction">Instruction.arg</a>. But under the hood, the byte value is still exactly what we set.</p>
+
+<div class="codehilite"><pre><span></span><code><span class="k">for</span> <span class="n">raw_byte</span> <span class="ow">in</span> <span class="n">code</span><span class="o">.</span><span class="n">co_code</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;raw code is: &quot;</span><span class="p">,</span> <span class="n">raw_byte</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">raw code is:  144   # EXTENDED_ARG</span>
+<span class="sd">raw code is:  1     # 0x01</span>
+<span class="sd">raw code is:  144   # EXTENDED_ARG</span>
+<span class="sd">raw code is:  35    # 0x23</span>
+<span class="sd">raw code is:  144   # EXTENDED_ARG</span>
+<span class="sd">raw code is:  69    # 0x45</span>
+<span class="sd">raw code is:  100   # LOAD_CONST</span>
+<span class="sd">raw code is:  103   # 0x67</span>
+<span class="sd">raw code is:  83    # RETURN_VALUE</span>
+<span class="sd">raw code is:  0     # no argument, so zero</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</code></pre></div>
+
+<p>The program also supports running with versions before 3.6, the only difference is the two bytes argument:</p>
+
+<div class="codehilite"><pre><span></span><code><span class="n">cbc</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
+    <span class="n">ConcreteInstr</span><span class="p">(</span><span class="s2">&quot;EXTENDED_ARG&quot;</span><span class="p">,</span> <span class="mh">0x123</span><span class="p">),</span>
+    <span class="n">ConcreteInstr</span><span class="p">(</span><span class="s2">&quot;LOAD_CONST&quot;</span><span class="p">,</span> <span class="mh">0x4567</span><span class="p">),</span>
+    <span class="n">ConcreteInstr</span><span class="p">(</span><span class="s2">&quot;RETURN_VALUE&quot;</span><span class="p">),</span>
+<span class="p">])</span>
+</code></pre></div>
