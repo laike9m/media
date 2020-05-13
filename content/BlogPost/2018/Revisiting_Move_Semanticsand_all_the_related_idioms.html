@@ -61,12 +61,12 @@
 
 <p>Suppose we have a handler(whatever that is) which is expensive to construct, and we want to store it into a map for future use.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="n">Handler</span><span class="o">&gt;</span> <span class="n">handlers</span><span class="p">;</span>
-<span class="kt">void</span> <span class="nf">RegisterHandler</span><span class="p">(</span><span class="k">const</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">name</span><span class="p">,</span> <span class="n">Handler</span> <span class="n">handler</span><span class="p">)</span> <span class="p">{</span>
-  <span class="n">handlers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">handler</span><span class="p">);</span>
-<span class="p">}</span>
-<span class="n">RegisterHandler</span><span class="p">(</span><span class="s">&quot;handler-A&quot;</span><span class="p">,</span> <span class="n">build_handler</span><span class="p">());</span>
-</code></pre></div>
+<pre><code>std::unordered_map&lt;string, Handler&gt; handlers;
+void RegisterHandler(const string&amp; name, Handler handler) {
+  handlers[name] = std::move(handler);
+}
+RegisterHandler("handler-A", build_handler());
+</code></pre>
 
 <p>This is a typical use of move, and of course it assumes <code>Handler</code> has a move ctor. By moving(not copying)-constructing a map value, a lot of time may be saved.</p>
 
@@ -140,12 +140,12 @@
 
 <p>For the third point, if you've read <em><a href="https://blog.rmf.io/cxx11/rule-of-zero">Rule of Zero</a></em>, you know what I'm talking about. No need to use raw pointers to manage resources, EVER, just use unique_ptr directly or store as member variable, and you're done. When transferring resource ownership, the implicitly constructed move ctor is able to do the job well. Better yet, the current specification ensures that, a named value in the return statement in the worst case(i.e. without elisions) is treated as an rvalue. It means, <strong>returning by value should be the default choice for unique_ptr</strong>.</p>
 
-<div class="codehilite"><pre><span></span><code><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">ExpensiveResource</span><span class="o">&gt;</span> <span class="n">foo</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">auto</span> <span class="n">data</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">make_unique</span><span class="o">&lt;</span><span class="n">ExpensiveResource</span><span class="o">&gt;</span><span class="p">();</span>
-  <span class="k">return</span> <span class="n">data</span><span class="p">;</span>
-<span class="p">}</span>
-<span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">ExpensiveResource</span><span class="o">&gt;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">foo</span><span class="p">();</span>  <span class="c1">// a move at worst</span>
-</code></pre></div>
+<pre><code>std::unique_ptr&lt;ExpensiveResource&gt; foo() {
+  auto data = std::make_unique&lt;ExpensiveResource&gt;();
+  return data;
+}
+std::unique_ptr&lt;ExpensiveResource&gt; p = foo();  // a move at worst
+</code></pre>
 
 <p>See <a href="https://stackoverflow.com/a/4316948/2142577">here</a> for a more detailed explanation. In fact, <strong>when using unique_ptr as function parameters, passing by value is still the best choice.</strong> I'll probably write an article about it, if time is available.</p>
 

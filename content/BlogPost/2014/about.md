@@ -9,7 +9,7 @@ If you want to get in touch with me, you can find me on [GitHub][], [Twitter][] 
 Programming
 -----------
 
-I didn't really start programming before I became a Junior student. Since then, I've done a lot of different things, most of which are tools for my personal use, but you may find some useful too.  You can take a look at my [projects][PRO] to see some of the major stuff I've worked on, or look at my [Github account][Github].
+I didn't really start programming before I became a Junior student. Since then, I've done a lot of different things, most of which are tools for my personal use, but you may find some useful too.  You can take a look at my [projects](https://laike9m.com/blog/projects/) to see some of the major stuff I've worked on, or look at my [Github account][Github].
 
 Python is my favourite language, whose simplicity and powerfulness fascinates me. C++ is great, but writing C++ code is of less fun.
 

@@ -57,7 +57,7 @@ foo()
 
 当 `bar()` 执行完之后来到 finally 的结尾，解释器发现当前 block 的类型是 `LOOP`，且当前执行的操作是 `break`（这里比较 tricky，`break` 会被 push 到 value stack 上，所以现在还是可以读取的。我们只要知道解释器仍然知道当前的操作是 break 即可），则同样弹出栈顶元素 `Block(LOOP, line of foo(), b_level)`，并跳转到该 block 的下一个指令 `line of foo()` 继续执行。此时 block stack 已被清空。
 
-这里面有非常多的细节，我们可以先不去深究。关键是理解一点，即有了 block stack 之后，解释器只需要根据运行时的信息（当前执行的指令）以及先前 push 到 block stack 上的元素的信息（类型、下一个指令的位置），加上一些规则，就能够实现正确跳转。
+这里面有非常多的细节，我们可以先不去深究。关键是理解一点，即有了 block stack 之后，解释器只需要根据运行时的信息（当前执行的指令）以及先前 push 到 block stack 上的元素的信息（类型、下一个指令的位置），加上一些规则，就能够实现正确跳转。除了上面提到的几个 statements，`try...except`, `continue`, `with` 的实现都涉及 block stack，原因也是显而易见的。
 
 本文仅为介绍 block stack 的概念，有意忽略了很多细节。因此下面列出一些材料，希望做深入了解的读者可以前往阅读。
 
