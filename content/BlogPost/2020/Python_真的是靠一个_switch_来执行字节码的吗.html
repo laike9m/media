@@ -1,0 +1,147 @@
+<ul>
+  <li><a href="#-1">分支预测</a></li>
+  <li><a href="#-2">优化技巧</a></li>
+  <li><a href="#-3">实现</a>
+  <ul>
+    <li><a href="#computed-goto">编译中判断要不要开启 computed goto</a></li>
+    <li><a href="#cevalc">ceval.c 中的实现</a></li>
+  </ul></li>
+</ul>
+<p>如果你读任何 (C)Python 源码分析的书或者文章，里面都会讲 Python 的 <a href="https://github.com/python/cpython/blob/master/Python/ceval.c"> <code>ceval.c</code> </a> 中有一个大 <code>switch</code>，会根据不同的 opcode 跳到相应的 <code>case</code> 去执行字节码。甚至 <a href="https://realpython.com/courses/cpython-internals-book/#team">Anthony Shaw</a> 的新书<a href="https://realpython.com/courses/cpython-internals-book/">《CPython Internals》</a>也是这么讲的。</p>
+
+<p>然而实际上，CPython （在大部分情况下）早就不这么做了。这篇文章会解释为什么。下文中 Python 均指 CPython。</p>
+
+<h2 id="-1">分支预测</h2>
+
+<p>为了解释清楚整个过程，我们必须从底层讲起。<a href="https://en.wikipedia.org/wiki/Predication_(computer_architecture)">分支预测</a>（Branch Prediction）是 CPU 必备的功能。准确的分支预测能大大提高指令流水线的性能，反之则导致性能损耗。</p>
+
+<p>Python 刚发明的时候，每一个 bytecode 的确需要进行一次 <code>switch</code> 跳转。而 C 语言的 <code>switch</code> 语句会导致分支预测不准，因为 CPU 无法预测程序会跳到哪个 <code>case</code>（下一个指令）。如果不进行优化，每执行一条字节码指令都将导致一次分支预测错误，可以想象对性能的损耗有多大。</p>
+
+<h2 id="-2">优化技巧</h2>
+
+<p>问题的关键就在于 <code>switch...case</code> 的跳转是个一对多的情况。想象你面对一道有十个选项的选择题，你不会知道哪个是正确答案。然而如果有十道题各一个选项，答案就都确定了。Python 采用的优化业无非也就是这么回事。</p>
+
+<p>Python 用了一种叫做 <a href="https://eli.thegreenplace.net/2012/07/12/computed-goto-for-efficient-dispatch-tables">computed goto</a> 的技巧，依赖于编译器的 <a href="https://gcc.gnu.org/onlinedocs/gcc/Labels-as-Values.html">label as value</a> 功能。详细原理大家就看链接里的解释吧。总之效果就是，可以把解释器主循环中的 <code>switch...case</code> 替换成 while loop，在每个 Python 的指令处理完之后，显示地用 <code>goto</code> 跳转到下一条指令。大概长这样：</p>
+
+<pre><code>int interp_cgoto(unsigned char* code, int initval) {
+    /* The indices of labels in the dispatch_table are the relevant opcodes
+    */
+    static void* dispatch_table[] = {&amp;&amp;do_op1, &amp;&amp;do_op2, &amp;&amp;do_op3};
+    #define DISPATCH() goto *dispatch_table[code[pc++]]
+
+    int pc = 0;
+    int val = initval;
+
+    DISPATCH();
+    while (1) {
+        do_op1:
+            return val;
+        do_op2:
+            val++;
+            DISPATCH();
+        do_op3:
+            val--;
+            DISPATCH();
+    }
+}
+</code></pre>
+
+<p>每个 <code>goto</code> 都是一次跳转，并且只有一个目标（下一条指令），这就让分支预测变得容易，从而性能也获得了极大提升（根据 Python 的<a href="https://github.com/python/cpython/blob/3.8/Python/ceval.c#L805">注释</a>，提升可达 15% ~ 20%）。</p>
+
+<h2 id="-3">实现</h2>
+
+<p>下面讲一下 Python 是如何实现上面提到的优化的。</p>
+
+<h3 id="computed-goto">编译中判断要不要开启 computed goto</h3>
+
+<p>这部分。。非常蛋疼。我花了不少时间试图弄清楚，最后还是放弃了。<a href="https://stackoverflow.com/a/62037189/2142577">这个回答</a>里记录了我的一些发现。总之大概的意思就是，Python 允许用户通过 <code>--with-computed-gotos</code> 和 <code>--without-computed-gotos</code> 参数在编译的时候控制要不要开启 computed goto。默认是开启的。同时编译期间还会判断当前使用的编译器支不支持 computed goto（GCC, Clang 支持，MSVC 不支持）。如果两个条件都满足，在 ceval.c 中就会启用 computed goto。</p>
+
+<h3 id="cevalc">ceval.c 中的实现</h3>
+
+<p>首先，label 是在 <a href="https://github.com/python/cpython/blob/master/Python/opcode_targets.h"><code>opcode_targets.h</code></a> 中定义，并被 <a href="https://github.com/python/cpython/blob/3.8/Python/ceval.c#L838">include</a> 到 ceval.c 的。</p>
+
+<p><a href="https://github.com/python/cpython/blob/3.8/Python/ceval.c#L836-L878">这一段</a> 定义了 computed goto enabled 和 disabled 时的跳转行为，我把简化过的代码贴在下面：</p>
+
+<pre><code>#if USE_COMPUTED_GOTOS
+/* Import the static jump table */
+#include "opcode_targets.h"
+
+#define TARGET(op) op: TARGET_##op
+
+#define DISPATCH() { \
+    _Py_CODEUNIT word = *next_instr; \
+    opcode = _Py_OPCODE(word); \
+    oparg = _Py_OPARG(word); \
+    next_instr++; \
+    goto *opcode_targets[opcode]; \
+}
+
+#else
+
+#define TARGET(op) op
+#define DISPATCH() continue
+
+#endif
+</code></pre>
+
+<p>嗯，简化了相当多的东西，但这能让我们更清晰地看出只有在 <code>USE_COMPUTED_GOTOS</code> 的情况下，<code>DISPATCH()</code> 才会用 <code>goto</code> 去跳到下一个 opcode 的 label。</p>
+
+<p>下面是极简版的主循环代码：</p>
+
+<pre><code>for (;;) {
+  switch (opcode) {
+      case TARGET(LOAD_CONST): {
+        // 处理 LOAD_CONST
+        DISPATCH();
+      }
+      // 其它 opcode 省略了
+  }
+}
+</code></pre>
+
+<p>先看 <strong>computed goto 未启用</strong>时，把代码中的宏展开（替换 <code>TARGET</code> 和 <code>DISPATCH</code>）的结果：</p>
+
+<pre><code>for (;;) {
+  switch (opcode) {
+      case LOAD_CONST: {
+        // 处理 LOAD_CONST
+        continue;
+      }
+  }
+}
+</code></pre>
+
+<p>嗯，就是这样了，很直接了当的 <code>switch...case</code>。</p>
+
+<p>再看 <strong>computed goto 启用</strong>时，把代码中的宏展开的结果：</p>
+
+<pre><code>for (;;) {
+  switch (opcode) {
+    case LOAD_CONST:
+    TARGET_LOAD_CONST: { // 注意这里多了一个 label
+      // 处理 LOAD_CONST
+      _Py_CODEUNIT word = *next_instr;
+      opcode = _Py_OPCODE(word);
+      oparg = _Py_OPARG(word);
+      next_instr++;
+      goto *opcode_targets[opcode];
+    }
+  }
+}
+</code></pre>
+
+<p>可以看到，在处理完 <code>LOAD_CONST</code> 之后，通过 <code>next_instr</code> 拿到下一个 opcode，然后执行<code>goto *opcode_targets[opcode];</code> ，跳到另一个由 opname 命名的 label（参见 <a href="https://github.com/python/cpython/blob/master/Python/opcode_targets.h"><code>opcode_targets.h</code></a> ），比如 <code>TARGET_STORE_NAME:</code>。这里的关键点在于，<strong>代码直接跳转到了下一个指令对应的 label，并不经过 switch</strong>。这也就回答了文章一开始的问题：</p>
+
+<blockquote>
+  <p>Python 真的是靠一个 switch 来执行字节码的吗？</p>
+</blockquote>
+
+<p>答案是：</p>
+
+<p><strong>只要 Python 启用了 computed goto （比如在 Mac 和 Linux 上），字节码的执行就不依赖 switch。</strong></p>
+
+<p>顺便一提，这个功能是在 <a href="https://docs.python.org/3/whatsnew/3.2.html#build-and-c-api-changes">Python 3.2</a> 中变为默认开启的：</p>
+
+<blockquote>
+  <p>Computed gotos are now enabled by default on supported compilers (which are detected by the configure script). They can still be disabled selectively by specifying <code>--without-computed-gotos</code>.</p>
+</blockquote>

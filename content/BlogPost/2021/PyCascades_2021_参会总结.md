@@ -1,0 +1,75 @@
+关于这篇文章到底用中文还是英文写，其实我犹豫了一会，但最终还是决定用中文，毕竟也没人会写一篇关于 PyCascades 的中文文章了。
+
+首先，PyCascades 是什么？用[官网](https://2021.pycascades.com/)的话说：
+
+> PyCascades is a regional PyCon in the Pacific Northwest, celebrating the west coast Python developer and user community. Our organizing team includes members of the Vancouver, Seattle, and Portland Python user groups.
+
+简单来说 PyCascades 就是一个区域性的 PyCon。但由于许多 Python 大佬聚居于此，其影响力比其它区域性 PyCon 大很多。
+
+我在 PyCascades 2021 给了一个演讲 “Let’s Rethink Debugging”：
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/eXlTVrNZ67Q" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+下面就聊聊我从申请到参加 PyCascades 的经历。
+
+## 申请
+
+去年（2020）十月，PyCascades 官推[宣布](https://twitter.com/pycascades/status/1312819374516961280)了 2021 年会议将在线上举办。当时 Cyberbrain 的第一个小版本已经接近完成，我正想找个地方宣传，于是就锁定了 PyCascades。彼时我只知道 PyCascades 有着不错的影响力，而对整个申请流程毫无概念。然后就[发现](https://pretalx.com/pycascades-2021/cfp)想要演讲，得先提交一个 CFP（Call for Proposal）。和 PyCon China 不同，PyCascades 有着严格的筛选机制。你得提交一个描述演讲内容的 proposal 给组委会审核，择优录取，所以并非报名了就能去讲。根据[这份 slide ](https://speakerdeck.com/mariatta/demystifying-public-speaking?slide=9)里提到的数据，PyCascades 2018 和 2019 年的演讲接收率（acceptance rate）都不超过 10%，可见筛选之严苛。
+
+我从来没写过 CFP，完全不知道要怎么下手。好在官方提供了一些参考资料，我就把它们看了一遍。其中值得一提的是这个 [repo](https://github.com/akaptur/pycon-proposals)，里面收集了过往被接受和拒绝的一些 PyCon proposals，很有参考价值。由于 19 年在 PyCon China 讲过，演讲的前半部分我基本直接照搬，力气主要花在写后半部分 Cyberbrain 的原理介绍和展望。10 月下旬，我花四个晚上完成了 CFP 的初稿，接着就开始找人审阅。
+
+找谁呢？我想起之前看过的那些资料。既然作者有心教人写 CFP，那么应该也会愿意帮忙审阅吧。于是我就给两位作者同时也是圈内大佬 [Allison Kaptur](https://twitter.com/akaptur) 和 [Brandon Rhodes ](https://twitter.com/brandon_rhodes)发了邮件。说来也巧，我在调研 Cyberbrain 时仔细阅读了 Allison 写的那篇 *[A Python Interpreter Written in Python](https://www.aosabook.org/en/500L/a-python-interpreter-written-in-python.html)*，实现过程中也一直在参考文中提到的 [byterun](https://github.com/nedbat/byterun) 项目，可以说渊源颇深。邮件发出后好多天也不见回信。我不想傻等，于是就推特私信了 PyCascades 的组织者 [Nina](https://twitter.com/nnja)。Nina 在一直是 Python 圈的活跃分子，以前也做过关于 debugging 的演讲，我觉得找她还挺合适的。很快有了回信：
+
+> This year I'm co-organized for PyCascades, so I currently have my hands full. Fortunately we have a team of volunteers that are providing speaker mentorship for the conference.
+>
+> Would it be OK if I introduced you to one of our speaker mentors? If yes, just let me know which e-mail address is best for you.
+
+我惊了，原来还有志愿者吗？那还用说，当然是赶快给我安排一个。于是，同为 Googler 的 [Chris Wilcox](https://twitter.com/chriswilcox47) 就成了我的 mentor。几乎是同时，Allison 和 Brandon 也回信了。于是接下来直到提交截止日期我几乎一直在改 CFP，成品就是[上一篇文章](https://laike9m.com/blog/lets-rethink-debugging,141/)中的那样。以后有空我可以专门聊聊怎么写 CFP，今天先略过了。
+
+## 会前准备
+
+CFP 幸运地被接收了。感情上，我终于放下心来，然而理智上我从来就不觉得会被据——要是这都被拒了，被接收的那些不得上天？毕竟我也不是没看往届演讲。
+
+于是就开始写 slide。我报名的是 recorded talk，也就是要提前录好。二月份提交才截止，理论上不用着急，但我想先试讲一次。我迅速搞定 slide，并联系了本地 Python meetup 的组织者，在 1 月 5 号晚上做了一次[远程演讲](https://www.meetup.com/OCPython/events/hvzxkrycccbhb/)。虽说只有二十多人参加，但反响还不错，这让我基本确信了这会是一个好的演讲。
+
+到这步还不能直接录制，组委会要审核 slide 是否符合 Code of Conduct，并做一个 tech check。Tech check 委托了 [Next Day Video](https://nextdayvideo.com/)（一个专业做会议视频的公司）进行，目的是为了确保讲师能够录制出效果足够好的视频。我先通过他们的系统预约，然后顺利进行并通过了 tech check。过程中，Next Day Video 的人还教了我怎么正确使用麦克风——原来我之前一直都摆错了方向导致无法获得最佳音效。果然这就是专业人士吗🤯。然后就是一些邮件+notion文档([1](https://www.notion.so/PyCascades-2021-Speaker-Guide-584203cbcfa348fe83aad6c13eacbb8c), [2](https://www.notion.so/AV-Tips-for-all-speakers-live-and-pre-recorded-5ba10f13d9e244b1a5270fe90121273a), [3](https://www.notion.so/AV-Tips-for-pre-recorded-talks-099d069082f94622bf3c19f269550d7a))，里面说明了参会和录制的各种要求，详细到视频的 bit rate 和 frame rate 都有规定。里面还推荐了一些录制用的软件。我最后采用的是 [Apowersoft Free Online Screen Recorder](https://www.apowersoft.com/free-online-screen-recorder?__c=1)。CoC review 通过之后，终于可以录制了。
+
+算上 PyCon China 2020 的[闪电演讲](https://www.bilibili.com/video/BV1Lp4y1B7RV)，这还只是我第二次录视频。我发现，录视频比现场演讲累太多了。可能有人会觉得，现场演讲多紧张啊要面对那么多观众，提前录的话讲坏了大不了重录或者剪辑嘛。但这也正是录视频累人的地方
+
+- 没有现场观众，你无法得到肾上腺素或者其它什么激素的刺激，而这些刺激能极大缓解疲劳。
+- 你不太会在意现场演讲中的口误、结巴等不完美的地方，因为你在面对别人讲话，而讲话时自然不会在意这些。
+- 提前录制则不同，首先你是自说自话，会对各种错误非常敏感。其次你有重录的机会，导致容易吹毛求疵。
+
+反正我第一次试着完整录，25 分钟，讲完就不行了。那天剩下的时间我几乎没办法干任何事，感觉整个人都被榨干了。自然效果也非常差，后半段可以明显感觉到讲师很疲惫。于是接下来的几天继续录，不算中途就抛弃掉的，大概第三遍的时候我觉得差不多了。我把视频传给了 Next Day Video，几天之后被告知没有问题。接下来就一身轻松等待会议开幕了。
+
+## Day 1
+
+主办方在周五安排了一个线上的 social 活动，使用的平台是 [SptialChat](https://spatial.chat/)。这个产品还挺有意思的。进去之后有一个类似剧场的空间，你可以在空间中拖动自己的头像，模拟在物理空间中走动的感觉。当你把头像移到一群人旁边就可以听到他们讲话，并且距离越近听得越清晰。一开始我只是听，后来 Anthony Shaw 过来和我打招呼，我也就顺势混入那一群人瞎聊起来。我说我感觉录视频好累，Anthony 和另一个讲师说他们也发现录视频会让自己要求变高，到最后受不了只能把讲稿完全写下来。
+
+主办方还找了个 DJ 在台上打碟。打碟的大叔全程也不和人交流，感觉很沉醉其中。
+
+## Day 2
+
+周六是正式会议，九点半开场。然而我七点就起床看了场球，还输了。郁闷了一阵想起来还要开会，点进去发现 Guido、Brett 等几位大佬已经开始聊天了。随后一直听，并反复在 recorded talk 和 live talk 之间切换，因为 PyCascades 的两个 track 是同时进行的。值得一看的演讲是 *[Your Name Is Invalid!](https://www.youtube.com/watch?v=telNgfvgmHs)*，大概就是讲处理各种语言文本时各种可能出的问题，比如有的语言中大小写字母不是一一对应的。最后的结论是 "Don't assume anything"。这让我想起以前看过的讲时区处理的视频，想用代码囊括复杂多样的世界，何其难也。
+
+会议之前若干周，主办方在 Slack 上开了几个私密频道给讲师，当作后台使用。会议当天，Next Day Video 的人会在后台联系讲师做 tech check——是的，为了确保万无一失，当天还有 tech check。我的演讲在下午 1:55，大概 1 点做 tech check。工作人员说声音没问题，但让我把后面的百叶窗拉上一点不让太亮了，并且还问能不能把摄像头放低一点。这里要解释一下，我用的是一个台式机连接大显示器，摄像头是放在显示器上面的，这样就造成了一种俯视的感觉。为了解决视角问题，我只能找两个纸巾盒子摞起来，把摄像头放在上面，这样勉强和我的头平齐。我还挺好奇其它人都是怎么做的。
+
+临近演讲时间，我登入 Next Day Video 的讲师专用后台。和主持人对了一次词，包括要怎么称呼和介绍我。这次会议我统一跟人说叫我"laike"了，毕竟称呼不重要。我之前以为开场介绍过后就可以退出，没想到还得一直待在后台。我只能找了一台笔记本打开听自己的演讲。他们强调说视频的播放有一段时间的延迟，但是我听着听着就忘了。临近结尾，我看到 slack 上有消息，是主持人让我马上过来说结束语。也就是说，我需要在视频没结束的时候就去讲，因为有延迟，观众看到的就是视频一结束，我和主持人马上出镜。我手忙脚乱地坐回屏幕前，调整摄像头，讲了一句话才发现自己处于 mute 状态，又赶紧 unmute。这状况频出的直播大概会成为未来的美好回忆吧。
+
+后台状况不提，演讲效果还是不错的。听众不出意外地被 Cyberbrain demo 震住，当然这也在意料之中。我边听边打字回答听众问题，十分愉快。
+
+![](https://image-laike9m.oss-cn-beijing.aliyuncs.com/cas1.png)
+
+![](https://image-laike9m.oss-cn-beijing.aliyuncs.com/cas2.png)
+
+有一些听众希望在 console 和 notebook 里使用。我只能说，希望未来可以实现吧。最令我高兴的还是看到 Łukasz 说他被 sold 了，虽然他后来也没有去 star 😢
+
+![](https://image-laike9m.oss-cn-beijing.aliyuncs.com/sold.png)
+
+之后就是在 Q & A 房间继续回答问题。有人问这个项目和 Google 有没有关系，我就非常想笑，怎么可能有关系啊。还有人问能否用 Cyberbrain profile 慢代码，我也只能承认不行。不管问题如何，能有机会和听众聊 Cyberbrain 就足够让我开心了。
+
+## Day 3
+
+Day 3 是 sprints，我没参加只是去看了一眼，感觉线上做 sprints 还是有点奇怪。以后线下一定要参加一回。
+
+大概就是这样。全程下来要问我哪一点印象最深，不是具体的 talk，也不是自己的第一次英文演讲，而是主办方那惊人的专业性。会前会中已经讲过，但这种专业性甚至延续到了会后。当他们把演讲视频上传到了 YouTube，我发现我在视频里有露脸。别不在意这个，但我并不想。正当我烦恼要怎么联系主办方解释自己的苦衷，甚至已经开始在脑中构思措辞时，我接到了一封邮件。这是一封确认视频有没有问题的邮件。我喜出望外，便在回复里说明了需求。于是他们迅速撤下视频，两天后剪辑完成又重新发布。这种受尊重的感觉实在太好了。我愿称 PyCascades 是我参与过的最专业的技术大会。

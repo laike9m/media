@@ -1,3 +1,11 @@
+## Talks
+
+* **Let's Rethink Debugging**  
+[video](https://www.youtube.com/watch?v=eXlTVrNZ67Q), [slide](https://laike9m.github.io/Slides/Let's%20Rethink%20Debugging%20-%20PyCascades%202021.html). PyCascades 2021.
+
+* **从零开始做播客**  
+[video](https://www.bilibili.com/video/BV1Lp4y1B7RV), [slide](https://drive.google.com/file/d/19-o_O7s6nLiCAMOazoxwk5WQPGCfbwKT/view?usp=sharing), PyCon China 2020
+
 * [**Python 调试新思路**](https://yanshuo.io/assets/player/?deck=5d6c9136d37616007449891e#/)  
 2019 PyCon China 上海站演讲
 
@@ -27,3 +35,12 @@ A talk at OpenCAS seminar.
 * [**Python First Class**](https://laike9m.github.io/Slides/Python.pdf)    
 My first talk at OpenCAS seminar. I introduced Python to students told them how to start learning it.  
 我第一次在中科院开源软件协会技术交流会上作演讲，介绍了 Python 语言，并引导同学们学习 Python
+
+## Podcasts
+
+- [捕蛇者说](https://pythonhunter.org)
+- [牛油果烤面包 EP.50：世界第一编程语言 Python](https://avocadotoast.live/episodes/50)
+- Magical Tokenized Friends EP 04 —— 现代百合巡礼
+  * [Day 1](https://www.youtube.com/watch?v=Nit6Ket63gc)
+  * [Day 2](https://www.youtube.com/watch?v=O4hoQCfMSks)
+- [Yet Aother 又是一个 ep.2：Language Confs](https://yetanother.fm/2020/09/24/ep002-language-confs/)

@@ -1,0 +1,201 @@
+<ul>
+  <li><a href="#abstract">Abstract</a></li>
+  <li><a href="#description">Description</a>
+  <ul>
+    <li><a href="#part-1-what-debugging-is-really-about">Part 1: What debugging is really about?</a></li>
+    <li><a href="#part-2-retrospect-the-history-of-debugging">Part 2: Retrospect the history of debugging</a></li>
+    <li><a href="#part-3-lets-rethink-debugging">Part 3: Let's rethink debugging</a></li>
+    <li><a href="#part-4-a-novel-approach-to-tackle-the-pain-points">Part 4: A novel approach to tackle the pain points</a></li>
+    <li><a href="#part-5-where-do-we-go-from-here">Part 5: Where do we go from here?</a></li>
+  </ul></li>
+</ul>
+<p>本文是我在 <a href="https://2021.pycascades.com/">PyCascades 2021</a> 的<a href="https://www.youtube.com/watch?v=eXlTVrNZ67Q">演讲</a>的 proposal。虽说是 proposal，却是以接近博文的风格写作的（毕竟我只会这种风格。。），所以就直接放出来水一篇了。对应的 <a href="https://laike9m.github.io/Slides/Let's%20Rethink%20Debugging%20-%20PyCascades%202021.html">slide 在这里</a>。下一篇文章我会聊聊参加 PyCascades 的经历。</p>
+
+<p>This is my talk proposal for <a href="https://2021.pycascades.com/">PyCascades 2021</a>. Even though it's a proposal, it reads very much like an article, so I just post it here.</p>
+
+<h2 id="abstract">Abstract</h2>
+
+<p>As programmers, we do debugging almost every day. What are the major options for debugging, what advantages and disadvantages do they have? We'll start the talk by giving the audience an overview of the history of debugging and existing tools so they know how to pick from them.</p>
+
+<p>Then, we'll help the audience gain a deeper understanding of what debugging is really about, and talk about two pain points with existing solutions. We'll introduce a novel approach to solve these pain points, with basic introduction to bytecode tracing so the audience can learn this useful technique.</p>
+
+<p>Finally, we'll look into the future and talk about why it's important to be more innovative. We hope that by listening to this talk, the audience can be more open-minded thinking about debugging, and programming as a whole.  </p>
+
+<p>No specific knowledge required, but basic experience with debugging would be helpful.</p>
+
+<h2 id="description">Description</h2>
+
+<p>Here is a detailed description of each part.</p>
+
+<h3 id="part-1-what-debugging-is-really-about">Part 1: What debugging is really about?</h3>
+
+<p>Broadly speaking, a Python program can have four types of errors:</p>
+
+<ul>
+<li>Syntax Error</li>
+<li>Exits abnormally (e.g. unhandled exceptions, killed by OS)</li>
+<li><strong>The program can run, but gives wrong results</strong></li>
+<li>Gives correct results, but consumes more resources than expected (e.g. memory leak)</li>
+</ul>
+
+<p>Among which, the third type of error is the most common, and also where programmers spent most of their time debugging. In this talk we focus on this type of error, aka "A Program can run, but gives wrong results".</p>
+
+<p>I'll let the audience recall how they usually do debugging. It's not hard to spot that, no matter what approach we take, we're trying to answer one question:</p>
+
+<p><strong>What is the root cause of the wrong value?</strong></p>
+
+<p>This sounds straightforward, but it is vital that we realize it before going into the later sections.</p>
+
+<h3 id="part-2-retrospect-the-history-of-debugging">Part 2: Retrospect the history of debugging</h3>
+
+<p>In the early days of programming, debugging meant dumping data of the system or output devices - literally printing, or displaying some flashy lights if there's an error. A very patient programmer then would go step-by-step through the code, reading it to see where the problem may be.</p>
+
+<p>Then, in the 70s and 80s, the idea of "debugging software" came along, and people started to build command-line debuggers like gbx and GDB. Since then, despite new  features like breakpoint, reverse debugging and graphical interface were added, the way people use debuggers stays pretty much the same: step through the program and look around. </p>
+
+<p>Today, print, logging, and debugger remain to be the major ways for debugging, each with its advantages and drawbacks:</p>
+
+<ul>
+<li><code>print</code>: 
+<ul>
+<li><strong>Advantages</strong>: available out-of-the-box, clean information, does not affect program execution.</li>
+<li><strong>Drawbacks</strong>: requires familiarity with code, needs tweaking repeatedly, lack of context, hard to manage output.</li>
+</ul></li>
+<li>Logging:
+<ul>
+<li><strong>Advantages</strong>: configurable, easy to manage output (e.g. Sentry), richer context (lineno, filename, etc).</li>
+<li><strong>Drawbacks</strong>: configuration is not easy, requires familiarity with code, hard to search what you need, context still not enough.</li>
+</ul></li>
+<li>Debugger:
+<ul>
+<li><strong>Advantages</strong>: powerful, does not require familiarity with code, richest context to help identify problems.</li>
+<li><strong>Drawbacks</strong>: not always available, decent learning curve, can't persist output, needs human interaction.</li>
+</ul></li>
+</ul>
+
+<p>Yet, with all these options, debugging is still hard sometimes. We'll see why in the next section.</p>
+
+<h3 id="part-3-lets-rethink-debugging">Part 3: Let's rethink debugging</h3>
+
+<p>There are two pain points with existing debugging solutions:</p>
+
+<ul>
+<li><p><strong>There is no tool that is as easy-to-use as a print, yet provides rich information like a debugger</strong>.</p>
+
+<table>
+<thead>
+<tr>
+  <th align="center">Tool</th>
+  <th align="center">Effort required</th>
+  <th align="center">Information provided</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td align="center">print</td>
+  <td align="center">low</td>
+  <td align="center">simple</td>
+</tr>
+<tr>
+  <td align="center">logging</td>
+  <td align="center">medium</td>
+  <td align="center">medium</td>
+</tr>
+<tr>
+  <td align="center">debugger</td>
+  <td align="center">high</td>
+  <td align="center">rich</td>
+</tr>
+<tr>
+  <td align="center">?</td>
+  <td align="center">low</td>
+  <td align="center">rich</td>
+</tr>
+</tbody>
+</table></li>
+<li><p><strong>Existing tools only give clues, without telling why.</strong></p>
+
+<p>This is a bigger (yet hidden) problem. </p>
+
+<p>In the first part we talked about the goal for debugging, which is finding out the root cause of the wrong value. Let's use debugger as an example to recall how we usually debug. Let's say you're debugging a program, where <code>c</code> has an unexpected value:</p>
+
+<pre><code>c = a + b  # c should be "foo", but instead is "bar"
+</code></pre>
+
+<p>Here are the normal steps:</p>
+
+<ol>
+<li>Set a break point at this line.</li>
+<li>Run the program, inspect the value of <code>a</code> and <code>b</code>.</li>
+<li>Figure out whether the error lies in <code>a</code> or <code>b</code>.</li>
+<li>Set another break point, repeat 🔁</li>
+</ol>
+
+<p>Or, if you want to do it in one run:</p>
+
+<ol>
+<li>Set a break point at the entry point of the program.</li>
+<li>Step through and program and remember everything happened along the way.</li>
+<li>Stop at <code>c = a + b</code>, use your brain to infer what happened.</li>
+</ol>
+
+<p>Either way, we still need to spend time reading the code and following the execution. We also need to keep monitoring all relevant variables in every step, compare them with the expected values, and memorize the results, because debuggers don't persist them. This is a huge overhead to our brain, and as a result made debugging less efficient and sometimes frustrating.</p>
+
+<p>The problem is obvious: debuggers only give clues, without telling why. We've been taking the manual work for granted for so long, that we don't even think it's a problem. In fact it is a problem, and it can be solved.</p></li>
+</ul>
+
+<h3 id="part-4-a-novel-approach-to-tackle-the-pain-points">Part 4: A novel approach to tackle the pain points</h3>
+
+<p>To reiterate, An ideal debugging tool should</p>
+
+<ul>
+<li><strong>Easy-to-use and provide rich information.</strong></li>
+<li><strong>Tell you why a variable has a wrong value with no or minimal human intervention.</strong></li>
+</ul>
+
+<p>For a moment, let's forget about the tools we use every day, just think about one question: who has the information we need for debugging?</p>
+
+<p>The answer is: <strong>the Python interpreter</strong>.</p>
+
+<p>So the question becomes, how do we pull relevant information out of the interpreter?</p>
+
+<p>I will briefly introduce the <code>sys.settrace</code> API, and the <code>opcode</code> event introduced in Python 3.7, with the example of <code>c = a + b</code> to demonstrate using bytecode to trace the sources of a variable. In this case, the sources of <code>c</code> are <code>a</code> and <code>b</code>. With this power, reasoning the root cause of a wrong value becomes possible.</p>
+
+<p>I will then introduce <a href="https://github.com/laike9m/Cyberbrain">Cyberbrain</a>, a debugger that takes advantage of the power of bytecode to solve the pain points with <strong>variable backtracing</strong>. What it means is that, besides viewing each variable's value at every step (which Cyberbrain also supports), users can "see" the sources of each variable change in a visualized way. In the previous example, Cyberbrain will tell you that it's <code>a</code> and <code>b</code> that caused <code>c</code> to change. It also traces the sources of <code>a</code> and <code>b</code> all the way up to the point where tracing begins.</p>
+
+<p>I'll do a quick demo of using Cyberbrain to debug a program to show how it solves the two pain points. By the end of the demo, the audience will realize that traditional debugging tools do require a lot of manual effort which can be automated. </p>
+
+<p>Bytecode tracing also has its problems, like it can make program slower and generate a huge amount of data for long running programs. But the important thing is that we realize the pain points, and don't stop looking for new possibilities, which brings the next topic.</p>
+
+<h3 id="part-5-where-do-we-go-from-here">Part 5: Where do we go from here?</h3>
+
+<p>Now is an interesting time.</p>
+
+<p>On the one hand, existing tools are becoming calcified. <a href="https://microsoft.github.io/debug-adapter-protocol/">Debug Adapter Protocol</a> is gaining popularity, which  defines the capabilities a debugger should provide. Tools that conform to DAP will never be able to provide capabilities beyond what the protocol specifies.</p>
+
+<p>On the other hand, new tools are coming out in Python's debugging space, just to list a few:</p>
+
+<ul>
+<li><a href="https://github.com/cool-RR/PySnooper">PySnooper</a>, <a href="https://github.com/gruns/icecream">IceCream</a>, <a href="https://github.com/ionelmc/python-hunter">Hunter</a>, <a href="https://github.com/alonho/pytrace">pytrace</a>: lets you trace function calls and variables with no effort, automating the process of adding <code>print()</code>.</li>
+<li><a href="https://github.com/alexmojaki/birdseye">birdseye</a>, <a href="https://thonny.org/">Thonny</a>: graphical  debuggers that can visualize the values of expressions.</li>
+<li><a href="http://www.pythontutor.com/">Python Tutor</a>: web-based interactive program visualization, which also visualizes data structures.</li>
+<li>Cyberbrain.</li>
+</ul>
+
+<p>These new tools share the same goal of reducing programmers' work in debugging, but beyond that, they are both trying to pitch the idea to people that the current "standard" way of debugging is not good enough, that more things can be achieved with less manual effort. The ideas behind are even more important than the tools themselves.</p>
+
+<p>Why is this important? Dijkstra has some famous words:</p>
+
+<blockquote>
+  <p>The tools we use have a profound (and devious!) influence on our thinking habits, and, therefore, on our thinking abilities. </p>
+</blockquote>
+
+<p>Imagine a world where all these efforts don't exist, will the word "debugger" gradually change from "something that can help you debug" to "something that conforms to the Debug Adapter Protocol"? That is not impossible. We need to prevent it from becoming the truth, and preserve a possible future where programmers are debugging in an effortless and more efficient way. So what can we do?</p>
+
+<ul>
+<li>Think of new ways to make debugging better;</li>
+<li>Create tools, or contribute to them;</li>
+<li>Spread this talk and the ideas;</li>
+<li>Create new programming languages that put debuggability as the core feature. </li>
+</ul>
+
+<p>And the easiest, yet hardest thing: <strong>keep an open mind</strong>.</p>

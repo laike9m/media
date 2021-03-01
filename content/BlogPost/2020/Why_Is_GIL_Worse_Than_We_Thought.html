@@ -1,0 +1,54 @@
+<p>以前每当看到有人抱怨 GIL（Global Interpreter Lock），我总会告诉他们不用慌，各种场景都有对应的解决方案，比如主 IO 操作用 async，主 CPU 操作用多进程。我也一直认为，Python 的慢主要慢在“纯”执行速度，而 GIL 只不过是一个瑕疵。</p>
+
+<p>然而最近我意识到，GIL 是一个比想象中严重得多的问题，因为它阻碍了程序的<strong>按需并行</strong>。</p>
+
+<p>什么是“按需并行”？这个词是我造的，用来描述编程中的一种常见 pattern，即把最耗时的那部分操作并行化，而程序整体仍保持单线程。通常来讲，耗时的部分往往是在遍历一个巨大的列表，并对列表中的元素做某种操作。而并行化也非常简单，只要开多个线程分别处理列表的一部分就行了。</p>
+
+<p>这里我们只讨论 CPU 密集的情况。由于 GIL 的存在，开多个线程并不会让程序跑得更快（如果不是更慢的话），因此我们必须用到多进程。那么多进程是不是就能解决问题呢？并不总是，有一系列难点：</p>
+
+<ul>
+<li>进程不共享内存，计算的输入必须被传到每个工作进程里，比如列表中的元素；</li>
+<li>能被传递的东西必须 <a href="https://stackoverflow.com/q/3603581">picklable</a>，而有相当多的东西是 unpicklable 的；</li>
+<li>如果后续程序执行需要并行计算的输出，那么这些输出也得 picklable；</li>
+<li>Pickle -> unpickle 操作带来了额外的性能开销。</li>
+</ul>
+
+<p>这样一来，多进程的应用范围就大大减小了。比如我最近在 <a href="https://github.com/laike9m/Cyberbrain">Cyberbrain</a> 中遇到的一个问题，其中<a href="https://github.com/laike9m/Cyberbrain/blob/1d34c5c6e6/cyberbrain/rpc_client.py#L191-L195">一段代码</a>是这样的：</p>
+
+<pre><code>for event in frame.events:   
+  frame_proto.events.append(_transform_event_to_proto(event))
+    event_ids = _get_event_sources_uids(event, frame)
+    if event_ids:
+      frame_proto.tracing_result[event.uid].event_ids[:] = event_ids
+</code></pre>
+
+<p>这段代码遍历 <code>frame.events</code>，处理之后更新 <code>frame_proto</code>。<code>events</code> 数量很大，导致这部分代码成为了性能瓶颈，因此我想把它并行化。然后我就发现这是一个不可能完成的任务，为什么呢？因为 protocol buffer 对象不 pickable。这意味着，我既不能把 <code>frame_proto</code> 传进每个进程，也不能把 <code>_transform_event_to_proto(event)</code> 的结果传出来，因为它们都是 protocol buffer 对象。如果是 C++ 或者 Java，这里直接多线程就解决了（每个线程分别更新 <code>frame_proto</code>）。</p>
+
+<p>总结一下：</p>
+
+<ul>
+<li>GIL 让在大部分语言里可以用多线程解决的事必须要用多进程解决。</li>
+<li>多进程的诸多限制让它无法无缝替代多线程。即使在能替代的场景，也要做很多额外工作，以及承担序列化和反序列化带来的性能开销。</li>
+</ul>
+
+<p>之前我们探讨了 GIL 对“并行”的阻碍，下面聊聊 GIL 对<strong>“按需”</strong>的阻碍。这是更本质的问题，却极少被人注意到。我们都知道，过早的优化是万恶之源。除了明显需要优化的场景（比如避免数据库 N+1），一般而言都是先实现，再 profile，最后优化。换句话说，类似“一个循环成了性能瓶颈”这种发现，写代码的时候一般是不知道的。假设你的程序写完了，然后需要优化某一部分，你当然希望能够不动其它代码，只修改瓶颈部分即可。这种优化的场景就非常适合多线程——因为变量是共享的，所以程序的整体完全不用动。而一旦涉及多进程，则往往需要对程序进行更大程度的修改，甚至重新设计整个架构。这样一来，<strong>“按需”</strong>优化就不存在了。这不仅导致优化困难，更给项目管理带来了不确定性，甚至可能导致延期或性能不达标。</p>
+
+<p>那么，<a href="https://www.python.org/dev/peps/pep-0554/">PEP 554 - 多解释器</a> 是不是救世主呢？显然也不是。多解释器说白了就是 goroutine 的 Python 实现，问题是它限制了 channel 能传递的变量类型，<a href="https://www.python.org/dev/peps/pep-0554/#id40">quote</a>:</p>
+
+<blockquote>
+  <p>Along those same lines, we will initially restrict the types that may be passed through channels to the following:</p>
+  
+  <ul>
+  <li>None</li>
+  <li>bytes</li>
+  <li>str</li>
+  <li>int</li>
+  <li>channels</li>
+  </ul>
+</blockquote>
+
+<p>所以，多解释器虽然是好的，但恐怕还是不能解决“按需并行”的问题。</p>
+
+<hr />
+
+<p>注：Python 里多进程可以共享内存，然而能共享的变量类型同样有限，具体可参考：<a href="https://docs.python.org/3/library/multiprocessing.shared_memory.html">multiprocessing.shared_memory</a></p>
