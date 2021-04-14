@@ -45,3 +45,6 @@ for event in frame.events:
 ---
 
 注：Python 里多进程可以共享内存，然而能共享的变量类型同样有限，具体可参考：[multiprocessing.shared_memory](https://docs.python.org/3/library/multiprocessing.shared_memory.html)
+
+Update：
+发现一个遇到了类似问题的哥们儿，以及我的[回复](https://discuss.python.org/t/pattern-for-sharing-large-python-data-structures-between-processes/7945/9?u=laike9m)
