@@ -1,0 +1,94 @@
+<ul>
+  <li><a href="#the-heat-around-pypi-critical-packages">The Heat around PyPI "critical" Packages</a></li>
+  <li><a href="#the-responsibility-of-oss-maintainers">The Responsibility of OSS Maintainers</a></li>
+  <li><a href="#a-possible-solution">A Possible Solution</a></li>
+  <li><a href="#a-beautiful-future-and-a-bumpy-road">A Beautiful Future and a Bumpy Road</a></li>
+  <li><a href="#the-world-is-different-now">The World Is Different Now</a></li>
+  <li><a href="#appendix">Appendix</a></li>
+</ul>
+<h2 id="the-heat-around-pypi-critical-packages">The Heat around PyPI "critical" Packages</h2>
+
+<p>Recently, <a href="https://www.bleepingcomputer.com/news/security/pypi-mandates-2fa-for-critical-projects-developer-pushes-back/">PyPI mandates 2FA for critical projects</a>, but got many push backs from developers (<a href="https://twitter.com/untitaker/status/1545476052536942592">1</a>, <a href="https://twitter.com/balloob/status/1545509863651811333">2</a>). Many people (assuming open source project maintainers) don't like the idea of being forced to put more work into projects they don't get paid to work on.</p>
+
+<p>Armin Ronacher (creator of Flask, Sentry) <a href="https://lucumr.pocoo.org/2022/7/9/congratulations/">discussed</a> this in more detail, suggesting there's a better way like <a href="https://github.com/mozilla/cargo-vet">cargo-vet</a> than putting more burden on maintainers. Donald Stufft (Python core dev, pip/PyPI maintainer) on the other hand, <a href="https://twitter.com/dstufft/status/1545892389537079297?s=20&amp;t=UQYNbR_-fq1bs6VwfzwcNg">believes</a> that maintainers do have certain responsibilities.</p>
+
+<p>While almost all people agree that enforcing 2FA is a sensible move, I think the real problem is still about the responsibility of open source software (OSS) maintainers, or, does it even exist?</p>
+
+<h2 id="the-responsibility-of-oss-maintainers">The Responsibility of OSS Maintainers</h2>
+
+<p>Many OSS maintainers complained on Twitter that they've been seen by users and big companies as "free labor", like the one Daniel Stenberg (creator of curl) posted.</p>
+
+<p><blockquote class="twitter-tweet"><p lang="en" dir="ltr">If you are a multi billion dollar company and are concerned about log4j, why not just email OSS authors you never paid anything and demand a response for free within 24 hours with lots of info? (company name redacted for <em>my</em> peace of mind) <a href="https://t.co/saumXAWPKO">pic.twitter.com/saumXAWPKO</a></p>&mdash; daniel:// stenberg:// (@bagder) <a href="https://twitter.com/bagder/status/1484672924036616195?ref_src=twsrc%5Etfw">January 21, 2022</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script></p>
+
+<p>Despite all the posts, it seems like we're entering a dead end: users keep asking, and maintainers keep clarifying. The OSS community has wasted so much time and energy on this, and it makes me wonder whether we're trying to solve the right problem. "How many responsibilities do OSS maintainers have?", it doesn't even feel possible to have a right answer, because projects are so different by themselves.</p>
+
+<p>I think, the question we need to answer is: <br />
+<strong>For a specific project, how to get its maintainers and users to reach a consensus on the responsibilities of maintainers?</strong></p>
+
+<p>The differences with the original question are:</p>
+
+<ul>
+<li>Target projects individually, instead of viewing them as a whole.</li>
+<li>Involves both sides, instead of only one.</li>
+<li>Building an understanding is always the foundation towards more actions.</li>
+</ul>
+
+<h2 id="a-possible-solution">A Possible Solution</h2>
+
+<p>Naturally, we think of a similar thing: open-source licenses. It's answering the opposite question: what are OSS users allowed to do? What if, we have something similar for maintainers, and let's just call it "<strong>software maintainer commitment</strong>", or <strong>SMC</strong>.
+Suppose we have something like this, what will it look like? </p>
+
+<ul>
+<li>For 90% of the projects, they will remain as is, i.e. no commitment. This means maintainers have absolutely no responsibility.</li>
+<li>For some, they're willing to enable 2FA to provide the least assurance. Some may be willing to ensure compatibility with the latest version of the language it's written in.</li>
+</ul>
+
+<p>For projects maintained by big companies, that's a whole different story. I can imagine big companies have the resources to provide a long list of commitments, and they're willing to do so to attract more users. This is certainly unfair for maintainers working in their free time, but on the other hand, by making the distinction clear that there are different levels of commitment, users will no longer assume that each project can provide the support that they imagine, which is the whole point of SMC.</p>
+
+<p>Though the idea comes from OSS licenses, implementation wise, SMC will be different in many ways:</p>
+
+<ul>
+<li>There will no longer be pre-defined commitments like MIT, GPL, except "no commitment", which is like <a href="http://www.wtfpl.net/">WTFPL</a>.</li>
+<li>Commitments need to:
+<ul>
+<li>Be <strong>fine-grained</strong>: support the attributes that maintainers may need to specify, and allow expansion.</li>
+<li>Be <strong>configurable</strong>: commitment is often more than just "yes" or "no". For example, one might say I guarantee to fix security issues in x days, and x can be an arbitrary integer greater than 0.</li>
+<li>Allow <strong>anti-commitment</strong>: since all we want is to bring more clarity, anti-commitment makes total sense. An extreme case would be: as a maintainer, I will not fix any issues, and it's the users' responsibility to do so.</li>
+<li>Allow <strong>conditional commitment</strong>: Often times, financial support is critical to keeping a project alive. Things like GitHub sponsors and Open Collective have helped many developers and made many projects better maintained. SMC should allow developers to state "if you pay me $500, I will respond to your bug in x days and make it a higher priority."</li>
+</ul></li>
+</ul>
+
+<p>In short, commitments need to be a lot more flexible than licenses, because maintainers have different needs.</p>
+
+<h2 id="a-beautiful-future-and-a-bumpy-road">A Beautiful Future and a Bumpy Road</h2>
+
+<p>So what can we do with software maintainer commitment (assuming it's widely adopted and recognized)?</p>
+
+<ul>
+<li>It makes maintainers happier, and users less confused.</li>
+<li>It saves people's time, for both maintainers and users: less questioning, arguing, clarifying, complaining. We're talking about the time people spend on communication, and that's a lot of time.</li>
+<li>It helps users select the projects to depend on.</li>
+<li>It helps identify the risk in your supply chain. Remember this graph?
+<img src="https://imgs.xkcd.com/comics/dependency.png" alt="" /> <br />
+But how are we going to analyze all these arbitrary commitments, you might ask? Well, that's where machine learning can help.</li>
+</ul>
+
+<p>The future sounds fantastic, but to get there we need to go through a bumpy road, and I'm not even sure we can.</p>
+
+<ul>
+<li>Unlike a license that is backed by legal precedent, SMC doesn't really "enforce" anything. Stating a high support level doesn't mean a project is actually supported. On the contrary, if somehow it is enforced by law, then maintainers will not use commitment for sure because the risk is too high.</li>
+<li>Most maintainers probably just don't care about having such a thing.</li>
+<li>Creating commitments by themselves is not enough, having them widely recognized and respected is as important. This is really hard and will probably take decades.</li>
+</ul>
+
+<p>With all the difficulties, I never doubt the value of transparency and clarity. Again, it's worth noting that <strong>the purpose of software maintainer commitment is not to encourage maintainers to do more things, but to resolve the confusion around responsibility</strong>. I can imagine that personal maintainers tend to have mostly anti-commitments, while corporations will have more commitments. This is fine, and if we get there, the world of open source will be a lot better than today.</p>
+
+<h2 id="the-world-is-different-now">The World Is Different Now</h2>
+
+<p>The world has become very different. In 2011, it's still <em><a href="https://a16z.com/2011/08/20/why-software-is-eating-the-world/">Why Software Is Eating the World</a></em>. Today, can you imagine an article like this that does not even mention open source? Open source is not new, but in the past, it was not as critical as it is today that affects almost every aspect of human beings. The scale of users has made OSS beyond just a topic among hackers. The atmosphere also changed with it, there's no "common sense" any more. With the explosive expansion of OSS, the management and idealogy of open source is falling behind.</p>
+
+<p>With or without software maintainer commitment, the issue of maintainer responsibility has to be solved. I have faith in human, and we'll get there eventually.</p>
+
+<h2 id="appendix">Appendix</h2>
+
+<p>James Bennett wrote an <a href="https://www.b-list.org/weblog/2022/jul/11/pypi/#:~:text=Don%E2%80%99t%20be%20a%C2%A0you%2Dknow%2Dwhat">article</a> that mentions similar ideas.</p>
