@@ -43,4 +43,5 @@ My first talk at OpenCAS seminar. I introduced Python to students told them how 
 - Magical Tokenized Friends EP 04 —— 现代百合巡礼
   * [Day 1](https://www.youtube.com/watch?v=Nit6Ket63gc)
   * [Day 2](https://www.youtube.com/watch?v=O4hoQCfMSks)
-- [Yet Aother 又是一个 ep.2：Language Confs](https://yetanother.fm/2020/09/24/ep002-language-confs/)
+- [Yet Aother 又是一个 ep.2：Language Confs](https://open.spotify.com/episode/3ZOCRLVowB0P7u5sGRmRMg)
+- [ByteTalk ep.7: 跟 Logseq 的创造者天生聊聊 Logseq 的故事](https://bytetalk.fm/posts/episode-7/)

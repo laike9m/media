@@ -29,6 +29,8 @@ As you can see, the `3.9.7 (pyenv) --> pyenv` part is unnecessary. It also creat
 
 Now comes to the controversial part: **[PDM](https://pdm.fming.dev/)**. Disclaimer: PDM is my personal choice, and it's totally ok if you chose Poetry, Pipenv, or any other tools. Here are the reasons why I use PDM:
 
+⚠️⚠️ *UPDATE 2023.5: I should clarify that, [PEP 582](https://pdm.fming.dev/latest/usage/pep582/) is good for developing libraries, but **for applications virtualenv should still be preferred.*** 
+
 - **PDM helped me get away from virtual environments**  
   I used to have 10+ virtual environments, and I get a headache every time I saw the long list. It essentially makes it impossible to ever upgrade my project Python, because I really don't want to setup virtual environments again for every project.
 
