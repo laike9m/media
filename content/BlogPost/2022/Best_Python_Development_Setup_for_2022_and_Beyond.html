@@ -13,7 +13,7 @@
 <ul>
 <li>For executables/utility tools (e.g. mypy, black), install with <strong>system Python + <a href="https://pypa.github.io/pipx/">pipx</a></strong></li>
 <li>For project development, install different Python versions via <strong><a href="https://github.com/pyenv/pyenv">pyenv</a></strong></li>
-<li>For dependency management, use <strong><a href="https://pdm.fming.dev/">PDM</a></strong> (PDM is managed by pipx)</li>
+<li>For dependency management, use <strong><a href="https://pdm.fming.dev/">PDM</a></strong> (PDM is installed via pipx)</li>
 </ul>
 
 <p>I'll explain each choice in more details below.</p>
@@ -40,7 +40,7 @@
 
 <p>Now comes to the controversial part: <strong><a href="https://pdm.fming.dev/">PDM</a></strong>. Disclaimer: PDM is my personal choice, and it's totally ok if you chose Poetry, Pipenv, or any other tools. Here are the reasons why I use PDM:</p>
 
-<p>⚠️⚠️ <em>UPDATE 2023.5: I should clarify that, <a href="https://pdm.fming.dev/latest/usage/pep582/">PEP 582</a> is good for developing libraries, but <strong>for applications virtualenv should still be preferred.</em></strong> </p>
+<p>⚠️⚠️ <em>UPDATE 2023.5: I should clarify that, <a href="https://pdm.fming.dev/latest/usage/pep582/">PEP 582</a> is good for developing libraries; <strong>for applications, PDM's <a href="https://pdm.fming.dev/latest/usage/venv/">virtualenv mode</a> should still be preferred.</em></strong> </p>
 
 <ul>
 <li><p><strong>PDM helped me get away from virtual environments</strong> <br />
