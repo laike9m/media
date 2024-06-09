@@ -36,7 +36,7 @@ Now comes to the controversial part: **[PDM](https://pdm.fming.dev/)**. Disclaim
 
   With PDM, I have no virtual environments. Each project directly depends on the pyenv-installed Python. I'm also free to upgrade patch versions (e.g. from 3.9.7 to 3.9.9), which allow me to always use the latest Python release.
 
-  See also *[You don't really need a virtualenv](https://frostming.com/2021/01-22/introducing-pdm/)*.
+  See also *[You don't really need a virtualenv](https://frostming.com/en/2021/introducing-pdm/)*.
 
 - **PDM is well maintained**  
   PDM is created and maintained by PyPA member [Frost Ming](https://twitter.com/frostming90). If you don't know what PyPA members do, let's just say they know the best about Python packaging. Frost Ming also maintains Pipenv.

@@ -65,7 +65,7 @@ With all the difficulties, I never doubt the value of transparency and clarity. 
 
 ## The World Is Different Now
 
-The world has become very different. In 2011, it's still *[Why Software Is Eating the World](https://a16z.com/2011/08/20/why-software-is-eating-the-world/)*. Today, can you imagine an article like this that does not even mention open source? Open source is not new, but in the past, it was not as critical as it is today that affects almost every aspect of human beings. The scale of users has made OSS beyond just a topic among hackers. The atmosphere also changed with it, there's no "common sense" any more. With the explosive expansion of OSS, the management and idealogy of open source is falling behind.
+The world has become very different. In 2011, it's still *[Why Software Is Eating the World](https://a16z.com/2011/08/20/why-software-is-eating-the-world/)*. Today, can you imagine an article like this that does not even mention open source? Open source is not new, but in the past, it was not as critical as it is today that affects almost every aspect of human beings. The scale of users has made OSS beyond just a topic among hackers. The atmosphere also changed with it, there's no "common sense" any more. With the explosive expansion of OSS, the management and ideology of open source is falling behind.
 
 With or without software maintainer commitment, the issue of maintainer responsibility has to be solved. I have faith in human, and we'll get there eventually.
 
