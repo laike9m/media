@@ -1,42 +1,12 @@
-Hi, I'm laike9m. I do a lot of different things.
+Hi, I'm laike9m. I'm currently a software engineer working for Google.
 
-If you want to get in touch with me, you can find me on [GitHub][], [Twitter][] or [Stackoverflow][SO].
+In my spare time, I do open-source and build apps:
 
-[GitHub]: http://github.com/laike9m
-[Twitter]: https://twitter.com/laike9m
-[SO]: http://stackoverflow.com/users/2142577/laike9m
+- My [GitHub](https://github.com/laike9m)
+- **[Xylect](https://xylect.app/): the No.1 AI-search app for Mac**. It works in ANY app, with multi-language support, and does not require API key or prompting. See the video introduction:
 
-Programming
------------
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/1z1gpg2FW-I?si=IAGSnJ_WIfQGedUl" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-I didn't really start programming before I became a Junior student. Since then, I've done a lot of different things, most of which are tools for my personal use, but you may find some useful too.  You can take a look at my [projects](https://laike9m.com/blog/projects/) to see some of the major stuff I've worked on, or look at my [Github account][Github].
+I'm an [Atlético Madrid](http://en.clubatleticodemadrid.com) fan since high school.
 
-Python is my favourite language, whose simplicity and powerfulness fascinates me. C++ is great, but writing C++ code is of less fun.
-
-Sports
-------
-
-I play many kinds of sports, including basketball, soccer, table-tennis and badminton. I'm a crazy **[Atlético Madrid][ATM]** supporter since high school.
-
-[ATM]: http://en.clubatleticodemadrid.com/
-
-Otaku Culture
--------------
-
-Not sure about how to call these stuff: anime, manga, game etc, anyway **[`Otaku`][otaku]** seems to be the most appropriate word. If you are also interested in it, you should read [this blog post][ta] to learn more about my taste.
-
-[otaku]: http://ladyluckblues.com/
-[ta]: /blog/xxx,21
-
-Novels
-------
-
-I love reading **detective novels** and **science fictions**. I used to be the 
-president of Tsinghua Student Association of Detective and Mystery.
-
-About This Site
------------
-
-If you want to know more about my site you should check out the [blogpost][blog] about how I wrote it. (It's in 中文)
-
-[blog]: http://www.laike9m.com/blog/permant_link,22/
+Yyou can find me on [Twitter](https://twitter.com/laike9m_studio) or [Mastodon](https://mastodon.social/@laike9m). Follow me and I will follow back 😀

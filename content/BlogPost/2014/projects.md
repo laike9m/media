@@ -1,5 +1,11 @@
-Projects
-==
+## [Xylect](https://xylect.app)
+
+One-click AI-search for Mac. It works in ANY app, with multi-language support, and does not require API key or prompting.
+
+## Open-source
+
+- [Python-Type-Challenges](https://github.com/laike9m/Python-Type-Challenges). 
+  Master Python typing (type hints) with interactive online exercises!
 
 * **[rsshub-zhihu-helper](https://github.com/laike9m/rsshub-zhihu-helper)**  
 如果你希望通过 [RSSHub](https://docs.rsshub.app/) 浏览知乎，这个项目或许可以帮到你。
