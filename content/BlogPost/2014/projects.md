@@ -1,6 +1,6 @@
-## [Xylect](https://xylect.app)
+## [Clicknow](https://clicknow.ai)
 
-One-click AI-search for Mac. It works in ANY app, with multi-language support, and does not require API key or prompting.
+One-click AI-search and translation app for Mac. It works in ANY app, with multi-language support, built-in API key, and a PopClip extension. Try it for free!
 
 ## Open-source
 

@@ -35,13 +35,3 @@ A talk at OpenCAS seminar.
 * [**Python First Class**](https://laike9m.github.io/Slides/Python.pdf)    
 My first talk at OpenCAS seminar. I introduced Python to students told them how to start learning it.  
 我第一次在中科院开源软件协会技术交流会上作演讲，介绍了 Python 语言，并引导同学们学习 Python
-
-## Podcasts
-
-- [捕蛇者说](https://pythonhunter.org)
-- [牛油果烤面包 EP.50：世界第一编程语言 Python](https://avocadotoast.live/episodes/50)
-- Magical Tokenized Friends EP 04 —— 现代百合巡礼
-  * [Day 1](https://www.youtube.com/watch?v=Nit6Ket63gc)
-  * [Day 2](https://www.youtube.com/watch?v=O4hoQCfMSks)
-- [Yet Aother 又是一个 ep.2：Language Confs](https://open.spotify.com/episode/3ZOCRLVowB0P7u5sGRmRMg)
-- [ByteTalk ep.7: 跟 Logseq 的创造者天生聊聊 Logseq 的故事](https://bytetalk.fm/posts/episode-7/)

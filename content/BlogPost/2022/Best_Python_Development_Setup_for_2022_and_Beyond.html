@@ -11,7 +11,7 @@
 <h2 id="the-best-setup-in-a-nutshell">The Best Setup, in A Nutshell</h2>
 
 <ul>
-<li>For executables/utility tools (e.g. mypy, black), install with <strong>system Python + <a href="https://pypa.github.io/pipx/">pipx</a></strong></li>
+<li>For common tooling (e.g. mypy, black), install with <strong>system Python + <a href="https://pypa.github.io/pipx/">pipx</a></strong></li>
 <li>For project development, install different Python versions via <strong><a href="https://github.com/pyenv/pyenv">pyenv</a></strong></li>
 <li>For dependency management, use <strong><a href="https://pdm.fming.dev/">PDM</a></strong> (PDM is installed via pipx)</li>
 </ul>
@@ -23,7 +23,7 @@
 <p>One unusual thing you probably have noticed is that the setup consists of two ways to install Python: the system Python and Python installed by pyenv. Here, by "system Python", I mean the Python carried with your system, or the Python installed with a system package manager (e.g. <code>apt</code>, <code>brew</code>). Many articles suggested that we should never using system Python, so why still use it? Because we need <strong>two independent systems for two different purposes</strong>:</p>
 
 <ul>
-<li>For utility tools, <strong>reliability</strong> matters the most. You want them to always work when you need them. The less things they depend on, the better. System Python is the best choice, because they have the least dependencies. Also, for utility tools, It doesn't really matter which Python it is running on. Therefore even if system Python is behind the latest version, it is usually fine.</li>
+<li>For utility tools, <strong>reliability</strong> matters the most. You want them to always work when you need them. The less things they depend on, the better. System Python is the best choice, because they have the least dependencies. Also, for utility tools, It doesn't really matter which Python it is running on. Therefore even if system Python is behind the latest version, usually this is fine.</li>
 <li>For Python interpreters used by projects, <strong>flexibility</strong> is more important. You may need to upgrade them when a patch version fixed a bug, or using a specific Python version because that's what you have on the server. pyenv fits this purpose well.</li>
 </ul>
 
@@ -40,16 +40,16 @@
 
 <p>Now comes to the controversial part: <strong><a href="https://pdm.fming.dev/">PDM</a></strong>. Disclaimer: PDM is my personal choice, and it's totally ok if you chose Poetry, Pipenv, or any other tools. Here are the reasons why I use PDM:</p>
 
-<p>⚠️⚠️ <em>UPDATE 2023.5: I should clarify that, <a href="https://pdm.fming.dev/latest/usage/pep582/">PEP 582</a> is good for developing libraries; <strong>for applications, PDM's <a href="https://pdm.fming.dev/latest/usage/venv/">virtualenv mode</a> should still be preferred.</em></strong> </p>
+<p>⚠️⚠️ <em>UPDATE 2023.5: I should clarify that, <a href="https://pdm.fming.dev/latest/usage/pep582/">PEP 582</a> is good for developing libraries; <strong>for applications, prefer the <a href="https://pdm.fming.dev/latest/usage/venv/">virtualenv mode</a>.</em></strong> </p>
 
 <ul>
-<li><p><strong>PDM helped me get away from virtual environments</strong> <br />
+<li><p><strong>PDM helped me get away from virtual environments</strong><br />
 I used to have 10+ virtual environments, and I get a headache every time I saw the long list. It essentially makes it impossible to ever upgrade my project Python, because I really don't want to setup virtual environments again for every project.</p>
 
 <p>With PDM, I have no virtual environments. Each project directly depends on the pyenv-installed Python. I'm also free to upgrade patch versions (e.g. from 3.9.7 to 3.9.9), which allow me to always use the latest Python release.</p>
 
 <p>See also <em><a href="https://frostming.com/en/2021/introducing-pdm/">You don't really need a virtualenv</a></em>.</p></li>
-<li><p><strong>PDM is well maintained</strong> <br />
+<li><p><strong>PDM is well maintained</strong><br />
 PDM is created and maintained by PyPA member <a href="https://twitter.com/frostming90">Frost Ming</a>. If you don't know what PyPA members do, let's just say they know the best about Python packaging. Frost Ming also maintains Pipenv.</p>
 
 <p>I used to use Poetry, which is also a nice tool. But sometimes Poetry is buggy, especially when upgrading project Python. What's worse is that no one seems to be dealing with those bugs (<a href="https://github.com/python-poetry/poetry/issues/3071">example</a>). PDM is the opposite. Issues are usually responded within a day or two, including <a href="https://github.com/pdm-project/pdm/issues/846">feature requests</a>.</p>

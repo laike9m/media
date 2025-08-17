@@ -2,7 +2,7 @@ This blogpost describes the Python development setup that makes the most sense t
 
 ## The Best Setup, in A Nutshell
 
-- For executables/utility tools (e.g. mypy, black), install with **system Python + [pipx](https://pypa.github.io/pipx/)**
+- For common tooling (e.g. mypy, black), install with **system Python + [pipx](https://pypa.github.io/pipx/)**
 - For project development, install different Python versions via **[pyenv](https://github.com/pyenv/pyenv)**
 - For dependency management, use **[PDM](https://pdm.fming.dev/)** (PDM is installed via pipx)
 
@@ -12,7 +12,7 @@ I'll explain each choice in more details below.
 
 One unusual thing you probably have noticed is that the setup consists of two ways to install Python: the system Python and Python installed by pyenv. Here, by "system Python", I mean the Python carried with your system, or the Python installed with a system package manager (e.g. `apt`, `brew`). Many articles suggested that we should never using system Python, so why still use it? Because we need **two independent systems for two different purposes**:
 
-- For utility tools, **reliability** matters the most. You want them to always work when you need them. The less things they depend on, the better. System Python is the best choice, because they have the least dependencies. Also, for utility tools, It doesn't really matter which Python it is running on. Therefore even if system Python is behind the latest version, it is usually fine.
+- For utility tools, **reliability** matters the most. You want them to always work when you need them. The less things they depend on, the better. System Python is the best choice, because they have the least dependencies. Also, for utility tools, It doesn't really matter which Python it is running on. Therefore even if system Python is behind the latest version, usually this is fine.
 - For Python interpreters used by projects, **flexibility** is more important. You may need to upgrade them when a patch version fixed a bug, or using a specific Python version because that's what you have on the server. pyenv fits this purpose well.
 
 ## pipx
@@ -29,7 +29,7 @@ As you can see, the `3.9.7 (pyenv) --> pyenv` part is unnecessary. It also creat
 
 Now comes to the controversial part: **[PDM](https://pdm.fming.dev/)**. Disclaimer: PDM is my personal choice, and it's totally ok if you chose Poetry, Pipenv, or any other tools. Here are the reasons why I use PDM:
 
-⚠️⚠️ *UPDATE 2023.5: I should clarify that, [PEP 582](https://pdm.fming.dev/latest/usage/pep582/) is good for developing libraries; **for applications, PDM's [virtualenv mode](https://pdm.fming.dev/latest/usage/venv/) should still be preferred.*** 
+⚠️⚠️ *UPDATE 2023.5: I should clarify that, [PEP 582](https://pdm.fming.dev/latest/usage/pep582/) is good for developing libraries; **for applications, prefer the [virtualenv mode](https://pdm.fming.dev/latest/usage/venv/).*** 
 
 - **PDM helped me get away from virtual environments**  
   I used to have 10+ virtual environments, and I get a headache every time I saw the long list. It essentially makes it impossible to ever upgrade my project Python, because I really don't want to setup virtual environments again for every project.
